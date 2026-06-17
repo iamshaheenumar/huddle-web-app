@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getActiveGroup } from '@/lib/group'
 import MemberAvatar from '@/components/MemberAvatar'
 import { CURRENCY, MONTHS } from '@/lib/constants'
+import RemoveMemberButton from './RemoveMemberButton'
 
 export default async function MembersPage() {
   const supabase = await createClient()
@@ -31,6 +32,8 @@ export default async function MembersPage() {
   const totalBudget = (budgetRes.data as unknown as { total_amount: number } | null)?.total_amount ?? 0
   const totalSpent = expenses.reduce((s, e) => s + e.amount, 0)
   const pctUsed = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0
+
+  const isOwner = rawMembers.some(m => m.user_id === user.id && m.role === 'owner')
 
   const members = rawMembers.map(m => {
     const profile = m.profiles
@@ -110,6 +113,9 @@ export default async function MembersPage() {
                   <div className="text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}</div>
                 </div>
                 <span className="text-[16px] font-extrabold" style={{ color: '#20242E' }}>{fmt(m.spent)}</span>
+                {isOwner && m.role !== 'owner' && (
+                  <RemoveMemberButton userId={m.user_id} name={m.profile?.display_name ?? 'this member'} />
+                )}
               </div>
               <div className="h-1.5 rounded-full mt-3 overflow-hidden" style={{ background: '#EFEBE3' }}>
                 <div className="h-full rounded-full transition-all" style={{ width: `${barPct}%`, background: color }} />

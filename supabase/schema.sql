@@ -121,6 +121,21 @@ $$;
 
 grant execute on function public.user_group_ids() to authenticated;
 
+-- Returns group ids owned by the current user. security definer so the lookup
+-- on groups bypasses groups_select (which itself queries group_members, causing
+-- infinite recursion if called from a group_members policy without this guard).
+create or replace function public.user_owned_group_ids()
+returns setof uuid
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select id from public.groups where owner_id = auth.uid()
+$$;
+
+grant execute on function public.user_owned_group_ids() to authenticated;
+
 -- Profiles: users can read/write their own profile
 drop policy if exists "profiles_select" on public.profiles;
 create policy "profiles_select" on public.profiles for select using (true);
@@ -222,6 +237,11 @@ drop policy if exists "group_members_insert" on public.group_members;
 create policy "group_members_insert" on public.group_members for insert with check (
   group_id in (select id from public.groups where owner_id = auth.uid())
   or user_id = auth.uid()
+);
+drop policy if exists "group_members_delete" on public.group_members;
+create policy "group_members_delete" on public.group_members for delete using (
+  group_id in (select public.user_owned_group_ids())
+  and role != 'owner'
 );
 
 -- Categories: public read, only system inserts (or authenticated users for custom)
