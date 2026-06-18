@@ -6,6 +6,7 @@ import { MONTHS, CURRENCY } from '@/lib/constants'
 import CategoryIcon from '@/components/CategoryIcon'
 import MemberAvatar from '@/components/MemberAvatar'
 import GroupSwitcher from '@/components/GroupSwitcher'
+import Greeting from '@/components/Greeting'
 import type { Profile } from '@/types'
 
 export default async function DashboardPage() {
@@ -86,17 +87,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col">
-      {/* Status Bar */}
-      <div className="flex items-center justify-between px-6 pt-4 pb-1">
-        <span className="text-[15px] font-bold" style={{ color: '#20242E' }}>
-          {now.getHours().toString().padStart(2, '0')}:{now.getMinutes().toString().padStart(2, '0')}
-        </span>
-      </div>
-
       {/* Greeting + Avatar */}
-      <div className="flex items-center justify-between px-5 pt-2">
+      <div className="flex items-center justify-between px-5 pt-12">
         <div>
-          <div className="text-[13px] font-semibold" style={{ color: '#9A9FA8' }}>{greeting}, {displayName}</div>
+          <Greeting name={displayName} initial={greeting} />
           <GroupSwitcher currentGroup={group} groups={groups} />
         </div>
         <div
