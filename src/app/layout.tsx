@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
+import ServiceWorkerRegistration from '@/features/common/ServiceWorkerRegistration'
 
 export const metadata: Metadata = {
   title: 'Huddle — Budget Together',

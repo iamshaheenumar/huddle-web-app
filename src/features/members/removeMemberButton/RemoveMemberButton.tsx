@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { UserMinusIcon } from '@phosphor-icons/react'
-import { removeMember } from './actions'
+import { removeMember } from '../actions'
 
 export default function RemoveMemberButton({ userId, name }: { userId: string; name: string }) {
   const router = useRouter()

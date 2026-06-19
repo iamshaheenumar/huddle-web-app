@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { UsersThree } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
-import MemberAvatar from '@/components/MemberAvatar'
+import MemberAvatar from '@/features/common/MemberAvatar'
 import { signupAndJoin } from './actions'
 
 type Member = { display_name: string; avatar_color: string }
