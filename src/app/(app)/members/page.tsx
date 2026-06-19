@@ -112,9 +112,13 @@ export default async function MembersPage() {
                   </div>
                   <div className="text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}</div>
                 </div>
-                <span className="text-[16px] font-extrabold" style={{ color: '#20242E' }}>{fmt(m.spent)}</span>
-                {isOwner && m.role !== 'owner' && (
-                  <RemoveMemberButton userId={m.user_id} name={m.profile?.display_name ?? 'this member'} />
+                <span className="text-[16px] font-extrabold tabular-nums text-right" style={{ color: '#20242E' }}>{fmt(m.spent)}</span>
+                {isOwner && (
+                  <div className="w-8 flex justify-end shrink-0">
+                    {m.role !== 'owner' && (
+                      <RemoveMemberButton userId={m.user_id} name={m.profile?.display_name ?? 'this member'} />
+                    )}
+                  </div>
                 )}
               </div>
               <div className="h-1.5 rounded-full mt-3 overflow-hidden" style={{ background: '#EFEBE3' }}>

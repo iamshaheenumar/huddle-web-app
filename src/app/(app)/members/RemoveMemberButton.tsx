@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { UserMinusIcon } from '@phosphor-icons/react'
 import { removeMember } from './actions'
 
 export default function RemoveMemberButton({ userId, name }: { userId: string; name: string }) {
@@ -15,10 +16,11 @@ export default function RemoveMemberButton({ userId, name }: { userId: string; n
   return (
     <button
       onClick={handleRemove}
-      className="text-[11px] font-bold rounded-[6px] px-2 py-1"
-      style={{ color: '#E5683E', background: '#FDF0EB', border: 'none' }}
+      aria-label={`Remove ${name}`}
+      className="flex items-center justify-center rounded-[10px] shrink-0"
+      style={{ width: 32, height: 32, color: '#E5683E', background: '#FDF0EB', border: 'none' }}
     >
-      Remove
+      <UserMinusIcon size={16} weight="bold" />
     </button>
   )
 }
