@@ -163,7 +163,7 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
       {error && <p className="mx-5 mt-3 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
 
       {/* Add button */}
-      <div className="sticky bottom-20 px-5 mt-auto pt-6">
+      <div className="sticky bottom-20 px-5 mt-6 pt-6" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>
         <button
           onClick={handleAdd}
           disabled={loading}
