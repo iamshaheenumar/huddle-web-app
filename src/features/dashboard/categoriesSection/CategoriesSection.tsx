@@ -17,7 +17,9 @@ export default async function CategoriesSection() {
         {categories.map((bc, i) => {
           const pct = bc.allocated_amount > 0 ? Math.min(100, Math.round((bc.consumed / bc.allocated_amount) * 100)) : 0
           const isLast = i === categories.length - 1
-          const fullyUsed = pct >= 100
+          const overspent = bc.allocated_amount > 0 && bc.consumed > bc.allocated_amount
+          const budgetFraction = bc.consumed > 0 ? Math.min(100, (bc.allocated_amount / bc.consumed) * 100) : 0
+          const barColor = bc.category?.color ?? '#3B6FF6'
           return (
             <Link href={`/categories/${bc.category?.id}`} key={bc.category?.id ?? i}>
               <div className="flex items-center gap-3 py-3" style={{ borderBottom: isLast ? 'none' : '1px solid #F4F0E9' }}>
@@ -25,13 +27,13 @@ export default async function CategoriesSection() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline gap-2">
                     <span className="text-[14px] font-bold" style={{ color: '#2A2E37' }}>{bc.category?.name}</span>
-                    {fullyUsed
-                      ? <span className="text-[12px] font-extrabold rounded-md px-2 py-0.5" style={{ color: '#E0563E', background: '#FBE7E1' }}>Fully used</span>
-                      : <span className="text-[13px] font-bold tabular-nums" style={{ color: '#20242E' }}>{fmt(bc.consumed)} <span style={{ color: '#B6BAC1', fontWeight: 600 }}>/ {fmt(bc.allocated_amount)}</span></span>
-                    }
+                    <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: overspent ? '#E0563E' : '#20242E' }}>{fmt(bc.consumed)} <span style={{ color: '#B6BAC1', fontWeight: 600 }}>/ {fmt(bc.allocated_amount)}</span></span>
                   </div>
                   <div className="h-1.5 rounded-full mt-2 overflow-hidden" style={{ background: '#EFEBE3' }}>
-                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: bc.category?.color ?? '#3B6FF6' }} />
+                    {overspent
+                      ? <div className="h-full rounded-full" style={{ width: '100%', background: `linear-gradient(to right, ${barColor} 0 ${budgetFraction}%, #E0563E ${budgetFraction}% 100%)` }} />
+                      : <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />
+                    }
                   </div>
                 </div>
               </div>

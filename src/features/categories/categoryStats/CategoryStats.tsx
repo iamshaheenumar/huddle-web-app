@@ -2,7 +2,7 @@ import { fmt } from '@/lib/format'
 import { getCategoryContext, getCategorySummary } from '../data'
 
 export default async function CategoryStats({ id }: { id: string }) {
-  const [{ category }, { allocated, totalConsumed, available }] = await Promise.all([
+  const [{ category }, { allocated, totalConsumed, available, overspent, overspendAmount }] = await Promise.all([
     getCategoryContext(id),
     getCategorySummary(id),
   ])
@@ -10,7 +10,9 @@ export default async function CategoryStats({ id }: { id: string }) {
   const stats = [
     { label: 'Budget', value: fmt(allocated), color: '#20242E' },
     { label: 'Consumed', value: fmt(totalConsumed), color: category.color },
-    { label: 'Available', value: fmt(Math.max(0, available)), color: '#20242E' },
+    overspent
+      ? { label: 'Over by', value: fmt(overspendAmount), color: '#E0563E' }
+      : { label: 'Available', value: fmt(Math.max(0, available)), color: '#20242E' },
   ]
 
   return (

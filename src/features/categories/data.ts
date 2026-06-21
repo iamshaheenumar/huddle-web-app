@@ -76,5 +76,10 @@ export const getCategorySummary = cache(async (id: string) => {
   const available = allocated - totalConsumed
   const pct = allocated > 0 ? Math.min(100, (totalConsumed / allocated) * 100) : 0
   const pctLeft = 100 - pct
-  return { allocated, totalConsumed, available, pct, pctLeft }
+  const overspent = allocated > 0 && totalConsumed > allocated
+  const overspendAmount = Math.max(0, totalConsumed - allocated)
+  const overspendPct = allocated > 0 ? Math.max(0, ((totalConsumed - allocated) / allocated) * 100) : 0
+  // budgetFraction = share of the *filled* ring that is in-budget (used to draw the red overspend segment)
+  const budgetFraction = totalConsumed > 0 ? Math.min(100, (allocated / totalConsumed) * 100) : 0
+  return { allocated, totalConsumed, available, pct, pctLeft, overspent, overspendAmount, overspendPct, budgetFraction }
 })
