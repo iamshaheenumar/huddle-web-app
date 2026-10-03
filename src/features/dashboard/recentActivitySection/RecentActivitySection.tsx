@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { fmt } from '@/lib/format'
 import { getRecentExpenses } from '../data'
@@ -8,8 +9,9 @@ export default async function RecentActivitySection() {
 
   return (
     <>
-      <div className="px-5 pt-5">
+      <div className="flex items-center justify-between px-5 pt-5">
         <span className="text-base font-extrabold" style={{ color: '#20242E' }}>Recent activity</span>
+        <Link href="/history" className="text-[12px] font-bold" style={{ color: '#3B6FF6' }}>See all</Link>
       </div>
       <div className="mx-5 mt-3 flex flex-col gap-2.5 pb-4">
         {expenses.map(exp => (
