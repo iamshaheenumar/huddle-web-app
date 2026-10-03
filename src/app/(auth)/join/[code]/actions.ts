@@ -27,3 +27,32 @@ export async function signupAndJoin(
 
   return {}
 }
+
+// Finishes signup for someone who arrived via an email invite: they already
+// have a session (from /auth/confirm) but no password or real name yet.
+export async function completeInviteSignup(
+  displayName: string,
+  password: string,
+  inviteCode: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Your invite session has expired. Open the email link again.' }
+
+  const { error: updateError } = await supabase.auth.updateUser({
+    password,
+    data: { display_name: displayName, invite_pending: false },
+  })
+  if (updateError) return { error: updateError.message }
+
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .update({ display_name: displayName })
+    .eq('id', user.id)
+  if (profileError) return { error: profileError.message }
+
+  const { error: joinError } = await supabase.rpc('join_group_by_code', { invite_code: inviteCode })
+  if (joinError) return { error: joinError.message }
+
+  return {}
+}

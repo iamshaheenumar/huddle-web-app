@@ -91,6 +91,18 @@ export async function regenerateInvite(supabase: SupabaseClient, groupId: string
   return createInvite(supabase, groupId, userId)
 }
 
+export type EmailInvite = { email: string; last_sent_at: string; accepted_at: string | null }
+
+export async function listEmailInvites(supabase: SupabaseClient, groupId: string): Promise<EmailInvite[]> {
+  const { data } = await supabase
+    .from('group_email_invites')
+    .select('email, last_sent_at, accepted_at')
+    .eq('group_id', groupId)
+    .order('created_at', { ascending: false })
+
+  return (data as EmailInvite[] | null) ?? []
+}
+
 async function createInvite(supabase: SupabaseClient, groupId: string, userId: string): Promise<string> {
   const code = generateInviteCode()
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()

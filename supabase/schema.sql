@@ -80,6 +80,19 @@ create table if not exists public.group_invites (
   revoked boolean not null default false
 );
 
+-- Email invites sent via Supabase auth (tracks who was invited and whether
+-- they've joined, so the invite page can list and resend them)
+create table if not exists public.group_email_invites (
+  id uuid primary key default gen_random_uuid(),
+  group_id uuid references public.groups(id) on delete cascade not null,
+  email text not null,
+  invited_by uuid references public.profiles(id) not null,
+  created_at timestamptz default now() not null,
+  last_sent_at timestamptz default now() not null,
+  accepted_at timestamptz,
+  unique (group_id, email)
+);
+
 -- Expenses
 create table if not exists public.expenses (
   id uuid primary key default gen_random_uuid(),
@@ -104,6 +117,7 @@ alter table public.budgets enable row level security;
 alter table public.budget_categories enable row level security;
 alter table public.expenses enable row level security;
 alter table public.group_invites enable row level security;
+alter table public.group_email_invites enable row level security;
 
 -- Returns the current user's group ids. security definer so this lookup
 -- bypasses RLS on group_members instead of re-triggering its own select
@@ -178,7 +192,9 @@ begin
   insert into public.group_members (group_id, user_id, role)
   values (v_group_id, auth.uid(), 'owner');
 
-  update public.profiles set active_group_id = v_group_id where id = auth.uid();
+  -- Qualify columns: the OUT params `id`/`name` from RETURNS TABLE would
+  -- otherwise make bare `id` ambiguous.
+  update public.profiles p set active_group_id = v_group_id where p.id = auth.uid();
 
   return query select g.id, g.name from public.groups g where g.id = v_group_id;
 end;
@@ -210,6 +226,12 @@ begin
   insert into public.profiles (id, display_name, avatar_color)
   values (new.id, v_display_name, v_avatar_color);
 
+  -- Users created by an email invite join the inviter's group on accept,
+  -- so don't give them a default group of their own.
+  if coalesce(new.raw_user_meta_data, '{}'::jsonb) ? 'invite_code' then
+    return new;
+  end if;
+
   v_group_name := coalesce(new.raw_user_meta_data->>'group_name', 'Home');
 
   insert into public.groups (name, owner_id) values (v_group_name, new.id)
@@ -217,7 +239,7 @@ begin
 
   insert into public.group_members (group_id, user_id, role) values (v_group_id, new.id, 'owner');
 
-  update public.profiles set active_group_id = v_group_id where id = new.id;
+  update public.profiles p set active_group_id = v_group_id where p.id = new.id;
 
   return new;
 end;
@@ -318,6 +340,21 @@ create policy "group_invites_update" on public.group_invites for update using (
   group_id in (select group_id from public.group_members where user_id = auth.uid())
 );
 
+-- Email invites: members of the group can read/create/resend
+drop policy if exists "group_email_invites_select" on public.group_email_invites;
+create policy "group_email_invites_select" on public.group_email_invites for select using (
+  group_id in (select public.user_group_ids())
+);
+drop policy if exists "group_email_invites_insert" on public.group_email_invites;
+create policy "group_email_invites_insert" on public.group_email_invites for insert with check (
+  group_id in (select public.user_group_ids())
+  and invited_by = auth.uid()
+);
+drop policy if exists "group_email_invites_update" on public.group_email_invites;
+create policy "group_email_invites_update" on public.group_email_invites for update using (
+  group_id in (select public.user_group_ids())
+);
+
 -- Join a group via invite code. security definer is required because the
 -- caller isn't a group member yet, so group_invites_select would otherwise
 -- block them from reading the invite row to validate the code.
@@ -340,6 +377,11 @@ begin
   insert into public.group_members (group_id, user_id, role)
   values (v_invite.group_id, auth.uid(), 'member')
   on conflict (group_id, user_id) do nothing;
+
+  update public.group_email_invites e set accepted_at = now()
+   where e.group_id = v_invite.group_id
+     and e.email = lower((select u.email from auth.users u where u.id = auth.uid()))
+     and e.accepted_at is null;
 
   update public.profiles set active_group_id = v_invite.group_id where id = auth.uid();
 

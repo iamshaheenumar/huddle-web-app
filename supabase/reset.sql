@@ -6,6 +6,7 @@
 
 drop table if exists
   public.expenses,
+  public.group_email_invites,
   public.group_invites,
   public.budget_categories,
   public.budgets,

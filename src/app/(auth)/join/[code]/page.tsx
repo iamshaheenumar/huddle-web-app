@@ -43,6 +43,8 @@ export default async function JoinGroupPage({ params }: { params: Promise<{ code
       memberCount={invite.member_count}
       members={invite.members}
       isAuthenticated={!!user}
+      needsSetup={!!user?.user_metadata?.invite_pending}
+      email={user?.email}
     />
   )
 }

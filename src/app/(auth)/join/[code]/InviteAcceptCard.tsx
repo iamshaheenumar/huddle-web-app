@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import MemberAvatar from '@/features/common/MemberAvatar'
-import { signupAndJoin } from './actions'
+import { signupAndJoin, completeInviteSignup } from './actions'
 import HuddleMark from '@/features/common/HuddleMark'
 
 type Member = { display_name: string; avatar_color: string }
@@ -17,12 +17,15 @@ type Props = {
   memberCount: number
   members: Member[]
   isAuthenticated: boolean
+  // Arrived via an email invite: signed in, but no password or name yet.
+  needsSetup?: boolean
+  email?: string
 }
 
-export default function InviteAcceptCard({ code, groupName, inviterName, memberCount, members, isAuthenticated }: Props) {
+export default function InviteAcceptCard({ code, groupName, inviterName, memberCount, members, isAuthenticated, needsSetup = false, email: invitedEmail }: Props) {
   const router = useRouter()
   const [displayName, setDisplayName] = useState('')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(invitedEmail ?? '')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -46,7 +49,9 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
     e.preventDefault()
     setLoading(true)
     setError('')
-    const result = await signupAndJoin(email, password, displayName, code)
+    const result = needsSetup
+      ? await completeInviteSignup(displayName, password, code)
+      : await signupAndJoin(email, password, displayName, code)
     if (result.error) {
       setError(result.error)
       setLoading(false)
@@ -79,7 +84,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
           </div>
         </div>
 
-        {isAuthenticated ? (
+        {isAuthenticated && !needsSetup ? (
           <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
             {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mb-4" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
             <button
@@ -93,7 +98,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
           </div>
         ) : (
           <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-            <h2 className="text-xl font-extrabold mb-6" style={{ color: '#20242E' }}>Create your account</h2>
+            <h2 className="text-xl font-extrabold mb-6" style={{ color: '#20242E' }}>{needsSetup ? 'Finish setting up' : 'Create your account'}</h2>
             <form onSubmit={handleSignupAndJoin} className="flex flex-col gap-4">
               <div>
                 <label className="text-xs font-bold mb-1.5 block" style={{ color: '#6B707A' }}>Your name</label>
@@ -112,6 +117,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
                 <input
                   type="email"
                   required
+                  readOnly={needsSetup}
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
@@ -139,13 +145,13 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
                 className="w-full rounded-2xl py-4 text-base font-extrabold text-white mt-2 transition-opacity disabled:opacity-60"
                 style={{ background: '#3B6FF6', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
               >
-                {loading ? 'Joining…' : 'Create account & join'}
+                {loading ? 'Joining…' : needsSetup ? `Join ${groupName}` : 'Create account & join'}
               </button>
             </form>
           </div>
         )}
 
-        <p className="text-center text-sm font-semibold mt-6" style={{ color: '#9A9FA8' }}>
+        {!needsSetup && <p className="text-center text-sm font-semibold mt-6" style={{ color: '#9A9FA8' }}>
           {isAuthenticated ? (
             <Link href="/dashboard" className="font-bold" style={{ color: '#3B6FF6' }}>Maybe later</Link>
           ) : (
@@ -154,7 +160,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
               <Link href={`/login?next=/join/${code}`} className="font-bold" style={{ color: '#3B6FF6' }}>Sign in</Link>
             </>
           )}
-        </p>
+        </p>}
       </div>
     </div>
   )
