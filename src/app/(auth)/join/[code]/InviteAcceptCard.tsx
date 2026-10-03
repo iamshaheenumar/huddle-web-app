@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { UsersThree } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { signupAndJoin } from './actions'
+import HuddleMark from '@/features/common/HuddleMark'
 
 type Member = { display_name: string; avatar_color: string }
 
@@ -60,9 +60,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ background: '#F6F3EE' }}>
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8 text-center">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: '#3B6FF6', boxShadow: '0 10px 22px -8px rgba(59,111,246,.6)' }}>
-            <UsersThree size={32} weight="fill" color="#fff" />
-          </div>
+          <HuddleMark size={64} shadow className="mb-4" />
           <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: '#20242E' }}>Join {groupName}</h1>
           <p className="text-sm font-semibold mt-1" style={{ color: '#9A9FA8' }}>Invited by {inviterName}</p>
         </div>

@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { SignOut, UsersThree } from '@phosphor-icons/react'
+import { SignOut } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
 import { MEMBER_COLORS } from '@/lib/constants'
 import type { Profile } from '@/types'
+import HuddleMark from '@/features/common/HuddleMark'
 
 export default function ProfileView({ profile: initialProfile }: { profile: Profile | null }) {
   const router = useRouter()
@@ -31,9 +32,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
     <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
       <div className="px-5 pt-12 pb-0">
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: '#3B6FF6', boxShadow: '0 10px 22px -8px rgba(59,111,246,.6)' }}>
-            <UsersThree size={28} weight="fill" color="#fff" />
-          </div>
+          <HuddleMark size={56} shadow />
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: '#20242E' }}>Huddle</h1>
             <p className="text-sm font-semibold" style={{ color: '#9A9FA8' }}>Budget together</p>

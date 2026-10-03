@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200">
+  <g transform="scale(0.390625)">
+  <rect width="512" height="512" rx="116" fill="#3B6FF6"/>
+  <path d="M 157 138 A 154 154 0 0 1 355 138" stroke="#fff" stroke-width="54" stroke-linecap="round" fill="none"/>
+  <circle cx="256" cy="190" r="40" fill="#fff"/>
+  <path d="M 407.7 229.3 A 154 154 0 0 1 308.7 400.7" stroke="#A9C0FB" stroke-width="54" stroke-linecap="round" fill="none"/>
+  <circle cx="313.2" cy="289" r="40" fill="#A9C0FB"/>
+  <path d="M 203.3 400.7 A 154 154 0 0 1 104.3 229.3" stroke="#20242E" stroke-width="54" stroke-linecap="round" fill="none"/>
+  <circle cx="198.8" cy="289" r="40" fill="#20242E"/>
+  </g>
+  <text x="232" y="116" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="100" letter-spacing="-3" fill="#20242E">Huddle</text>
+  <text x="236" y="158" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" font-size="30" fill="#9A9FA8">Budget together</text>
+</svg>
