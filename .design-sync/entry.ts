@@ -1,0 +1,15 @@
+// design-sync entry: the prop-driven Huddle components shipped to Claude Design.
+// Data-fetching (server) sections and router-bound components are deliberately excluded.
+export { default as HuddleMark } from '../src/features/common/HuddleMark'
+export { default as MemberAvatar } from '../src/features/common/MemberAvatar'
+export { default as CategoryIcon } from '../src/features/common/CategoryIcon'
+export { Sk } from '../src/features/common/Skeleton'
+export { default as Greeting } from '../src/features/common/Greeting'
+export { default as ShareButton } from '../src/features/history/historyHeader/ShareButton'
+export { default as TxnList } from '../src/features/history/txnList/TxnList'
+export { default as BudgetHeroCardSkeleton } from '../src/features/dashboard/budgetHeroCard/BudgetHeroCardSkeleton'
+export { default as CategoriesSectionSkeleton } from '../src/features/dashboard/categoriesSection/CategoriesSectionSkeleton'
+export { default as MembersSectionSkeleton } from '../src/features/dashboard/membersSection/MembersSectionSkeleton'
+export { default as RecentActivitySectionSkeleton } from '../src/features/dashboard/recentActivitySection/RecentActivitySectionSkeleton'
+export { fmt } from '../src/lib/format'
+export { CATEGORIES, MEMBER_COLORS, MONTHS, CURRENCY } from '../src/lib/constants'

@@ -1,0 +1,47 @@
+{
+  "projectId": "01bbd4d0-77ae-4f9c-972b-a763d478ff49",
+  "shape": "package",
+  "pkg": "huddle",
+  "globalName": "Huddle",
+  "entry": "./.design-sync/entry.ts",
+  "buildCmd": "node .design-sync/build-css.mjs",
+  "tsconfig": "./tsconfig.json",
+  "cssEntry": "./.design-sync/.cache/huddle.css",
+  "componentSrcMap": {
+    "HuddleMark": true,
+    "MemberAvatar": true,
+    "CategoryIcon": true,
+    "Sk": true,
+    "Greeting": true,
+    "ShareButton": true,
+    "TxnList": true,
+    "BudgetHeroCardSkeleton": true,
+    "CategoriesSectionSkeleton": true,
+    "MembersSectionSkeleton": true,
+    "RecentActivitySectionSkeleton": true
+  },
+  "docsDir": "./.design-sync/docs",
+  "dtsPropsFor": {
+    "HuddleMark": "size?: number; variant?: 'tile' | 'soft' | 'mono'; shadow?: boolean; className?: string",
+    "MemberAvatar": "name: string; color: string; size?: number; fontSize?: number",
+    "CategoryIcon": "icon: 'ShoppingCart' | 'ForkKnife' | 'Lightning' | 'Car' | 'ShoppingBag' | string; color: string; bg_color: string; size?: number; iconSize?: number; radius?: number",
+    "Sk": "className?: string; style?: React.CSSProperties",
+    "Greeting": "name: string; initial: string",
+    "ShareButton": "groupName: string",
+    "TxnList": "transactions: { id: string; amount: number; note: string | null; date: string; categoryName: string; payerName: string; payerColor: string }[]; show: 'payer' | 'category'",
+    "BudgetHeroCardSkeleton": "",
+    "CategoriesSectionSkeleton": "",
+    "MembersSectionSkeleton": "",
+    "RecentActivitySectionSkeleton": ""
+  },
+  "srcDir": "./.design-sync/docs",
+  "overrides": {
+    "TxnList": {
+      "cardMode": "column"
+    },
+    "ShareButton": {
+      "cardMode": "column"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
