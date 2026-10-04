@@ -3,12 +3,12 @@ import { Sk } from '@/features/common/Skeleton'
 export default function CategoriesSectionSkeleton() {
   return (
     <>
-      <div className="flex items-center justify-between px-5 pt-5">
-        <Sk style={{ width: 80, height: 16 }} />
+      <div className="flex items-center justify-between px-5 pt-6">
+        <Sk style={{ width: 90, height: 17 }} />
         <Sk style={{ width: 70, height: 13 }} />
       </div>
       <div
-        className="mx-5 mt-3 rounded-[22px] py-1.5 px-4"
+        className="mx-5 mt-3 rounded-[22px] py-1 px-4"
         style={{ background: '#fff', border: '1px solid #F0ECE4' }}
       >
         {[0, 1, 2, 3].map((i) => (

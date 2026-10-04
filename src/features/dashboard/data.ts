@@ -2,11 +2,12 @@ import { cache } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getActiveGroup, listUserGroups } from '@/lib/group'
-import type { Member, BudgetCategory, RecentExpense } from './types'
+import type { Member, BudgetCategory, SpendDay } from './types'
 import type { Profile } from '@/types'
+import { todayDate } from './dates'
 
 type BudgetRow = { id: string; total_amount: number }
-type ExpRow = { id: string; amount: number; note: string | null; expense_date: string; category_id: string; paid_by: string; profiles: { display_name: string; avatar_color: string } | null; categories: { name: string; icon: string; color: string; bg_color: string; id: string } | null }
+type ExpRow = { id: string; amount: number; note: string | null; expense_date: string; created_at: string; category_id: string; paid_by: string; profiles: { display_name: string; avatar_color: string } | null; categories: { name: string; icon: string; color: string; bg_color: string; id: string } | null }
 type MemberRow = { user_id: string; profiles: { display_name: string; avatar_color: string } | null }
 type BCRow = { allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 
@@ -93,14 +94,39 @@ export const getBudgetCategories = cache(async (): Promise<BudgetCategory[]> => 
   })
 })
 
-export const getRecentExpenses = cache(async (): Promise<RecentExpense[]> => {
-  const expenses = await getMonthExpenses()
-  return expenses.slice(0, 4).map(e => ({
-    id: e.id,
-    amount: e.amount,
-    note: e.note,
-    expense_date: e.expense_date,
-    profile: e.profiles,
-    category: e.categories,
-  }))
+// Today's expenses or, when nothing was spent today, the most recent day that had spend.
+export const getSpendDay = cache(async (): Promise<SpendDay> => {
+  const { supabase, group } = await getDashboardContext()
+  // Same UTC date basis the add-expense form uses for its default expense_date.
+  const today = todayDate()
+  const { data: latest } = await supabase
+    .from('expenses')
+    .select('expense_date')
+    .eq('group_id', group.id)
+    .lte('expense_date', today)
+    .order('expense_date', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (!latest) return { date: null, isToday: false, expenses: [] }
+
+  const date = (latest as { expense_date: string }).expense_date
+  const { data } = await supabase
+    .from('expenses')
+    .select('*, profiles(display_name, avatar_color), categories(name, icon, color, bg_color)')
+    .eq('group_id', group.id)
+    .eq('expense_date', date)
+    .order('created_at', { ascending: false })
+  const rows = (data as unknown as ExpRow[]) ?? []
+  return {
+    date,
+    isToday: date === today,
+    expenses: rows.map(e => ({
+      id: e.id,
+      amount: e.amount,
+      note: e.note,
+      created_at: e.created_at,
+      profile: e.profiles,
+      category: e.categories,
+    })),
+  }
 })

@@ -10,11 +10,18 @@ export type BudgetCategory = {
   category: { id: string; name: string; icon: string; color: string; bg_color: string }
 }
 
-export type RecentExpense = {
+export type DayExpense = {
   id: string
   amount: number
   note: string | null
-  expense_date: string
+  created_at: string
   profile: { display_name: string; avatar_color: string } | null
-  category: { name: string } | null
+  category: { name: string; icon: string; color: string; bg_color: string } | null
+}
+
+export type SpendDay = {
+  // null when the group has no expenses on or before today
+  date: string | null
+  isToday: boolean
+  expenses: DayExpense[]
 }
