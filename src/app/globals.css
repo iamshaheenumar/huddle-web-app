@@ -55,3 +55,25 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes sheet-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sheet-up {
+  animation: sheet-up .26s cubic-bezier(.2, .8, .2, 1);
+}
+
+.sheet-fade {
+  animation: sheet-fade .2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-up, .sheet-fade { animation: none; }
+}

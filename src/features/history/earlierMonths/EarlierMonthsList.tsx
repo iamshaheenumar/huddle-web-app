@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { fmt } from '@/lib/format'
-import type { EarlierMonth } from '../types'
+import { historyHref } from '../links'
+import type { EarlierMonth, HistoryView } from '../types'
 
 const PAGE_SIZE = 6
 
 const periodKey = (m: EarlierMonth) => `${m.period.year}-${String(m.period.month).padStart(2, '0')}`
 
-export default function EarlierMonthsList({ months }: { months: EarlierMonth[] }) {
+export default function EarlierMonthsList({ months, view }: { months: EarlierMonth[]; view: HistoryView }) {
   const [visible, setVisible] = useState(PAGE_SIZE)
   const remaining = months.length - visible
 
@@ -18,7 +19,7 @@ export default function EarlierMonthsList({ months }: { months: EarlierMonth[] }
       {months.slice(0, visible).map(m => (
         <Link
           key={periodKey(m)}
-          href={`/history?period=${periodKey(m)}`}
+          href={historyHref(periodKey(m), view)}
           scroll={false}
           className="flex items-center gap-3.5 rounded-[20px] p-3.5"
           style={{ background: '#fff', border: '1px solid #F0ECE4' }}

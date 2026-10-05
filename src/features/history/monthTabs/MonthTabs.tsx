@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { MONTHS } from '@/lib/constants'
 import { getHistoryContext, periodKey } from '../data'
+import { historyHref } from '../links'
+import type { HistoryView } from '../types'
 
-export default async function MonthTabs({ period }: { period?: string }) {
+export default async function MonthTabs({ period, view }: { period?: string; view: HistoryView }) {
   const { periods, selected } = await getHistoryContext(period)
   const selectedKey = periodKey(selected)
 
@@ -14,7 +16,7 @@ export default async function MonthTabs({ period }: { period?: string }) {
         return (
           <Link
             key={key}
-            href={`/history?period=${key}`}
+            href={historyHref(key, view)}
             scroll={false}
             className="flex-shrink-0 rounded-full px-4 py-2 text-[13px] font-bold whitespace-nowrap"
             style={isSelected

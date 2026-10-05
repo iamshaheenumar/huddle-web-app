@@ -46,7 +46,18 @@ export type HistoryTxn = {
   amount: number
   note: string | null
   date: string
+  createdAt: string
+  payerId: string
   categoryName: string
+  category: { id: string; name: string; icon: string; color: string; bg_color: string } | null
   payerName: string
   payerColor: string
 }
+
+export type HistoryDay = {
+  date: string
+  total: number
+  transactions: HistoryTxn[]
+}
+
+export type HistoryView = 'transactions' | 'categories' | 'members'

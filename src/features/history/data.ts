@@ -3,10 +3,10 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getActiveGroup } from '@/lib/group'
 import { MONTHS } from '@/lib/constants'
-import type { Period, PeriodSummary, HistoryCategory, EarlierMonth, HistoryMember, HistoryTxn } from './types'
+import type { Period, PeriodSummary, HistoryCategory, EarlierMonth, HistoryMember, HistoryTxn, HistoryDay } from './types'
 
 type BudgetRow = { id: string; month: number; year: number; total_amount: number }
-type ExpRow = { id: string; note: string | null; amount: number; expense_date: string; category_id: string; paid_by: string; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
+type ExpRow = { id: string; note: string | null; amount: number; expense_date: string; created_at: string; category_id: string; paid_by: string; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 type MemberRow = { user_id: string; profiles: { display_name: string; avatar_color: string } | null }
 type BCRow = { budget_id: string; allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 
@@ -51,7 +51,10 @@ const toTxn = (e: ExpRow, payer: MemberRow | undefined): HistoryTxn => ({
   amount: Number(e.amount),
   note: e.note,
   date: e.expense_date,
+  createdAt: e.created_at,
+  payerId: e.paid_by,
   categoryName: e.categories?.name ?? 'Expense',
+  category: e.categories,
   payerName: payer?.profiles?.display_name ?? 'Unknown',
   payerColor: payer?.profiles?.avatar_color ?? '#3B6FF6',
 })
@@ -76,7 +79,7 @@ export const getAllExpenses = cache(async (): Promise<ExpRow[]> => {
   for (let from = 0; ; from += PAGE) {
     const { data } = await supabase
       .from('expenses')
-      .select('id, note, amount, expense_date, category_id, paid_by, categories(id, name, icon, color, bg_color)')
+      .select('id, note, amount, expense_date, created_at, category_id, paid_by, categories(id, name, icon, color, bg_color)')
       .eq('group_id', group.id)
       .order('expense_date', { ascending: false })
       .order('id')
@@ -249,4 +252,26 @@ export const getPeriodMembers = cache(async (periodParam?: string): Promise<Hist
       return { user_id: m.user_id, profile: m.profiles, spent, share: totalSpent > 0 ? Math.round((spent / totalSpent) * 100) : 0, transactions: txnsBy.get(m.user_id) ?? [] }
     })
     .sort((a, b) => b.spent - a.spent)
+})
+
+// The selected month's expenses grouped by day — newest day first, newest entry first within a day.
+export const getPeriodTransactions = cache(async (periodParam?: string): Promise<HistoryDay[]> => {
+  const { selected } = await getHistoryContext(periodParam)
+  const [members, expenses] = await Promise.all([getGroupMembers(), getAllExpenses()])
+  const memberById = new Map(members.map(m => [m.user_id, m]))
+
+  const byDate = new Map<string, HistoryDay>()
+  for (const e of expenses) {
+    const q = expensePeriod(e.expense_date)
+    if (q.year !== selected.year || q.month !== selected.month) continue
+    const txn = toTxn(e, memberById.get(e.paid_by))
+    const day = byDate.get(e.expense_date) ?? { date: e.expense_date, total: 0, transactions: [] }
+    day.total += txn.amount
+    day.transactions.push(txn)
+    byDate.set(e.expense_date, day)
+  }
+
+  const days = [...byDate.values()].sort((a, b) => b.date.localeCompare(a.date))
+  for (const d of days) d.transactions.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  return days
 })
