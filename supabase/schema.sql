@@ -318,12 +318,18 @@ create policy "expenses_select" on public.expenses for select using (
   group_id in (select group_id from public.group_members where user_id = auth.uid())
 );
 drop policy if exists "expenses_insert" on public.expenses;
+-- Any member can log an expense on behalf of another member of the same group.
 create policy "expenses_insert" on public.expenses for insert with check (
-  group_id in (select group_id from public.group_members where user_id = auth.uid())
-  and paid_by = auth.uid()
+  group_id in (select public.user_group_ids())
+  and exists (
+    select 1 from public.group_members gm
+    where gm.group_id = expenses.group_id and gm.user_id = expenses.paid_by
+  )
 );
 drop policy if exists "expenses_delete" on public.expenses;
-create policy "expenses_delete" on public.expenses for delete using (paid_by = auth.uid());
+create policy "expenses_delete" on public.expenses for delete using (
+  group_id in (select public.user_group_ids())
+);
 
 -- Group invites: members of the group can read/create/revoke
 drop policy if exists "group_invites_select" on public.group_invites;
