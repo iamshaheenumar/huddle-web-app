@@ -2,13 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Check, Plus } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateAppData } from '@/lib/actions'
 import { switchActiveGroup, type GroupSummary } from '@/lib/group'
 
 export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: GroupSummary; groups: GroupSummary[] }) {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -22,7 +21,7 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
     try {
       await switchActiveGroup(supabase, groupId)
       setOpen(false)
-      router.refresh()
+      await revalidateAppData()
     } finally {
       setLoading(false)
     }

@@ -1,12 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { House, ChartPieSlice, Plus, Users, UserCircle } from '@phosphor-icons/react'
 
 export default function BottomNav() {
   const pathname = usePathname()
-  const router = useRouter()
 
   const active = (path: string) => pathname === path || pathname.startsWith(path + '/')
   const color = (path: string) => active(path) ? '#3B6FF6' : '#B4B8C0'
@@ -31,13 +30,14 @@ export default function BottomNav() {
         <span className="text-[10px] font-bold" style={{ color: color('/budget') }}>Budget</span>
       </Link>
 
-      <button
-        onClick={() => router.push('/expense/add')}
+      <Link
+        href="/expense/add"
+        aria-label="Add expense"
         className="w-13 h-13 rounded-full flex items-center justify-center -mt-6"
         style={{ background: '#3B6FF6', boxShadow: '0 12px 22px -8px rgba(59,111,246,.7)', width: 52, height: 52 }}
       >
         <Plus size={24} weight="bold" color="#fff" />
-      </button>
+      </Link>
 
       <Link href="/members" className="flex flex-col items-center gap-1">
         <Users size={24} weight={active('/members') ? 'fill' : 'regular'} color={color('/members')} />

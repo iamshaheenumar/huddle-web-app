@@ -21,7 +21,7 @@ export async function removeMember(userId: string): Promise<{ error?: string }> 
 
   if (error) return { error: error.message }
 
-  revalidatePath('/members')
+  revalidatePath('/', 'layout')
   return {}
 }
 

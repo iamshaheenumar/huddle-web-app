@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateAppData } from '@/lib/actions'
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { signupAndJoin, completeInviteSignup } from './actions'
 import HuddleMark from '@/features/common/HuddleMark'
@@ -41,8 +42,8 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
       setLoading(false)
       return
     }
+    await revalidateAppData()
     router.push('/dashboard')
-    router.refresh()
   }
 
   async function handleSignupAndJoin(e: React.FormEvent) {
@@ -57,8 +58,8 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
       setLoading(false)
       return
     }
+    await revalidateAppData()
     router.push('/dashboard')
-    router.refresh()
   }
 
   return (

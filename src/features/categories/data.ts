@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import { redirect, notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuth } from '@/lib/auth'
 import type { Category } from '@/types'
 import type { CategoryExpense } from './types'
 
@@ -9,9 +9,7 @@ type RawExpenseRow = { id: string; amount: number; note: string | null; expense_
 // Resolves the category + the caller's group + period once per request (keyed by
 // category id). Mirrors the original page: group is the caller's first membership.
 export const getCategoryContext = cache(async (id: string) => {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user } = await getAuth()
 
   const now = new Date()
   const month = now.getMonth() + 1

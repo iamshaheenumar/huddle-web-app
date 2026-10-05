@@ -1,7 +1,8 @@
-import type { SupabaseClient, User } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { AuthUser } from '@/lib/auth'
 import { MEMBER_COLORS } from '@/lib/constants'
 
-export async function getOrCreateProfile(supabase: SupabaseClient, user: User): Promise<void> {
+export async function getOrCreateProfile(supabase: SupabaseClient, user: AuthUser): Promise<void> {
   const { data: existing } = await supabase.from('profiles').select('id').eq('id', user.id).maybeSingle()
   if (existing) return
 

@@ -1,12 +1,9 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuth } from '@/lib/auth'
 import { getOrCreateProfile } from '@/lib/profile'
 import BottomNav from '@/features/common/BottomNav'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user } = await getAuth()
 
   await getOrCreateProfile(supabase, user)
 

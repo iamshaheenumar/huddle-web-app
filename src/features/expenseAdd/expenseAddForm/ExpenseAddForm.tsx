@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { X, PlusCircle, NotePencil, CalendarBlank, CaretDown } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateAppData } from '@/lib/actions'
 import { CURRENCY } from '@/lib/constants'
 import type { ExpenseAddData } from '../data'
 
@@ -45,6 +46,7 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
       setError(insertError.message)
       setLoading(false)
     } else {
+      await revalidateAppData()
       router.push('/dashboard')
     }
   }

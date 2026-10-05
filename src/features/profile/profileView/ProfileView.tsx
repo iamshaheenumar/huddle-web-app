@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SignOut } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateAppData } from '@/lib/actions'
 import { MEMBER_COLORS } from '@/lib/constants'
 import type { Profile } from '@/types'
 import HuddleMark from '@/features/common/HuddleMark'
@@ -17,8 +18,8 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
     setLoading(true)
     const supabase = createClient()
     await supabase.auth.signOut()
+    await revalidateAppData()
     router.push('/login')
-    router.refresh()
   }
 
   async function changeColor(color: string) {
@@ -26,6 +27,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
     const supabase = createClient()
     await supabase.from('profiles').update({ avatar_color: color } as never).eq('id', profile.id)
     setProfile(p => p ? { ...p, avatar_color: color } : p)
+    await revalidateAppData()
   }
 
   return (

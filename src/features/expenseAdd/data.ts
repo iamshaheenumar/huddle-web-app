@@ -1,6 +1,5 @@
 import { cache } from 'react'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuth } from '@/lib/auth'
 import { getActiveGroup } from '@/lib/group'
 import type { Category, Profile } from '@/types'
 
@@ -13,9 +12,7 @@ export type ExpenseAddData = {
 }
 
 export const getExpenseAddData = cache(async (): Promise<ExpenseAddData> => {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user } = await getAuth()
 
   const [profileRes, group, catsRes] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),

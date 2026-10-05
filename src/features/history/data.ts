@@ -1,6 +1,5 @@
 import { cache } from 'react'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuth } from '@/lib/auth'
 import { getActiveGroup } from '@/lib/group'
 import { MONTHS } from '@/lib/constants'
 import type { Period, PeriodSummary, HistoryCategory, EarlierMonth, HistoryMember, HistoryTxn, HistoryDay } from './types'
@@ -61,9 +60,7 @@ const toTxn = (e: ExpRow, payer: MemberRow | undefined): HistoryTxn => ({
 
 // One auth + active-group resolution per request, shared by every helper below.
 const getBase = cache(async () => {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user } = await getAuth()
   const group = await getActiveGroup(supabase, user.id)
   return { supabase, user, group }
 })

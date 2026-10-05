@@ -1,14 +1,11 @@
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getAuth } from '@/lib/auth'
 import { getActiveGroup, getOrCreateActiveInvite, listEmailInvites } from '@/lib/group'
 import InviteCard from './InviteCard'
 import SentInvites from './SentInvites'
 
 export default async function InviteMemberPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user } = await getAuth()
 
   const group = await getActiveGroup(supabase, user.id)
   const [code, invites] = await Promise.all([

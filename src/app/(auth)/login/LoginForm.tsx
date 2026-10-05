@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateAppData } from '@/lib/actions'
 import HuddleMark from '@/features/common/HuddleMark'
 
 export default function LoginForm({ next }: { next?: string }) {
@@ -23,8 +24,8 @@ export default function LoginForm({ next }: { next?: string }) {
       setError(error.message)
       setLoading(false)
     } else {
+      await revalidateAppData()
       router.push(next ?? '/dashboard')
-      router.refresh()
     }
   }
 

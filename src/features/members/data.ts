@@ -1,6 +1,5 @@
 import { cache } from 'react'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuth } from '@/lib/auth'
 import { getActiveGroup } from '@/lib/group'
 import type { MemberStat } from './types'
 
@@ -13,9 +12,7 @@ type ExpenseRow = { paid_by: string; amount: number }
 
 // One auth + active-group + period resolution per request, shared by every helper below.
 export const getMembersContext = cache(async () => {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user } = await getAuth()
   const group = await getActiveGroup(supabase, user.id)
   const now = new Date()
   const month = now.getMonth() + 1

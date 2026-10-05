@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { CaretLeft, Plus, Check, CheckCircle } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateAppData } from '@/lib/actions'
 import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
 import type { BudgetSetData } from '../data'
@@ -60,6 +61,7 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
 
     if (rows.length > 0) await supabase.from('budget_categories').insert(rows as never)
 
+    await revalidateAppData()
     setSaved(true)
     setLoading(false)
     setTimeout(() => router.push('/dashboard'), 1000)

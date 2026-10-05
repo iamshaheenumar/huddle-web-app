@@ -1,6 +1,5 @@
 import { cache } from 'react'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuth } from '@/lib/auth'
 import { getActiveGroup } from '@/lib/group'
 import { CATEGORIES } from '@/lib/constants'
 import type { Category } from '@/types'
@@ -16,9 +15,7 @@ export type BudgetSetData = {
 }
 
 export const getBudgetSetData = cache(async (): Promise<BudgetSetData> => {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user } = await getAuth()
 
   const now = new Date()
   const month = now.getMonth() + 1

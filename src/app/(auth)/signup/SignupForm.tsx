@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateAppData } from '@/lib/actions'
 import HuddleMark from '@/features/common/HuddleMark'
 
 export default function SignupForm({ next }: { next?: string }) {
@@ -32,8 +33,8 @@ export default function SignupForm({ next }: { next?: string }) {
       return
     }
 
+    await revalidateAppData()
     router.push(next ?? '/dashboard')
-    router.refresh()
   }
 
   return (
