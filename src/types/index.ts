@@ -39,6 +39,8 @@ export type Category = {
   color: string
   bg_color: string
   is_default: boolean
+  group_id: string | null
+  created_by: string | null
 }
 
 export type Budget = {
@@ -78,7 +80,7 @@ export type Database = {
       groups: { Row: Group; Insert: Omit<Group, 'id' | 'created_at'>; Update: Partial<Group> }
       group_members: { Row: GroupMember; Insert: Omit<GroupMember, 'id' | 'joined_at'>; Update: Partial<GroupMember> }
       group_invites: { Row: GroupInvite; Insert: Omit<GroupInvite, 'id' | 'created_at' | 'revoked'>; Update: Partial<GroupInvite> }
-      categories: { Row: Category; Insert: Omit<Category, 'id'>; Update: Partial<Category> }
+      categories: { Row: Category; Insert: Omit<Category, 'id' | 'group_id' | 'created_by'> & Partial<Pick<Category, 'group_id' | 'created_by'>>; Update: Partial<Category> }
       budgets: { Row: Budget; Insert: Omit<Budget, 'id' | 'created_at'>; Update: Partial<Budget> }
       budget_categories: { Row: BudgetCategory; Insert: Omit<BudgetCategory, 'id'>; Update: Partial<BudgetCategory> }
       expenses: { Row: Expense; Insert: Omit<Expense, 'id' | 'created_at'>; Update: Partial<Expense> }

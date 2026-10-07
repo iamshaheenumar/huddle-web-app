@@ -4,23 +4,32 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CaretLeft, Plus, Check, CheckCircle } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
+import AddCategorySheet from '@/features/common/AddCategorySheet'
 import { createClient } from '@/lib/supabase/client'
 import { revalidateAppData } from '@/lib/actions'
 import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
 import type { BudgetSetData } from '../data'
+import type { Category } from '@/types'
 
 const STEP = 100
 
 export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
   const router = useRouter()
-  const { groupId, groupName, categories, month, year } = data
+  const { groupId, groupName, month, year } = data
 
   const [totalBudget, setTotalBudget] = useState(data.totalBudget)
   const [allocations, setAllocations] = useState<Record<string, number>>(data.allocations)
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
   const [editingTotal, setEditingTotal] = useState(false)
+  const [categories, setCategories] = useState<Category[]>(data.categories)
+  const [addingCategory, setAddingCategory] = useState(false)
+
+  function handleCategoryCreated(cat: Category) {
+    setCategories(prev => [...prev, cat].sort((a, b) => a.name.localeCompare(b.name)))
+    setAllocations(prev => ({ ...prev, [cat.id]: 0 }))
+  }
 
   function setCategoryAmount(catId: string, newValue: number) {
     const clamped = Math.max(0, newValue)
@@ -118,7 +127,9 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
       {/* Category steppers */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <span className="text-base font-extrabold" style={{ color: '#20242E' }}>Allocate by category</span>
-        <span className="text-[12px] font-bold" style={{ color: '#3B6FF6' }}><Plus size={12} weight="bold" /> Add</span>
+        <button onClick={() => setAddingCategory(true)} className="flex items-center gap-1 text-[12px] font-bold" style={{ color: '#3B6FF6' }}>
+          <Plus size={12} weight="bold" /> Add
+        </button>
       </div>
       <div className="mx-5 flex flex-col gap-2.5">
         {categories.map(cat => (
@@ -145,6 +156,14 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
           </div>
         ))}
       </div>
+
+      <AddCategorySheet
+        open={addingCategory}
+        onClose={() => setAddingCategory(false)}
+        groupId={groupId}
+        existing={categories}
+        onCreated={handleCategoryCreated}
+      />
 
       {/* Save button */}
       <div className="sticky bottom-20 px-5 mt-6" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>

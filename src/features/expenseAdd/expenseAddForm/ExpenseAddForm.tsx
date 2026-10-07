@@ -2,20 +2,24 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, PlusCircle, NotePencil, CalendarBlank, CaretDown } from '@phosphor-icons/react'
+import { X, Plus, PlusCircle, NotePencil, CalendarBlank, CaretDown } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
+import AddCategorySheet from '@/features/common/AddCategorySheet'
 import { createClient } from '@/lib/supabase/client'
 import { revalidateAppData } from '@/lib/actions'
 import { CURRENCY } from '@/lib/constants'
 import type { ExpenseAddData } from '../data'
+import type { Category } from '@/types'
 
 export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
   const router = useRouter()
-  const { groupId, groupName, members, categories } = data
+  const { groupId, groupName, members } = data
+  const [categories, setCategories] = useState<Category[]>(data.categories)
+  const [addingCategory, setAddingCategory] = useState(false)
 
   const [amount, setAmount] = useState('')
   const [paidBy, setPaidBy] = useState<string | null>(data.currentUser?.id ?? null)
-  const [categoryId, setCategoryId] = useState<string | null>(categories[0]?.id ?? null)
+  const [categoryId, setCategoryId] = useState<string | null>(data.categories[0]?.id ?? null)
   const [note, setNote] = useState('')
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0])
   const [loading, setLoading] = useState(false)
@@ -133,8 +137,27 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
               </button>
             )
           })}
+          <button
+            onClick={() => setAddingCategory(true)}
+            className="flex items-center gap-1.5 rounded-[13px] px-3 py-2.5 text-[13px] font-bold"
+            style={{ background: 'transparent', color: '#3B6FF6', border: '1.5px dashed #B9CCFB' }}
+          >
+            <Plus size={14} weight="bold" />
+            New
+          </button>
         </div>
       </div>
+
+      <AddCategorySheet
+        open={addingCategory}
+        onClose={() => setAddingCategory(false)}
+        groupId={groupId}
+        existing={categories}
+        onCreated={cat => {
+          setCategories(prev => [...prev, cat])
+          setCategoryId(cat.id)
+        }}
+      />
 
       {/* Note + Date */}
       <div className="px-5 pt-5 flex flex-col gap-2.5">

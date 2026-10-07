@@ -14,15 +14,18 @@ export type ExpenseAddData = {
 export const getExpenseAddData = cache(async (): Promise<ExpenseAddData> => {
   const { supabase, user } = await getAuth()
 
-  const [profileRes, group, catsRes] = await Promise.all([
+  const [profileRes, group] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     getActiveGroup(supabase, user.id),
-    supabase.from('categories').select('*').eq('is_default', true).order('name'),
   ])
 
   const currentUser = profileRes.data as Profile | null
 
-  const { data: membersData } = await supabase.from('group_members').select('user_id, profiles(*)').eq('group_id', group.id)
+  // Defaults (group_id null) plus this group's custom categories.
+  const [{ data: membersData }, catsRes] = await Promise.all([
+    supabase.from('group_members').select('user_id, profiles(*)').eq('group_id', group.id),
+    supabase.from('categories').select('*').or(`group_id.is.null,group_id.eq.${group.id}`).order('name'),
+  ])
   const members = ((membersData as unknown as { user_id: string; profiles: Profile }[]) ?? []).map(m => m.profiles).filter(Boolean)
 
   const categories = (catsRes.data as unknown as Category[]) ?? []

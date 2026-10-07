@@ -23,7 +23,8 @@ export const getBudgetSetData = cache(async (): Promise<BudgetSetData> => {
 
   const group = await getActiveGroup(supabase, user.id)
 
-  const { data: catsData } = await supabase.from('categories').select('*').eq('is_default', true).order('name')
+  // Defaults (group_id null) plus this group's custom categories.
+  const { data: catsData } = await supabase.from('categories').select('*').or(`group_id.is.null,group_id.eq.${group.id}`).order('name')
   let cats = catsData as Category[] | null
   if (!cats || cats.length === 0) {
     const inserts = CATEGORIES.map(c => ({ name: c.name, icon: c.icon, color: c.color, bg_color: c.bg_color, is_default: true }))

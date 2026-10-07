@@ -34,7 +34,8 @@ create table if not exists public.group_members (
   unique (group_id, user_id)
 );
 
--- Budget categories (system-wide)
+-- Budget categories: system-wide defaults (group_id null) plus custom
+-- categories owned by a single group.
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -45,9 +46,15 @@ create table if not exists public.categories (
 );
 
 -- Added after the table already existed in some environments, so
--- "create table if not exists" above won't retroactively apply it.
+-- "create table if not exists" above won't retroactively apply them.
+alter table public.categories add column if not exists group_id uuid references public.groups(id) on delete cascade;
+alter table public.categories add column if not exists created_by uuid references public.profiles(id) on delete set null default auth.uid();
+
+-- Names are unique among defaults and within each group (case-insensitive),
+-- so two groups can each have their own "Gym".
 alter table public.categories drop constraint if exists categories_name_key;
-alter table public.categories add constraint categories_name_key unique (name);
+create unique index if not exists categories_default_name_key on public.categories (lower(name)) where group_id is null;
+create unique index if not exists categories_group_name_key on public.categories (group_id, lower(name)) where group_id is not null;
 
 -- Monthly budgets (per group)
 create table if not exists public.budgets (
@@ -266,11 +273,18 @@ create policy "group_members_delete" on public.group_members for delete using (
   and role != 'owner'
 );
 
--- Categories: public read, only system inserts (or authenticated users for custom)
+-- Categories: defaults are readable by everyone; custom ones only by members
+-- of the owning group. Any member can add a custom category to their group.
+-- The defaults branch keeps the app's first-run default seeding working.
 drop policy if exists "categories_select" on public.categories;
-create policy "categories_select" on public.categories for select using (true);
+create policy "categories_select" on public.categories for select using (
+  group_id is null or group_id in (select public.user_group_ids())
+);
 drop policy if exists "categories_insert" on public.categories;
-create policy "categories_insert" on public.categories for insert with check (auth.uid() is not null);
+create policy "categories_insert" on public.categories for insert with check (
+  (group_id is null and is_default and auth.uid() is not null)
+  or (group_id in (select public.user_group_ids()) and created_by = auth.uid() and not is_default)
+);
 
 -- Budgets: group members only
 drop policy if exists "budgets_select" on public.budgets;
@@ -468,4 +482,4 @@ insert into public.categories (name, icon, color, bg_color, is_default) values
   ('Bills & Utilities','Lightning',   '#3B6FF6', '#E9F0FE', true),
   ('Transport',       'Car',          '#1FA0A6', '#E0F3F4', true),
   ('Shopping',        'ShoppingBag',  '#8A5CF0', '#EFE9FD', true)
-on conflict (name) do nothing;
+on conflict ((lower(name))) where group_id is null do nothing;
