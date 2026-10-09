@@ -32,27 +32,26 @@ export default function DayTransactionsSection() {
         {expenses.length === 0 ? (
           <div className="py-[22px] text-center text-[14px] font-semibold" style={{ color: '#9A9FA8' }}>No transactions yet. Tap + to add one.</div>
         ) : (
-          <div className="-mb-px">
-            {expenses.map(exp => {
-              const payer = exp.profile?.display_name?.split(' ')[0] ?? '?'
-              return (
-                <div key={exp.id} className="flex items-center gap-3 py-[13px]" style={{ borderBottom: '1px solid #F4F0E9' }}>
-                  {exp.category && <CategoryIcon icon={exp.category.icon} color={exp.category.color} bg_color={exp.category.bg_color} size={40} iconSize={20} radius={12} />}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{exp.note || exp.category?.name || 'Expense'}</div>
-                    <div className="flex items-center gap-1.5 mt-[3px] min-w-0">
-                      <MemberAvatar name={payer} color={exp.profile?.avatar_color ?? '#3B6FF6'} size={16} fontSize={9} />
-                      <span className="text-[12px] font-semibold truncate" style={{ color: '#9A9FA8' }}>
-                        {payer}{exp.category ? ` · ${exp.category.name}` : ''} · {timeLabel(exp.created_at)}
-                      </span>
-                      {exp.pending && <SyncingBadge />}
-                    </div>
+          expenses.map((exp, i) => {
+            const payer = exp.profile?.display_name?.split(' ')[0] ?? '?'
+            const isLast = i === expenses.length - 1
+            return (
+              <div key={exp.id} className="flex items-center gap-3 py-[13px]" style={{ borderBottom: isLast ? 'none' : '1px solid #F4F0E9' }}>
+                {exp.category && <CategoryIcon icon={exp.category.icon} color={exp.category.color} bg_color={exp.category.bg_color} size={40} iconSize={20} radius={12} />}
+                <div className="flex-1 min-w-0">
+                  <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{exp.note || exp.category?.name || 'Expense'}</div>
+                  <div className="flex items-center gap-1.5 mt-[3px] min-w-0">
+                    <MemberAvatar name={payer} color={exp.profile?.avatar_color ?? '#3B6FF6'} size={16} fontSize={9} />
+                    <span className="text-[12px] font-semibold truncate" style={{ color: '#9A9FA8' }}>
+                      {payer}{exp.category ? ` · ${exp.category.name}` : ''} · {timeLabel(exp.created_at)}
+                    </span>
+                    {exp.pending && <SyncingBadge />}
                   </div>
-                  <span className="text-[16px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(exp.amount)}</span>
                 </div>
-              )
-            })}
-          </div>
+                <span className="text-[16px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(exp.amount)}</span>
+              </div>
+            )
+          })
         )}
       </div>
     </>
