@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { House, ChartPieSlice, Plus, Users, UserCircle } from '@phosphor-icons/react'
+import { hidesBottomNav } from './navPaths'
 
 export default function BottomNav() {
   const pathname = usePathname()
+  if (hidesBottomNav(pathname)) return null
 
   const active = (path: string) => pathname === path || pathname.startsWith(path + '/')
   const color = (path: string) => active(path) ? '#3B6FF6' : '#B4B8C0'

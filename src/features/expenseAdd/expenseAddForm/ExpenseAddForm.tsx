@@ -65,7 +65,7 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
   const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-AE', { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
-    <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen" style={{ background: '#F6F3EE' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-0">
         <button onClick={() => router.back()} className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
@@ -195,7 +195,7 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
       {error && <p className="mx-5 mt-3 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
 
       {/* Add button */}
-      <div className="sticky bottom-20 px-5 mt-6 pt-6" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>
+      <div className="sticky bottom-0 px-5 mt-auto pt-6 pb-[calc(env(safe-area-inset-bottom)+16px)]" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>
         <button
           onClick={handleAdd}
           disabled={loading}

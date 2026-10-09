@@ -34,7 +34,7 @@ export default function GroupsNewForm() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen" style={{ background: '#F6F3EE' }}>
       {/* Header */}
       <div className="flex items-center gap-3.5 px-5 pt-12 pb-0">
         <button onClick={() => router.back()} className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
@@ -62,7 +62,7 @@ export default function GroupsNewForm() {
       </div>
 
       {/* Create button */}
-      <div className="px-5 mt-6">
+      <div className="px-5 mt-auto pt-6 pb-[calc(env(safe-area-inset-bottom)+16px)]">
         <button
           onClick={handleCreate}
           disabled={loading}

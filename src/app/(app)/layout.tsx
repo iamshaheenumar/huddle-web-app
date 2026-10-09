@@ -1,3 +1,4 @@
+import AppContent from '@/features/common/AppContent'
 import BottomNav from '@/features/common/BottomNav'
 import QueryProvider from '@/features/common/QueryProvider'
 
@@ -11,9 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           className="relative flex flex-col w-full"
           style={{ maxWidth: 430, minHeight: '100svh', background: '#F6F3EE', overflow: 'hidden' }}
         >
-          <div className="flex-1 overflow-y-auto" style={{ paddingBottom: 80, paddingTop: 'env(safe-area-inset-top)' }}>
-            {children}
-          </div>
+          <AppContent>{children}</AppContent>
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full" style={{ maxWidth: 430 }}>
             <BottomNav />
           </div>

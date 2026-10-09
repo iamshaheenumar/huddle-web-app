@@ -2,7 +2,7 @@ import { Sk } from '@/features/common/Skeleton'
 
 export default function ExpenseAddSkeleton() {
   return (
-    <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen" style={{ background: '#F6F3EE' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-0">
         <Sk className="rounded-[13px]" style={{ width: 40, height: 40 }} />
@@ -34,7 +34,7 @@ export default function ExpenseAddSkeleton() {
         <Sk className="rounded-[15px]" style={{ width: '100%', height: 50 }} />
       </div>
       {/* Add button */}
-      <div className="px-5 mt-auto pt-6">
+      <div className="px-5 mt-auto pt-6 pb-[calc(env(safe-area-inset-bottom)+16px)]">
         <Sk className="rounded-[17px]" style={{ width: '100%', height: 54 }} />
       </div>
     </div>
