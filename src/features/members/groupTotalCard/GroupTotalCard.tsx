@@ -1,12 +1,15 @@
+'use client'
+
 import { CURRENCY, MONTHS } from '@/lib/constants'
 import { fmt } from '@/lib/format'
-import { getMembers, getMembersSummary } from '../data'
+import { useMemberStats, useMembersSummary } from '../queries'
+import GroupTotalCardSkeleton from './GroupTotalCardSkeleton'
 
-export default async function GroupTotalCard() {
-  const [{ month, totalSpent, totalBudget, pctUsed, memberCount }, members] = await Promise.all([
-    getMembersSummary(),
-    getMembers(),
-  ])
+export default function GroupTotalCard() {
+  const summary = useMembersSummary()
+  const members = useMemberStats()
+  if (!summary || !members) return <GroupTotalCardSkeleton />
+  const { month, totalSpent, totalBudget, pctUsed, memberCount } = summary
 
   return (
     <div className="mx-5 mt-5 rounded-3xl p-5 text-white" style={{ background: '#20242E' }}>

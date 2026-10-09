@@ -1,4 +1,6 @@
 export type CategoryExpense = {
+  // Queued on this device, not yet synced
+  pending?: boolean
   id: string
   amount: number
   note: string | null

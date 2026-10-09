@@ -1,10 +1,14 @@
+'use client'
+
 import Link from 'next/link'
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { fmt } from '@/lib/format'
-import { getMembers } from '../data'
+import { useMemberSpend } from '../queries'
+import MembersSectionSkeleton from './MembersSectionSkeleton'
 
-export default async function MembersSection() {
-  const members = await getMembers()
+export default function MembersSection() {
+  const members = useMemberSpend()
+  if (!members) return <MembersSectionSkeleton />
   if (members.length === 0) return null
 
   const total = members.reduce((s, m) => s + m.spent, 0)

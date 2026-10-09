@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SignOut } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
+import { useQueryClient } from '@tanstack/react-query'
+import { useInvalidateAppData } from '@/lib/query/invalidate'
+import { clearPersistedCache, clearOfflinePages } from '@/lib/query/client'
 import { revalidateAppData } from '@/lib/actions'
 import { MEMBER_COLORS } from '@/lib/constants'
 import type { Profile } from '@/types'
@@ -11,6 +14,8 @@ import HuddleMark from '@/features/common/HuddleMark'
 
 export default function ProfileView({ profile: initialProfile }: { profile: Profile | null }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
+  const invalidateAppData = useInvalidateAppData()
   const [profile, setProfile] = useState<Profile | null>(initialProfile)
   const [loading, setLoading] = useState(false)
 
@@ -18,16 +23,20 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
     setLoading(true)
     const supabase = createClient()
     await supabase.auth.signOut()
-    await revalidateAppData()
+    // Shared devices must not keep this user's financial data around.
+    queryClient.clear()
+    await Promise.all([clearPersistedCache(), clearOfflinePages(), revalidateAppData()])
     router.push('/login')
   }
 
   async function changeColor(color: string) {
     if (!profile) return
     const supabase = createClient()
-    await supabase.from('profiles').update({ avatar_color: color } as never).eq('id', profile.id)
+    const { error } = await supabase.from('profiles').update({ avatar_color: color } as never).eq('id', profile.id)
+    // Needs a connection; keep showing the saved color if the update didn't go through.
+    if (error) return
     setProfile(p => p ? { ...p, avatar_color: color } : p)
-    await revalidateAppData()
+    await invalidateAppData()
   }
 
   return (

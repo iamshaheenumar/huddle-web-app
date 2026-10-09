@@ -5,7 +5,7 @@ import { Check, PlusCircle } from '@phosphor-icons/react'
 import BottomSheet from './BottomSheet'
 import CategoryIcon, { CATEGORY_ICON_NAMES } from './CategoryIcon'
 import { createClient } from '@/lib/supabase/client'
-import { revalidateAppData } from '@/lib/actions'
+import { useInvalidateAppData } from '@/lib/query/invalidate'
 import { CATEGORY_COLORS, colorUsage, pickUnusedColor } from '@/lib/categories'
 import type { Category } from '@/types'
 
@@ -49,6 +49,7 @@ type FormProps = {
 }
 
 function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onCreated }: FormProps) {
+  const invalidateAppData = useInvalidateAppData()
   const [name, setName] = useState('')
   const [icon, setIcon] = useState(() => {
     const used = new Set(existing.map(c => c.icon))
@@ -86,7 +87,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
       return
     }
 
-    await revalidateAppData()
+    await invalidateAppData()
     setPending(false)
     onCreated(data as Category)
   }

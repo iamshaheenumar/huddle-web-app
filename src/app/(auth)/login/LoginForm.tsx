@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { revalidateAppData } from '@/lib/actions'
+import { clearPersistedCache } from '@/lib/query/client'
 import HuddleMark from '@/features/common/HuddleMark'
 
 export default function LoginForm({ next }: { next?: string }) {
@@ -24,7 +25,8 @@ export default function LoginForm({ next }: { next?: string }) {
       setError(error.message)
       setLoading(false)
     } else {
-      await revalidateAppData()
+      // Start from an empty cache so a previous user's data never shows.
+      await Promise.all([revalidateAppData(), clearPersistedCache()])
       router.push(next ?? '/dashboard')
     }
   }

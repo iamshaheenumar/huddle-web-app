@@ -1,11 +1,16 @@
+'use client'
+
 import Link from 'next/link'
 import HuddleMark from '@/features/common/HuddleMark'
 import { MONTHS } from '@/lib/constants'
-import { getDashboardContext, getBudget } from '../data'
+import { useAppContext } from '@/features/common/queries'
+import { useBudget } from '../queries'
 
-export default async function EmptyBudget() {
-  const [{ month }, budget] = await Promise.all([getDashboardContext(), getBudget()])
-  if (budget) return null
+export default function EmptyBudget() {
+  const { month } = useAppContext()
+  const { data: budget } = useBudget()
+  // undefined = still loading, null = no budget this month.
+  if (budget !== null) return null
 
   return (
     <div className="mx-5 mt-6 rounded-3xl p-6 text-center" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>

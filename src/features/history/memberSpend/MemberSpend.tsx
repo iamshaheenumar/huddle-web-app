@@ -1,10 +1,14 @@
+'use client'
+
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { fmt } from '@/lib/format'
-import { getPeriodMembers } from '../data'
+import { usePeriodMembers } from '../queries'
 import TxnList from '../txnList/TxnList'
+import MemberSpendSkeleton from './MemberSpendSkeleton'
 
-export default async function MemberSpend({ period }: { period?: string }) {
-  const members = await getPeriodMembers(period)
+export default function MemberSpend({ period }: { period?: string }) {
+  const members = usePeriodMembers(period)
+  if (!members) return <MemberSpendSkeleton />
   if (members.length === 0) return null
 
   return (

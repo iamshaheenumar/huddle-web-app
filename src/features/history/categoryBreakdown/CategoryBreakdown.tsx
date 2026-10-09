@@ -1,10 +1,14 @@
+'use client'
+
 import CategoryIcon from '@/features/common/CategoryIcon'
 import { fmt } from '@/lib/format'
-import { getPeriodCategories } from '../data'
+import { usePeriodCategories } from '../queries'
 import TxnList from '../txnList/TxnList'
+import CategoryBreakdownSkeleton from './CategoryBreakdownSkeleton'
 
-export default async function CategoryBreakdown({ period }: { period?: string }) {
-  const categories = await getPeriodCategories(period)
+export default function CategoryBreakdown({ period }: { period?: string }) {
+  const categories = usePeriodCategories(period)
+  if (!categories) return <CategoryBreakdownSkeleton />
   if (categories.length === 0) {
     return (
       <div className="mx-5 mt-4 rounded-[22px] py-[22px] text-center text-[14px] font-semibold" style={{ background: '#fff', border: '1px solid #F0ECE4', color: '#9A9FA8' }}>

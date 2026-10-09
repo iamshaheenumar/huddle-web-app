@@ -1,14 +1,16 @@
+'use client'
+
 import { CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
-import { getCategoryContext, getCategorySummary } from '../data'
+import { useCategoryDetail } from '../queries'
+import CategoryRingSkeleton from './CategoryRingSkeleton'
 
 const OVER = '#E0563E'
 
-export default async function CategoryRing({ id }: { id: string }) {
-  const [{ category }, { available, pct, pctLeft, overspent, overspendAmount, overspendPct, budgetFraction }] = await Promise.all([
-    getCategoryContext(id),
-    getCategorySummary(id),
-  ])
+export default function CategoryRing({ id }: { id: string }) {
+  const detail = useCategoryDetail(id)
+  if (!detail?.category) return <CategoryRingSkeleton />
+  const { category, summary: { available, pct, pctLeft, overspent, overspendAmount, overspendPct, budgetFraction } } = detail
 
   const conicGradient = overspent
     ? `conic-gradient(${category.color} 0% ${budgetFraction}%, ${OVER} ${budgetFraction}% 100%)`

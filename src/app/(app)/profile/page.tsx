@@ -1,11 +1,6 @@
-import { Suspense } from 'react'
 import ProfileSection from '@/features/profile/profileSection/ProfileSection'
-import ProfileSkeleton from '@/features/profile/profileSkeleton/ProfileSkeleton'
 
+// Static shell: the profile comes from the client cache.
 export default function ProfilePage() {
-  return (
-    <Suspense fallback={<ProfileSkeleton />}>
-      <ProfileSection />
-    </Suspense>
-  )
+  return <ProfileSection />
 }

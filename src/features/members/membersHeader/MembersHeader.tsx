@@ -1,8 +1,13 @@
-import Link from 'next/link'
-import { getMembersContext, getMembers } from '../data'
+'use client'
 
-export default async function MembersHeader() {
-  const [{ group }, members] = await Promise.all([getMembersContext(), getMembers()])
+import Link from 'next/link'
+import { useAppContext, useGroupMembers } from '@/features/common/queries'
+import MembersHeaderSkeleton from './MembersHeaderSkeleton'
+
+export default function MembersHeader() {
+  const { group } = useAppContext()
+  const { data: members } = useGroupMembers()
+  if (!group || !members) return <MembersHeaderSkeleton />
 
   return (
     <div className="flex items-center justify-between px-5 pt-12 pb-0">

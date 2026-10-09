@@ -1,11 +1,13 @@
-import { fmt } from '@/lib/format'
-import { getCategoryContext, getCategorySummary } from '../data'
+'use client'
 
-export default async function CategoryStats({ id }: { id: string }) {
-  const [{ category }, { allocated, totalConsumed, available, overspent, overspendAmount }] = await Promise.all([
-    getCategoryContext(id),
-    getCategorySummary(id),
-  ])
+import { fmt } from '@/lib/format'
+import { useCategoryDetail } from '../queries'
+import CategoryStatsSkeleton from './CategoryStatsSkeleton'
+
+export default function CategoryStats({ id }: { id: string }) {
+  const detail = useCategoryDetail(id)
+  if (!detail?.category) return <CategoryStatsSkeleton />
+  const { category, summary: { allocated, totalConsumed, available, overspent, overspendAmount } } = detail
 
   const stats = [
     { label: 'Budget', value: fmt(allocated), color: '#20242E' },

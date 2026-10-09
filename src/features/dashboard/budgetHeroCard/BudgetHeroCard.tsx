@@ -1,15 +1,23 @@
+'use client'
+
 import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
-import { getBudgetSummary, getSpendDay } from '../data'
+import { useAppContext } from '@/features/common/queries'
+import { useBudgetSummary, useSpendDay } from '../queries'
 import { dayLabel, todayDate } from '../dates'
+import BudgetHeroCardSkeleton from './BudgetHeroCardSkeleton'
 
 const GRADIENT = 'linear-gradient(152deg,#4D79F8 0%,#3461E8 100%)'
 const SHADOW = '0 18px 30px -18px rgba(52,97,232,.8)'
 const OVER_GRADIENT = 'linear-gradient(152deg,#F2675A 0%,#DC4437 100%)'
 const OVER_SHADOW = '0 18px 30px -18px rgba(220,68,55,.8)'
 
-export default async function BudgetHeroCard() {
-  const [{ month, remaining, totalBudget, totalSpent }, spendDay] = await Promise.all([getBudgetSummary(), getSpendDay()])
+export default function BudgetHeroCard() {
+  const { month } = useAppContext()
+  const summary = useBudgetSummary()
+  const spendDay = useSpendDay()
+  if (!summary || !spendDay) return <BudgetHeroCardSkeleton />
+  const { remaining, totalBudget, totalSpent } = summary
 
   const hasBudget = totalBudget > 0
   const over = hasBudget && remaining < 0

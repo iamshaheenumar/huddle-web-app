@@ -1,9 +1,13 @@
+'use client'
+
 import { CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
-import { getPeriodSummary } from '../data'
+import { usePeriodSummary } from '../queries'
+import PeriodHeroCardSkeleton from './PeriodHeroCardSkeleton'
 
-export default async function PeriodHeroCard({ period }: { period?: string }) {
-  const s = await getPeriodSummary(period)
+export default function PeriodHeroCard({ period }: { period?: string }) {
+  const s = usePeriodSummary(period)
+  if (!s) return <PeriodHeroCardSkeleton />
   const barColor = s.overspent ? '#F0876A' : '#4FD08A'
   const barWidth = s.overspent ? 100 : (s.hasBudget ? Math.min(100, Math.round((s.totalSpent / s.totalBudget) * 100)) : 0)
   const statusColor = s.overspent ? '#F0876A' : '#5FD69A'

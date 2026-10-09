@@ -473,6 +473,38 @@ $$;
 
 grant execute on function public.switch_active_group(uuid) to authenticated;
 
+-- Saves a month's budget and replaces its category allocations in one
+-- transaction, so a failure part-way can't leave a budget with its
+-- allocations wiped. security invoker: the budgets/budget_categories RLS
+-- policies still decide whether the caller may write.
+-- p_allocations: [{ "category_id": uuid, "allocated_amount": number }, ...]
+create or replace function public.save_budget(p_group_id uuid, p_month int, p_year int, p_total numeric, p_allocations jsonb)
+returns uuid
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  v_budget_id uuid;
+begin
+  insert into public.budgets (group_id, month, year, total_amount)
+  values (p_group_id, p_month, p_year, p_total)
+  on conflict (group_id, month, year) do update set total_amount = excluded.total_amount
+  returning id into v_budget_id;
+
+  delete from public.budget_categories where budget_id = v_budget_id;
+
+  insert into public.budget_categories (budget_id, category_id, allocated_amount)
+  select v_budget_id, (a->>'category_id')::uuid, (a->>'allocated_amount')::numeric
+  from jsonb_array_elements(p_allocations) a
+  where (a->>'allocated_amount')::numeric > 0;
+
+  return v_budget_id;
+end;
+$$;
+
+grant execute on function public.save_budget(uuid, int, int, numeric, jsonb) to authenticated;
+
 -- ============================================================
 -- Seed: default categories
 -- ============================================================

@@ -1,9 +1,13 @@
-import { getEarlierMonths } from '../data'
+'use client'
+
+import { useEarlierMonths } from '../queries'
 import EarlierMonthsList from './EarlierMonthsList'
+import EarlierMonthsSkeleton from './EarlierMonthsSkeleton'
 import type { HistoryView } from '../types'
 
-export default async function EarlierMonths({ period, view }: { period?: string; view: HistoryView }) {
-  const months = await getEarlierMonths(period)
+export default function EarlierMonths({ period, view }: { period?: string; view: HistoryView }) {
+  const months = useEarlierMonths(period)
+  if (!months) return <EarlierMonthsSkeleton />
   if (months.length === 0) return null
 
   return (

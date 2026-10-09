@@ -4,12 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Check, Plus } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
-import { revalidateAppData } from '@/lib/actions'
+import { useInvalidateAppData } from '@/lib/query/invalidate'
 import { switchActiveGroup, type GroupSummary } from '@/lib/group'
 
 export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: GroupSummary; groups: GroupSummary[] }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const invalidateAppData = useInvalidateAppData()
 
   async function handleSwitch(groupId: string) {
     if (groupId === currentGroup.id || loading) {
@@ -21,7 +22,7 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
     try {
       await switchActiveGroup(supabase, groupId)
       setOpen(false)
-      await revalidateAppData()
+      await invalidateAppData()
     } finally {
       setLoading(false)
     }

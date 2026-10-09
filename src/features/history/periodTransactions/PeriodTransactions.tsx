@@ -1,15 +1,20 @@
+'use client'
+
 import CategoryIcon from '@/features/common/CategoryIcon'
 import MemberAvatar from '@/features/common/MemberAvatar'
+import SyncingBadge from '@/features/common/SyncingBadge'
 import { fmt } from '@/lib/format'
-import { getPeriodTransactions } from '../data'
+import { usePeriodTransactions } from '../queries'
 import DeleteTxnButton from '../deleteTxnButton/DeleteTxnButton'
+import PeriodTransactionsSkeleton from './PeriodTransactionsSkeleton'
 
-// expense_date is a plain YYYY-MM-DD; format it in UTC so the server's zone can't shift the day.
+// expense_date is a plain YYYY-MM-DD; format it in UTC so the viewer's zone can't shift the day.
 const dayLabel = (date: string) =>
   new Date(`${date}T00:00:00Z`).toLocaleDateString('en-AE', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
 
-export default async function PeriodTransactions({ period }: { period?: string }) {
-  const days = await getPeriodTransactions(period)
+export default function PeriodTransactions({ period }: { period?: string }) {
+  const days = usePeriodTransactions(period)
+  if (!days) return <PeriodTransactionsSkeleton />
 
   if (days.length === 0) {
     return (
@@ -42,6 +47,7 @@ export default async function PeriodTransactions({ period }: { period?: string }
                     <div className="flex items-center gap-1.5 mt-[3px] min-w-0">
                       <MemberAvatar name={payer} color={t.payerColor} size={16} fontSize={9} />
                       <span className="text-[12px] font-semibold truncate" style={{ color: '#9A9FA8' }}>{payer} · {t.categoryName}</span>
+                      {t.pending && <SyncingBadge />}
                     </div>
                   </div>
                   <span className="text-[16px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(t.amount)}</span>

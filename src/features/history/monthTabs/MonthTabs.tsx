@@ -1,11 +1,17 @@
+'use client'
+
 import Link from 'next/link'
 import { MONTHS } from '@/lib/constants'
-import { getHistoryContext, periodKey } from '../data'
+import { periodKey } from '../derive'
+import { useHistoryContext } from '../queries'
 import { historyHref } from '../links'
 import type { HistoryView } from '../types'
+import MonthTabsSkeleton from './MonthTabsSkeleton'
 
-export default async function MonthTabs({ period, view }: { period?: string; view: HistoryView }) {
-  const { periods, selected } = await getHistoryContext(period)
+export default function MonthTabs({ period, view }: { period?: string; view: HistoryView }) {
+  const ctx = useHistoryContext(period)
+  if (!ctx) return <MonthTabsSkeleton />
+  const { periods, selected } = ctx
   const selectedKey = periodKey(selected)
 
   return (

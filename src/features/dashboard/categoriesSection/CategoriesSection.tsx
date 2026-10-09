@@ -1,10 +1,14 @@
+'use client'
+
 import Link from 'next/link'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import { fmt } from '@/lib/format'
-import { getBudgetCategories } from '../data'
+import { useBudgetCategories } from '../queries'
+import CategoriesSectionSkeleton from './CategoriesSectionSkeleton'
 
-export default async function CategoriesSection() {
-  const categories = await getBudgetCategories()
+export default function CategoriesSection() {
+  const categories = useBudgetCategories()
+  if (!categories) return <CategoriesSectionSkeleton />
   if (categories.length === 0) return null
 
   return (

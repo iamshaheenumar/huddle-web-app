@@ -6,16 +6,18 @@ import { CaretLeft, Plus, Check, CheckCircle } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import AddCategorySheet from '@/features/common/AddCategorySheet'
 import { createClient } from '@/lib/supabase/client'
-import { revalidateAppData } from '@/lib/actions'
+import { useInvalidateAppData } from '@/lib/query/invalidate'
+import { useOnline } from '@/lib/query/online'
 import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
-import type { BudgetSetData } from '../data'
+import type { BudgetSetData } from '../queries'
 import type { Category } from '@/types'
 
 const STEP = 100
 
 export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
   const router = useRouter()
+  const invalidateAppData = useInvalidateAppData()
   const { groupId, groupName, month, year } = data
 
   const [totalBudget, setTotalBudget] = useState(data.totalBudget)
@@ -25,6 +27,8 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
   const [editingTotal, setEditingTotal] = useState(false)
   const [categories, setCategories] = useState<Category[]>(data.categories)
   const [addingCategory, setAddingCategory] = useState(false)
+  const [error, setError] = useState('')
+  const online = useOnline()
 
   function handleCategoryCreated(cat: Category) {
     setCategories(prev => [...prev, cat].sort((a, b) => a.name.localeCompare(b.name)))
@@ -49,28 +53,23 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
 
   async function handleSave() {
     setLoading(true)
-    const supabase = createClient()
-
-    const { data: existingData } = await supabase.from('budgets').select('id').eq('group_id', groupId).eq('month', month).eq('year', year).single()
-    const existing = existingData as { id: string } | null
-
-    let budgetId: string
-    if (existing) {
-      await supabase.from('budgets').update({ total_amount: totalBudget } as never).eq('id', existing.id)
-      budgetId = existing.id
-      await supabase.from('budget_categories').delete().eq('budget_id', budgetId)
-    } else {
-      const { data: nbData } = await supabase.from('budgets').insert({ group_id: groupId, month, year, total_amount: totalBudget } as never).select().single()
-      budgetId = (nbData as { id: string })!.id
+    setError('')
+    // One transaction (supabase/schema.sql): the budget and its allocations are
+    // saved together, so a failure can't leave the budget with allocations wiped.
+    const { error: saveError } = await createClient().rpc('save_budget', {
+      p_group_id: groupId,
+      p_month: month,
+      p_year: year,
+      p_total: totalBudget,
+      p_allocations: Object.entries(allocations).map(([category_id, allocated_amount]) => ({ category_id, allocated_amount })),
+    })
+    if (saveError) {
+      setError(saveError.message)
+      setLoading(false)
+      return
     }
 
-    const rows = Object.entries(allocations)
-      .filter(([, v]) => v > 0)
-      .map(([category_id, allocated_amount]) => ({ budget_id: budgetId, category_id, allocated_amount }))
-
-    if (rows.length > 0) await supabase.from('budget_categories').insert(rows as never)
-
-    await revalidateAppData()
+    await invalidateAppData()
     setSaved(true)
     setLoading(false)
     setTimeout(() => router.push('/dashboard'), 1000)
@@ -165,15 +164,17 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
         onCreated={handleCategoryCreated}
       />
 
+      {error && <p className="mx-5 mt-4 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
+
       {/* Save button */}
       <div className="sticky bottom-20 px-5 mt-6" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>
         <button
           onClick={handleSave}
-          disabled={loading || saved}
+          disabled={loading || saved || !online}
           className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold text-white transition-opacity disabled:opacity-70"
           style={{ background: saved ? '#2E9E6B' : '#3B6FF6', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
         >
-          {saved ? <><Check size={18} weight="bold" /> Saved!</> : loading ? 'Saving…' : <><Check size={18} weight="fill" /> Save {MONTHS[month - 1]} budget</>}
+          {saved ? <><Check size={18} weight="bold" /> Saved!</> : loading ? 'Saving…' : !online ? 'Connect to save the budget' : <><Check size={18} weight="fill" /> Save {MONTHS[month - 1]} budget</>}
         </button>
       </div>
     </div>

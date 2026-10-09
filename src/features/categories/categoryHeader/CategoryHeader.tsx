@@ -1,9 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 import CategoryIcon from '@/features/common/CategoryIcon'
-import { getCategoryContext } from '../data'
+import { useCategoryDetail } from '../queries'
+import CategoryHeaderSkeleton from './CategoryHeaderSkeleton'
 
-export default async function CategoryHeader({ id }: { id: string }) {
-  const { category } = await getCategoryContext(id)
+export default function CategoryHeader({ id }: { id: string }) {
+  const category = useCategoryDetail(id)?.category
+  if (!category) return <CategoryHeaderSkeleton />
 
   return (
     <div className="flex items-center justify-between px-5 pt-12 pb-0">

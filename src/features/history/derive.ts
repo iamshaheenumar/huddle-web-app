@@ -1,13 +1,11 @@
-import { cache } from 'react'
-import { getAuth } from '@/lib/auth'
-import { getActiveGroup } from '@/lib/group'
 import { MONTHS } from '@/lib/constants'
+import type { MemberRow } from '@/features/common/queries'
 import type { Period, PeriodSummary, HistoryCategory, EarlierMonth, HistoryMember, HistoryTxn, HistoryDay } from './types'
 
-type BudgetRow = { id: string; month: number; year: number; total_amount: number }
-type ExpRow = { id: string; note: string | null; amount: number; expense_date: string; created_at: string; category_id: string; paid_by: string; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
-type MemberRow = { user_id: string; profiles: { display_name: string; avatar_color: string } | null }
-type BCRow = { budget_id: string; allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
+export type BudgetRow = { id: string; month: number; year: number; total_amount: number }
+export type ExpRow = { id: string; pending?: boolean; note: string | null; amount: number; expense_date: string; created_at: string; category_id: string; paid_by: string; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
+export type BCRow = { budget_id: string; allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
+export type HistoryContext = { periods: Period[]; selected: Period; currentPeriod: Period }
 
 // Date-badge palette for the "Earlier months" list, cycled by list position.
 const ACCENTS = [
@@ -30,7 +28,12 @@ const expensePeriod = (dateStr: string): Period => {
   return { year: Number(y), month: Number(m) }
 }
 
-const parsePeriod = (s?: string): Period | null => {
+const inPeriod = (e: ExpRow, p: Period) => {
+  const q = expensePeriod(e.expense_date)
+  return q.year === p.year && q.month === p.month
+}
+
+const parsePeriod = (s?: string | null): Period | null => {
   if (!s) return null
   const m = /^(\d{4})-(\d{1,2})$/.exec(s)
   if (!m) return null
@@ -41,12 +44,11 @@ const parsePeriod = (s?: string): Period | null => {
 }
 
 const sumSpent = (expenses: ExpRow[], p: Period) =>
-  expenses
-    .filter(e => { const q = expensePeriod(e.expense_date); return q.year === p.year && q.month === p.month })
-    .reduce((s, e) => s + Number(e.amount), 0)
+  expenses.filter(e => inPeriod(e, p)).reduce((s, e) => s + Number(e.amount), 0)
 
 const toTxn = (e: ExpRow, payer: MemberRow | undefined): HistoryTxn => ({
   id: e.id,
+  pending: e.pending,
   amount: Number(e.amount),
   note: e.note,
   date: e.expense_date,
@@ -58,71 +60,9 @@ const toTxn = (e: ExpRow, payer: MemberRow | undefined): HistoryTxn => ({
   payerColor: payer?.profiles?.avatar_color ?? '#3B6FF6',
 })
 
-// One auth + active-group resolution per request, shared by every helper below.
-const getBase = cache(async () => {
-  const { supabase, user } = await getAuth()
-  const group = await getActiveGroup(supabase, user.id)
-  return { supabase, user, group }
-})
-
-// The group's whole expense history — fetched once and aggregated per period in
-// JS so every section (tabs, hero, breakdown, earlier months) shares one query.
-export const getAllExpenses = cache(async (): Promise<ExpRow[]> => {
-  const { supabase, group } = await getBase()
-  // PostgREST caps a single response (1000 rows by default), which would silently
-  // drop the oldest months — page through until a short page comes back.
-  const PAGE = 1000
-  const rows: ExpRow[] = []
-  for (let from = 0; ; from += PAGE) {
-    const { data } = await supabase
-      .from('expenses')
-      .select('id, note, amount, expense_date, created_at, category_id, paid_by, categories(id, name, icon, color, bg_color)')
-      .eq('group_id', group.id)
-      .order('expense_date', { ascending: false })
-      .order('id')
-      .range(from, from + PAGE - 1)
-    const page = (data as unknown as ExpRow[]) ?? []
-    rows.push(...page)
-    if (page.length < PAGE) break
-  }
-  return rows
-})
-
-export const getAllBudgets = cache(async (): Promise<BudgetRow[]> => {
-  const { supabase, group } = await getBase()
-  const { data } = await supabase
-    .from('budgets')
-    .select('id, month, year, total_amount')
-    .eq('group_id', group.id)
-  return (data as unknown as BudgetRow[]) ?? []
-})
-
-export const getAllBudgetCategories = cache(async (): Promise<BCRow[]> => {
-  const budgets = await getAllBudgets()
-  if (budgets.length === 0) return []
-  const { supabase } = await getBase()
-  const { data } = await supabase
-    .from('budget_categories')
-    .select('budget_id, allocated_amount, categories(id, name, icon, color, bg_color)')
-    .in('budget_id', budgets.map(b => b.id))
-  return (data as unknown as BCRow[]) ?? []
-})
-
-export const getMemberCount = cache(async (): Promise<number> => {
-  const { supabase, group } = await getBase()
-  const { count } = await supabase
-    .from('group_members')
-    .select('user_id', { count: 'exact', head: true })
-    .eq('group_id', group.id)
-  return count ?? 0
-})
-
-// Resolves the available periods (every month with a budget or expense, plus the
-// current month) and the selected one. Cached on the raw `period` search param so
-// all sections passing the same param share a single resolution.
-export const getHistoryContext = cache(async (periodParam?: string) => {
-  const { supabase, user, group } = await getBase()
-  const [budgets, expenses] = await Promise.all([getAllBudgets(), getAllExpenses()])
+// The available periods (every month with a budget or expense, plus the current
+// month) and the selected one.
+export function historyContext(budgets: BudgetRow[], expenses: ExpRow[], periodParam?: string | null): HistoryContext {
   const now = new Date()
   const currentPeriod: Period = { year: now.getFullYear(), month: now.getMonth() + 1 }
 
@@ -132,15 +72,12 @@ export const getHistoryContext = cache(async (periodParam?: string) => {
   for (const e of expenses) { const p = expensePeriod(e.expense_date); map.set(periodKey(p), p) }
 
   const periods = [...map.values()].sort(cmpDesc)
-  const parsed = parsePeriod(periodParam)
-  const selected = parsed ?? periods[0] ?? currentPeriod
+  const selected = parsePeriod(periodParam) ?? periods[0] ?? currentPeriod
+  return { periods, selected, currentPeriod }
+}
 
-  return { supabase, user, group, periods, selected, currentPeriod }
-})
-
-export const getPeriodSummary = cache(async (periodParam?: string): Promise<PeriodSummary> => {
-  const { selected, currentPeriod } = await getHistoryContext(periodParam)
-  const [budgets, expenses, memberCount] = await Promise.all([getAllBudgets(), getAllExpenses(), getMemberCount()])
+export function periodSummary(ctx: HistoryContext, budgets: BudgetRow[], expenses: ExpRow[], memberCount: number): PeriodSummary {
+  const { selected, currentPeriod } = ctx
   const budget = budgets.find(b => b.year === selected.year && b.month === selected.month)
   const totalBudget = Number(budget?.total_amount ?? 0)
   const totalSpent = sumSpent(expenses, selected)
@@ -162,11 +99,9 @@ export const getPeriodSummary = cache(async (periodParam?: string): Promise<Peri
     memberCount,
     hasBudget,
   }
-})
+}
 
-export const getPeriodCategories = cache(async (periodParam?: string): Promise<HistoryCategory[]> => {
-  const { selected } = await getHistoryContext(periodParam)
-  const [budgets, allBc, expenses, members] = await Promise.all([getAllBudgets(), getAllBudgetCategories(), getAllExpenses(), getGroupMembers()])
+export function periodCategories(selected: Period, budgets: BudgetRow[], allBc: BCRow[], expenses: ExpRow[], members: MemberRow[]): HistoryCategory[] {
   const memberById = new Map(members.map(m => [m.user_id, m]))
   const budget = budgets.find(b => b.year === selected.year && b.month === selected.month)
 
@@ -180,9 +115,7 @@ export const getPeriodCategories = cache(async (periodParam?: string): Promise<H
   }
   // Fold in consumption; categories spent without an allocation land with allocated = 0.
   for (const e of expenses) {
-    const q = expensePeriod(e.expense_date)
-    if (q.year !== selected.year || q.month !== selected.month) continue
-    if (!e.categories) continue
+    if (!inPeriod(e, selected) || !e.categories) continue
     const txn = toTxn(e, memberById.get(e.paid_by))
     const existing = byId.get(e.categories.id)
     if (existing) { existing.consumed += txn.amount; existing.transactions.push(txn) }
@@ -190,13 +123,11 @@ export const getPeriodCategories = cache(async (periodParam?: string): Promise<H
   }
 
   return [...byId.values()].sort((a, b) => b.allocated - a.allocated || b.consumed - a.consumed)
-})
+}
 
-export const getEarlierMonths = cache(async (periodParam?: string): Promise<EarlierMonth[]> => {
-  const { selected, periods } = await getHistoryContext(periodParam)
-  const [budgets, expenses] = await Promise.all([getAllBudgets(), getAllExpenses()])
-  return periods
-    .filter(p => isBefore(p, selected))
+export function earlierMonths(ctx: HistoryContext, budgets: BudgetRow[], expenses: ExpRow[]): EarlierMonth[] {
+  return ctx.periods
+    .filter(p => isBefore(p, ctx.selected))
     .map((p, i) => {
       const budget = budgets.find(b => b.year === p.year && b.month === p.month)
       const totalBudget = Number(budget?.total_amount ?? 0)
@@ -214,28 +145,15 @@ export const getEarlierMonths = cache(async (periodParam?: string): Promise<Earl
         accent: ACCENTS[i % ACCENTS.length],
       }
     })
-})
+}
 
-export const getGroupMembers = cache(async (): Promise<MemberRow[]> => {
-  const { supabase, group } = await getBase()
-  const { data } = await supabase
-    .from('group_members')
-    .select('user_id, profiles(display_name, avatar_color)')
-    .eq('group_id', group.id)
-  return (data as unknown as MemberRow[]) ?? []
-})
-
-export const getPeriodMembers = cache(async (periodParam?: string): Promise<HistoryMember[]> => {
-  const { selected } = await getHistoryContext(periodParam)
-  const [members, expenses] = await Promise.all([getGroupMembers(), getAllExpenses()])
-
+export function periodMembers(selected: Period, members: MemberRow[], expenses: ExpRow[]): HistoryMember[] {
   const memberById = new Map(members.map(m => [m.user_id, m]))
   const spentBy = new Map<string, number>()
   const txnsBy = new Map<string, HistoryTxn[]>()
   let totalSpent = 0
   for (const e of expenses) {
-    const q = expensePeriod(e.expense_date)
-    if (q.year !== selected.year || q.month !== selected.month) continue
+    if (!inPeriod(e, selected)) continue
     spentBy.set(e.paid_by, (spentBy.get(e.paid_by) ?? 0) + Number(e.amount))
     totalSpent += Number(e.amount)
     const list = txnsBy.get(e.paid_by) ?? []
@@ -249,18 +167,15 @@ export const getPeriodMembers = cache(async (periodParam?: string): Promise<Hist
       return { user_id: m.user_id, profile: m.profiles, spent, share: totalSpent > 0 ? Math.round((spent / totalSpent) * 100) : 0, transactions: txnsBy.get(m.user_id) ?? [] }
     })
     .sort((a, b) => b.spent - a.spent)
-})
+}
 
 // The selected month's expenses grouped by day — newest day first, newest entry first within a day.
-export const getPeriodTransactions = cache(async (periodParam?: string): Promise<HistoryDay[]> => {
-  const { selected } = await getHistoryContext(periodParam)
-  const [members, expenses] = await Promise.all([getGroupMembers(), getAllExpenses()])
+export function periodTransactions(selected: Period, members: MemberRow[], expenses: ExpRow[]): HistoryDay[] {
   const memberById = new Map(members.map(m => [m.user_id, m]))
 
   const byDate = new Map<string, HistoryDay>()
   for (const e of expenses) {
-    const q = expensePeriod(e.expense_date)
-    if (q.year !== selected.year || q.month !== selected.month) continue
+    if (!inPeriod(e, selected)) continue
     const txn = toTxn(e, memberById.get(e.paid_by))
     const day = byDate.get(e.expense_date) ?? { date: e.expense_date, total: 0, transactions: [] }
     day.total += txn.amount
@@ -271,4 +186,4 @@ export const getPeriodTransactions = cache(async (periodParam?: string): Promise
   const days = [...byDate.values()].sort((a, b) => b.date.localeCompare(a.date))
   for (const d of days) d.transactions.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
   return days
-})
+}

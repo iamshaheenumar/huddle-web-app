@@ -1,23 +1,23 @@
+'use client'
+
 import Greeting from '@/features/common/Greeting'
 import GroupSwitcher from '@/features/common/GroupSwitcher'
-import { getDashboardContext, getProfile, getGroups } from '../data'
+import { useAppContext, useProfile, useGroups } from '@/features/common/queries'
+import DashboardHeaderSkeleton from './DashboardHeaderSkeleton'
 
-export default async function DashboardHeader() {
-  const [{ group }, profile, groups] = await Promise.all([
-    getDashboardContext(),
-    getProfile(),
-    getGroups(),
-  ])
+export default function DashboardHeader() {
+  const { group } = useAppContext()
+  const { data: profile } = useProfile()
+  const { data: groups } = useGroups()
+  if (!group || profile === undefined || !groups) return <DashboardHeaderSkeleton />
 
   const displayName = profile?.display_name ?? 'there'
   const avatarColor = profile?.avatar_color ?? '#3B6FF6'
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   return (
     <div className="flex items-center justify-between px-5 pt-12">
       <div>
-        <Greeting name={displayName} initial={greeting} />
+        <Greeting name={displayName} />
         <GroupSwitcher currentGroup={group} groups={groups} />
       </div>
       <div

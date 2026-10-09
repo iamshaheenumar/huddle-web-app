@@ -4,11 +4,12 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CaretLeft } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
-import { revalidateAppData } from '@/lib/actions'
+import { useInvalidateAppData } from '@/lib/query/invalidate'
 import { createNewGroup } from '@/lib/group'
 
 export default function GroupsNewForm() {
   const router = useRouter()
+  const invalidateAppData = useInvalidateAppData()
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -24,7 +25,7 @@ export default function GroupsNewForm() {
     const supabase = createClient()
     try {
       await createNewGroup(supabase, trimmed)
-      await revalidateAppData()
+      await invalidateAppData()
       router.push('/dashboard')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not create group')

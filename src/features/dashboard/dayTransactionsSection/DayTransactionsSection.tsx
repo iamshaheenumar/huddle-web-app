@@ -1,13 +1,19 @@
+'use client'
+
 import Link from 'next/link'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { fmt } from '@/lib/format'
-import { getSpendDay } from '../data'
+import { useSpendDay } from '../queries'
 import { dayLabel, isYesterday, timeLabel } from '../dates'
+import DayTransactionsSectionSkeleton from './DayTransactionsSectionSkeleton'
+import SyncingBadge from '@/features/common/SyncingBadge'
 
 // Shows today's transactions; falls back to the latest day that had spend.
-export default async function DayTransactionsSection() {
-  const { date, isToday, expenses } = await getSpendDay()
+export default function DayTransactionsSection() {
+  const spendDay = useSpendDay()
+  if (!spendDay) return <DayTransactionsSectionSkeleton />
+  const { date, isToday, expenses } = spendDay
 
   const title = isToday || !date
     ? "Today's transactions"
@@ -39,6 +45,7 @@ export default async function DayTransactionsSection() {
                       <span className="text-[12px] font-semibold truncate" style={{ color: '#9A9FA8' }}>
                         {payer}{exp.category ? ` · ${exp.category.name}` : ''} · {timeLabel(exp.created_at)}
                       </span>
+                      {exp.pending && <SyncingBadge />}
                     </div>
                   </div>
                   <span className="text-[16px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(exp.amount)}</span>

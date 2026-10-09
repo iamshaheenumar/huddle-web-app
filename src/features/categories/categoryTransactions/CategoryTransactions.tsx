@@ -1,14 +1,17 @@
+'use client'
+
 import Link from 'next/link'
 import MemberAvatar from '@/features/common/MemberAvatar'
+import SyncingBadge from '@/features/common/SyncingBadge'
 import { MONTHS } from '@/lib/constants'
 import { fmt } from '@/lib/format'
-import { getCategoryContext, getCategoryExpenses } from '../data'
+import { useCategoryDetail } from '../queries'
+import CategoryTransactionsSkeleton from './CategoryTransactionsSkeleton'
 
-export default async function CategoryTransactions({ id }: { id: string }) {
-  const [{ category, month }, expenses] = await Promise.all([
-    getCategoryContext(id),
-    getCategoryExpenses(id),
-  ])
+export default function CategoryTransactions({ id }: { id: string }) {
+  const detail = useCategoryDetail(id)
+  if (!detail?.category) return <CategoryTransactionsSkeleton />
+  const { category, month, expenses } = detail
 
   return (
     <>
@@ -35,8 +38,9 @@ export default async function CategoryTransactions({ id }: { id: string }) {
                 <MemberAvatar name={exp.profile?.display_name ?? '?'} color={exp.profile?.avatar_color ?? '#3B6FF6'} size={36} fontSize={13} />
                 <div className="flex-1 min-w-0">
                   <div className="text-[14px] font-bold truncate" style={{ color: '#2A2E37' }}>{exp.note ?? category.name}</div>
-                  <div className="text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>
                     {exp.profile?.display_name?.split(' ')[0]} · {new Date(exp.expense_date + 'T00:00:00').toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
+                    {exp.pending && <SyncingBadge />}
                   </div>
                 </div>
                 <span className="text-[14px] font-extrabold" style={{ color: '#20242E' }}>−{fmt(exp.amount)}</span>

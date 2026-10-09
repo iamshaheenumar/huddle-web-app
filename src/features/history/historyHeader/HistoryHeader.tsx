@@ -1,9 +1,13 @@
-import Link from 'next/link'
-import { getHistoryContext } from '../data'
-import ShareButton from './ShareButton'
+'use client'
 
-export default async function HistoryHeader({ period }: { period?: string }) {
-  const { group } = await getHistoryContext(period)
+import Link from 'next/link'
+import { useAppContext } from '@/features/common/queries'
+import ShareButton from './ShareButton'
+import HistoryHeaderSkeleton from './HistoryHeaderSkeleton'
+
+export default function HistoryHeader() {
+  const { group } = useAppContext()
+  if (!group) return <HistoryHeaderSkeleton />
 
   return (
     <div className="flex items-center justify-between px-5 pt-12 pb-1">

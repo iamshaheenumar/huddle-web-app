@@ -1,10 +1,17 @@
+'use client'
+
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { fmt } from '@/lib/format'
-import { getMembers, getIsOwner } from '../data'
+import { useAppContext } from '@/features/common/queries'
+import { useMemberStats, useIsOwner } from '../queries'
 import RemoveMemberButton from '../removeMemberButton/RemoveMemberButton'
+import MemberListSkeleton from './MemberListSkeleton'
 
-export default async function MemberList() {
-  const [members, isOwner] = await Promise.all([getMembers(), getIsOwner()])
+export default function MemberList() {
+  const { group } = useAppContext()
+  const members = useMemberStats()
+  const isOwner = useIsOwner()
+  if (!group || !members || isOwner === undefined) return <MemberListSkeleton />
   const maxSpent = members[0]?.spent ?? 1
 
   return (
@@ -32,7 +39,7 @@ export default async function MemberList() {
                 {isOwner && (
                   <div className="w-8 flex justify-end shrink-0">
                     {m.role !== 'owner' && (
-                      <RemoveMemberButton userId={m.user_id} name={m.profile?.display_name ?? 'this member'} />
+                      <RemoveMemberButton groupId={group.id} userId={m.user_id} name={m.profile?.display_name ?? 'this member'} />
                     )}
                   </div>
                 )}

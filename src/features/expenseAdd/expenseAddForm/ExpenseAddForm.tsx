@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation'
 import { X, Plus, PlusCircle, NotePencil, CalendarBlank, CaretDown } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import AddCategorySheet from '@/features/common/AddCategorySheet'
-import { createClient } from '@/lib/supabase/client'
-import { revalidateAppData } from '@/lib/actions'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { ADD_EXPENSE, type ExpenseDraft } from '@/lib/query/mutations'
+import { persistNow } from '@/lib/query/client'
 import { CURRENCY } from '@/lib/constants'
-import type { ExpenseAddData } from '../data'
+import { todayDate } from '@/features/dashboard/dates'
+import type { ExpenseAddData } from '../queries'
 import type { Category } from '@/types'
 
 export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
@@ -16,12 +18,16 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
   const { groupId, groupName, members } = data
   const [categories, setCategories] = useState<Category[]>(data.categories)
   const [addingCategory, setAddingCategory] = useState(false)
+  // Runs from the mutation defaults (src/lib/query/mutations.ts), so it is
+  // queued while offline and survives this screen closing.
+  const addExpense = useMutation<void, Error, ExpenseDraft>({ mutationKey: ADD_EXPENSE })
+  const queryClient = useQueryClient()
 
   const [amount, setAmount] = useState('')
-  const [paidBy, setPaidBy] = useState<string | null>(data.currentUser?.id ?? null)
+  const [paidBy, setPaidBy] = useState<string | null>(data.currentUserId)
   const [categoryId, setCategoryId] = useState<string | null>(data.categories[0]?.id ?? null)
   const [note, setNote] = useState('')
-  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0])
+  const [date, setDate] = useState(todayDate)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -37,22 +43,23 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
     }
     setLoading(true)
     setError('')
-    const supabase = createClient()
-    const { error: insertError } = await supabase.from('expenses').insert({
+    const payer = members.find(m => m.id === paidBy)
+    const category = categories.find(c => c.id === categoryId)
+    // Shows on the dashboard straight away; syncs now, or once back online.
+    addExpense.mutate({
+      id: crypto.randomUUID(),
       group_id: groupId,
       category_id: categoryId,
       paid_by: paidBy,
       amount: parsedAmount,
       note: note || null,
       expense_date: date,
-    } as never)
-    if (insertError) {
-      setError(insertError.message)
-      setLoading(false)
-    } else {
-      await revalidateAppData()
-      router.push('/dashboard')
-    }
+      created_at: new Date().toISOString(),
+      profiles: payer ? { display_name: payer.display_name, avatar_color: payer.avatar_color } : null,
+      categories: category ? { name: category.name, icon: category.icon, color: category.color, bg_color: category.bg_color } : null,
+    })
+    await persistNow(queryClient)
+    router.push('/dashboard')
   }
 
   const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-AE', { day: 'numeric', month: 'long', year: 'numeric' })

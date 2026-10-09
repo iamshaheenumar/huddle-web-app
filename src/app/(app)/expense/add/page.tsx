@@ -1,11 +1,6 @@
-import { Suspense } from 'react'
 import ExpenseAddSection from '@/features/expenseAdd/expenseAddSection/ExpenseAddSection'
-import ExpenseAddSkeleton from '@/features/expenseAdd/expenseAddSkeleton/ExpenseAddSkeleton'
 
+// Static shell: the form reads members and categories from the client cache.
 export default function AddExpensePage() {
-  return (
-    <Suspense fallback={<ExpenseAddSkeleton />}>
-      <ExpenseAddSection />
-    </Suspense>
-  )
+  return <ExpenseAddSection />
 }

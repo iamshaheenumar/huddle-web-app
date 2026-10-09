@@ -15,6 +15,8 @@ export type DayExpense = {
   amount: number
   note: string | null
   created_at: string
+  // Queued on this device, not yet synced
+  pending?: boolean
   profile: { display_name: string; avatar_color: string } | null
   category: { name: string; icon: string; color: string; bg_color: string } | null
 }

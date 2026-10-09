@@ -1,16 +1,23 @@
 'use client'
-import { useRouter } from 'next/navigation'
 import { UserMinusIcon } from '@phosphor-icons/react'
-import { removeMember } from '../actions'
+import { createClient } from '@/lib/supabase/client'
+import { useInvalidateAppData } from '@/lib/query/invalidate'
 
-export default function RemoveMemberButton({ userId, name }: { userId: string; name: string }) {
-  const router = useRouter()
+export default function RemoveMemberButton({ groupId, userId, name }: { groupId: string; userId: string; name: string }) {
+  const invalidateAppData = useInvalidateAppData()
 
   async function handleRemove() {
     if (!confirm(`Remove ${name} from the group?`)) return
-    const { error } = await removeMember(userId)
-    if (error) alert(error)
-    else router.refresh()
+    // RLS only lets the group owner delete; a blocked delete is silent, so check what was removed.
+    const { data, error } = await createClient()
+      .from('group_members')
+      .delete()
+      .eq('group_id', groupId)
+      .eq('user_id', userId)
+      .select('user_id')
+    if (error) return alert(error.message)
+    if (!data || data.length === 0) return alert('Only the group owner can remove members')
+    await invalidateAppData()
   }
 
   return (
