@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useMutationState, useQueryClient } from '@tanstack/react-query'
+import { useMutationState, useQueryClient, type Mutation } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { makeQueryClient, createPersister, CACHE_MAX_AGE, CACHE_BUSTER, resumeQueuedWrites } from '@/lib/query/client'
 import { useSession } from '@/lib/query/session'
@@ -42,16 +42,20 @@ function SessionGuard() {
   return null
 }
 
-// Queued expense writes run after their screen is gone, so a write the server
+// Queued expense and recurring-payment writes (src/lib/query/mutations.ts).
+const isQueuedWrite = (m: Mutation<unknown, Error, unknown, unknown>) =>
+  ['expense', 'recurring'].includes(String(m.options.mutationKey?.[0]))
+
+// Queued writes run after their screen is gone, so a write the server
 // rejects (after retries) is reported here instead of vanishing silently.
 function SyncErrorBanner() {
   const queryClient = useQueryClient()
-  const failed = useMutationState({ filters: { mutationKey: ['expense'], status: 'error' } })
+  const failed = useMutationState({ filters: { status: 'error', predicate: isQueuedWrite } })
   if (failed.length === 0) return null
 
   function dismiss() {
     const cache = queryClient.getMutationCache()
-    cache.findAll({ mutationKey: ['expense'], status: 'error' }).forEach(m => cache.remove(m))
+    cache.findAll({ status: 'error', predicate: isQueuedWrite }).forEach(m => cache.remove(m))
   }
 
   return (

@@ -43,7 +43,7 @@ export default function DayTransactionsSection() {
                   <div className="flex items-center gap-1.5 mt-[3px] min-w-0">
                     <MemberAvatar name={payer} color={exp.profile?.avatar_color ?? '#3B6FF6'} size={16} fontSize={9} />
                     <span className="text-[12px] font-semibold truncate" style={{ color: '#9A9FA8' }}>
-                      {payer}{exp.category ? ` · ${exp.category.name}` : ''} · {timeLabel(exp.created_at)}
+                      {payer}{exp.category ? ` · ${exp.category.name}` : ''} · {exp.recurring ? 'Recurring' : timeLabel(exp.created_at)}
                     </span>
                     {exp.pending && <SyncingBadge />}
                   </div>

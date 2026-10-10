@@ -506,6 +506,387 @@ $$;
 grant execute on function public.save_budget(uuid, int, int, numeric, jsonb) to authenticated;
 
 -- ============================================================
+-- Recurring expenses
+-- A rule per recurring payment; each due date becomes a real expenses row
+-- (tagged with recurring_id), so budgets, history and totals need no changes.
+-- ============================================================
+
+create table if not exists public.recurring_expenses (
+  id uuid primary key default gen_random_uuid(),
+  group_id uuid references public.groups(id) on delete cascade not null,
+  category_id uuid references public.categories(id) not null,
+  paid_by uuid references public.profiles(id) not null,
+  amount numeric(12,2) not null check (amount > 0),
+  note text,
+  frequency text not null check (frequency in ('daily', 'weekly', 'monthly', 'yearly')),
+  -- Every due date is computed from start_date, so month-end dates don't drift
+  -- (31 Jan → 28 Feb → 31 Mar).
+  start_date date not null,
+  -- Position in the series of next_due_date. Stored with the date so the daily
+  -- job finds due rules by index instead of computing dates.
+  next_index integer not null default 0,
+  -- null once the series has ended.
+  next_due_date date,
+  end_type text not null default 'never' check (end_type in ('never', 'on_date', 'after_count')),
+  end_date date,
+  max_occurrences integer check (max_occurrences is null or max_occurrences > 0),
+  occurrences_created integer not null default 0,
+  -- false = paused
+  is_active boolean not null default true,
+  created_by uuid references public.profiles(id) on delete set null default auth.uid(),
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null,
+  check (end_type <> 'on_date' or end_date is not null),
+  check (end_type <> 'after_count' or max_occurrences is not null)
+);
+
+create index if not exists recurring_expenses_group_idx on public.recurring_expenses (group_id);
+-- The only rows the daily job ever reads.
+create index if not exists recurring_expenses_due_idx on public.recurring_expenses (next_due_date)
+  where is_active and next_due_date is not null;
+
+-- Past payments stay when their rule is deleted.
+alter table public.expenses add column if not exists recurring_id uuid references public.recurring_expenses(id) on delete set null;
+-- One payment per rule per date, however often (or from however many devices)
+-- the generation runs.
+create unique index if not exists expenses_recurring_date_key on public.expenses (recurring_id, expense_date)
+  where recurring_id is not null;
+
+alter table public.recurring_expenses enable row level security;
+
+drop policy if exists "recurring_expenses_select" on public.recurring_expenses;
+create policy "recurring_expenses_select" on public.recurring_expenses for select using (
+  group_id in (select public.user_group_ids())
+);
+drop policy if exists "recurring_expenses_insert" on public.recurring_expenses;
+create policy "recurring_expenses_insert" on public.recurring_expenses for insert with check (
+  group_id in (select public.user_group_ids())
+  and exists (
+    select 1 from public.group_members gm
+    where gm.group_id = recurring_expenses.group_id and gm.user_id = recurring_expenses.paid_by
+  )
+);
+drop policy if exists "recurring_expenses_update" on public.recurring_expenses;
+create policy "recurring_expenses_update" on public.recurring_expenses for update
+  using (group_id in (select public.user_group_ids()))
+  with check (
+    group_id in (select public.user_group_ids())
+    and exists (
+      select 1 from public.group_members gm
+      where gm.group_id = recurring_expenses.group_id and gm.user_id = recurring_expenses.paid_by
+    )
+  );
+drop policy if exists "recurring_expenses_delete" on public.recurring_expenses;
+create policy "recurring_expenses_delete" on public.recurring_expenses for delete using (
+  group_id in (select public.user_group_ids())
+);
+
+-- "Today" for recurring payments: the UTC date, the same basis the app uses for
+-- an expense's default date (todayDate() in src/features/dashboard/dates.ts).
+create or replace function public.recurring_today()
+returns date
+language sql
+stable
+as $$
+  select (now() at time zone 'utc')::date
+$$;
+
+-- The n-th date (0-based) of a series. Mirrored by occurrence() in src/lib/recurring.ts.
+create or replace function public.recurring_occurrence(p_start date, p_frequency text, p_n integer)
+returns date
+language sql
+immutable
+as $$
+  select case p_frequency
+    when 'daily' then p_start + p_n
+    when 'weekly' then p_start + 7 * p_n
+    when 'monthly' then (p_start + make_interval(months => p_n))::date
+    when 'yearly' then (p_start + make_interval(years => p_n))::date
+  end
+$$;
+
+-- The due date at p_index, or null when the series has ended by then.
+create or replace function public.recurring_next_due(
+  p_start date, p_frequency text, p_index integer,
+  p_end_type text, p_end_date date, p_max integer, p_created integer
+)
+returns date
+language sql
+immutable
+as $$
+  select case
+    when p_end_type = 'after_count' and p_created >= p_max then null
+    when p_end_type = 'on_date' and public.recurring_occurrence(p_start, p_frequency, p_index) > p_end_date then null
+    else public.recurring_occurrence(p_start, p_frequency, p_index)
+  end
+$$;
+
+-- Index of the first date in the series on or after p_from.
+create or replace function public.recurring_first_index_on_or_after(p_start date, p_frequency text, p_from date)
+returns integer
+language plpgsql
+immutable
+as $$
+declare
+  n integer;
+begin
+  if p_from <= p_start then
+    return 0;
+  end if;
+  -- Estimate, then step to the exact index (month-end clamping can be off by one).
+  n := case p_frequency
+    when 'daily' then p_from - p_start
+    when 'weekly' then (p_from - p_start) / 7
+    when 'monthly' then ((extract(year from p_from) - extract(year from p_start)) * 12
+                         + extract(month from p_from) - extract(month from p_start))::int
+    when 'yearly' then (extract(year from p_from) - extract(year from p_start))::int
+  end;
+  while n > 0 and public.recurring_occurrence(p_start, p_frequency, n - 1) >= p_from loop
+    n := n - 1;
+  end loop;
+  while public.recurring_occurrence(p_start, p_frequency, n) < p_from loop
+    n := n + 1;
+  end loop;
+  return n;
+end;
+$$;
+
+-- Creates the expenses for every due date up to p_today, for one group or (from
+-- the daily cron job) all groups. Returns how many expenses it inserted.
+-- security definer: the cron job has no auth.uid(), so RLS would hide every
+-- row. Not callable by app users directly; they go through catch_up_recurring().
+create or replace function public.process_recurring_expenses(p_group_id uuid default null, p_today date default null)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_today date := coalesce(p_today, public.recurring_today());
+  r public.recurring_expenses%rowtype;
+  v_inserted integer := 0;
+  v_rows integer;
+  v_steps integer;
+begin
+  -- skip locked: an overlapping run (cron + an app catch-up) leaves the rule to
+  -- whichever run locked it first instead of waiting on it.
+  for r in
+    select * from public.recurring_expenses
+     where is_active
+       and next_due_date is not null
+       and next_due_date <= v_today
+       and (p_group_id is null or group_id = p_group_id)
+     for update skip locked
+  loop
+    -- The payer left the group: pause instead of logging spend in their name.
+    if not exists (
+      select 1 from public.group_members gm where gm.group_id = r.group_id and gm.user_id = r.paid_by
+    ) then
+      update public.recurring_expenses set is_active = false, updated_at = now() where id = r.id;
+      continue;
+    end if;
+
+    v_steps := 0;
+    -- Capped so a long-missed daily rule can't run away in one call; the next
+    -- run carries on from where this one stopped.
+    while r.next_due_date is not null and r.next_due_date <= v_today and v_steps < 400 loop
+      insert into public.expenses (group_id, category_id, paid_by, amount, note, expense_date, recurring_id)
+      values (r.group_id, r.category_id, r.paid_by, r.amount, r.note, r.next_due_date, r.id)
+      on conflict (recurring_id, expense_date) where recurring_id is not null do nothing;
+      get diagnostics v_rows = row_count;
+      v_inserted := v_inserted + v_rows;
+
+      -- Counted even on a conflict: a payment for that date exists either way.
+      r.occurrences_created := r.occurrences_created + 1;
+      r.next_index := r.next_index + 1;
+      r.next_due_date := public.recurring_next_due(
+        r.start_date, r.frequency, r.next_index, r.end_type, r.end_date, r.max_occurrences, r.occurrences_created
+      );
+      v_steps := v_steps + 1;
+    end loop;
+
+    update public.recurring_expenses
+       set next_index = r.next_index,
+           next_due_date = r.next_due_date,
+           occurrences_created = r.occurrences_created,
+           updated_at = now()
+     where id = r.id;
+  end loop;
+
+  return v_inserted;
+end;
+$$;
+
+revoke execute on function public.process_recurring_expenses(uuid, date) from public, anon, authenticated;
+
+-- Run by the app when it opens: a safety net for missed cron runs. A no-op
+-- (one index lookup) when nothing is due.
+create or replace function public.catch_up_recurring(p_group_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not exists (
+    select 1 from public.group_members where group_id = p_group_id and user_id = auth.uid()
+  ) then
+    raise exception 'Not a member of that group';
+  end if;
+
+  return public.process_recurring_expenses(p_group_id);
+end;
+$$;
+
+grant execute on function public.catch_up_recurring(uuid) to authenticated;
+
+-- Creates a rule and, when it starts today or earlier, its first payment, in
+-- one transaction. Ids come from the device, so a retried call is a no-op.
+-- security invoker: RLS decides whether the caller may write.
+-- p_rule: { id, group_id, category_id, paid_by, amount, note, frequency,
+--           start_date, end_type, end_date, max_occurrences }
+create or replace function public.create_recurring_expense(
+  p_rule jsonb,
+  p_first_expense_id uuid default null,
+  p_first_created_at timestamptz default null
+)
+returns void
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  v_id uuid := (p_rule->>'id')::uuid;
+  v_start date := (p_rule->>'start_date')::date;
+  v_frequency text := p_rule->>'frequency';
+  v_end_type text := coalesce(p_rule->>'end_type', 'never');
+  v_end_date date := (p_rule->>'end_date')::date;
+  v_max integer := (p_rule->>'max_occurrences')::integer;
+  v_first boolean := p_first_expense_id is not null
+    and v_start <= public.recurring_today()
+    and (v_end_type <> 'on_date' or v_start <= v_end_date);
+  v_created integer := case when v_first then 1 else 0 end;
+begin
+  insert into public.recurring_expenses (
+    id, group_id, category_id, paid_by, amount, note, frequency, start_date,
+    end_type, end_date, max_occurrences, occurrences_created, next_index, next_due_date
+  ) values (
+    v_id, (p_rule->>'group_id')::uuid, (p_rule->>'category_id')::uuid, (p_rule->>'paid_by')::uuid,
+    (p_rule->>'amount')::numeric, nullif(p_rule->>'note', ''), v_frequency, v_start,
+    v_end_type, v_end_date, v_max, v_created, v_created,
+    public.recurring_next_due(v_start, v_frequency, v_created, v_end_type, v_end_date, v_max, v_created)
+  )
+  on conflict (id) do nothing;
+
+  -- An earlier attempt already got this far.
+  if not found then
+    return;
+  end if;
+
+  if v_first then
+    insert into public.expenses (id, group_id, category_id, paid_by, amount, note, expense_date, recurring_id, created_at)
+    values (
+      p_first_expense_id, (p_rule->>'group_id')::uuid, (p_rule->>'category_id')::uuid, (p_rule->>'paid_by')::uuid,
+      (p_rule->>'amount')::numeric, nullif(p_rule->>'note', ''), v_start, v_id, coalesce(p_first_created_at, now())
+    )
+    on conflict do nothing;
+  end if;
+end;
+$$;
+
+grant execute on function public.create_recurring_expense(jsonb, uuid, timestamptz) to authenticated;
+
+-- Saves an edited rule. Changes apply to future payments only. A new schedule
+-- (frequency or start date) restarts from its first date on or after today;
+-- an ended rule whose end was extended resumes from today, never backfilling.
+-- p_rule: same shape as create_recurring_expense.
+create or replace function public.update_recurring_expense(p_rule jsonb)
+returns void
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  v_id uuid := (p_rule->>'id')::uuid;
+  v_old public.recurring_expenses%rowtype;
+  v_start date := (p_rule->>'start_date')::date;
+  v_frequency text := p_rule->>'frequency';
+  v_end_type text := coalesce(p_rule->>'end_type', 'never');
+  v_end_date date := (p_rule->>'end_date')::date;
+  v_max integer := (p_rule->>'max_occurrences')::integer;
+  v_index integer;
+begin
+  select * into v_old from public.recurring_expenses where id = v_id for update;
+  if not found then
+    raise exception 'Recurring payment not found';
+  end if;
+
+  if v_old.frequency <> v_frequency or v_old.start_date <> v_start then
+    v_index := public.recurring_first_index_on_or_after(v_start, v_frequency, public.recurring_today());
+  elsif v_old.next_due_date is null then
+    v_index := greatest(v_old.next_index, public.recurring_first_index_on_or_after(v_start, v_frequency, public.recurring_today()));
+  else
+    v_index := v_old.next_index;
+  end if;
+
+  update public.recurring_expenses set
+    category_id = (p_rule->>'category_id')::uuid,
+    paid_by = (p_rule->>'paid_by')::uuid,
+    amount = (p_rule->>'amount')::numeric,
+    note = nullif(p_rule->>'note', ''),
+    frequency = v_frequency,
+    start_date = v_start,
+    end_type = v_end_type,
+    end_date = v_end_date,
+    max_occurrences = v_max,
+    next_index = v_index,
+    next_due_date = public.recurring_next_due(v_start, v_frequency, v_index, v_end_type, v_end_date, v_max, v_old.occurrences_created),
+    updated_at = now()
+  where id = v_id;
+end;
+$$;
+
+grant execute on function public.update_recurring_expense(jsonb) to authenticated;
+
+-- Pauses or resumes a rule. Resuming skips the dates missed while paused: the
+-- next payment is the first date on or after today.
+create or replace function public.set_recurring_active(p_id uuid, p_active boolean)
+returns void
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  r public.recurring_expenses%rowtype;
+  v_index integer;
+begin
+  select * into r from public.recurring_expenses where id = p_id for update;
+  if not found then
+    raise exception 'Recurring payment not found';
+  end if;
+
+  v_index := case
+    when p_active then greatest(r.next_index, public.recurring_first_index_on_or_after(r.start_date, r.frequency, public.recurring_today()))
+    else r.next_index
+  end;
+
+  update public.recurring_expenses set
+    is_active = p_active,
+    next_index = v_index,
+    next_due_date = public.recurring_next_due(r.start_date, r.frequency, v_index, r.end_type, r.end_date, r.max_occurrences, r.occurrences_created),
+    updated_at = now()
+  where id = p_id;
+end;
+$$;
+
+grant execute on function public.set_recurring_active(uuid, boolean) to authenticated;
+
+-- Daily at 00:05 UTC (the date basis above). pg_cron is available on every
+-- Supabase plan; scheduling a job under an existing name replaces it.
+create extension if not exists pg_cron;
+select cron.schedule('process-recurring-expenses', '5 0 * * *', $$select public.process_recurring_expenses()$$);
+
+-- ============================================================
 -- Seed: default categories
 -- ============================================================
 insert into public.categories (name, icon, color, bg_color, is_default) values

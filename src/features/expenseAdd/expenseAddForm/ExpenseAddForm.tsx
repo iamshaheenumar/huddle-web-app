@@ -2,34 +2,66 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Plus, PlusCircle, NotePencil, CalendarBlank, CaretDown } from '@phosphor-icons/react'
+import { X, Plus, PlusCircle, NotePencil, CalendarBlank, CaretDown, Trash, FloppyDisk } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import AddCategorySheet from '@/features/common/AddCategorySheet'
+import ConfirmSheet from '@/features/common/ConfirmSheet'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ADD_EXPENSE, type ExpenseDraft } from '@/lib/query/mutations'
+import {
+  ADD_EXPENSE, ADD_RECURRING, UPDATE_RECURRING, DELETE_RECURRING,
+  type ExpenseDraft, type RecurringDraft, type RecurringUpdate, type RecurringDelete, type RecurringRule,
+} from '@/lib/query/mutations'
 import { persistNow } from '@/lib/query/client'
 import { CURRENCY } from '@/lib/constants'
+import { createsFirstPayment, editedPosition, initialPosition } from '@/lib/recurring'
 import { todayDate } from '@/features/dashboard/dates'
+import type { RecurringRow } from '@/features/recurring/queries'
+import RecurringSection, { type RecurringSettings } from '../recurringSection/RecurringSection'
 import type { ExpenseAddData } from '../queries'
 import type { Category } from '@/types'
 
-export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
+type Props = {
+  data: ExpenseAddData
+  // Opens with the recurring toggle on (from the recurring screen's "+").
+  startRecurring?: boolean
+  // Edits this recurring payment instead of adding an expense.
+  editing?: RecurringRow
+}
+
+export default function ExpenseAddForm({ data, startRecurring, editing }: Props) {
   const router = useRouter()
   const { groupId, groupName, members } = data
   const [categories, setCategories] = useState<Category[]>(data.categories)
   const [addingCategory, setAddingCategory] = useState(false)
-  // Runs from the mutation defaults (src/lib/query/mutations.ts), so it is
-  // queued while offline and survives this screen closing.
+  // These run from the mutation defaults (src/lib/query/mutations.ts), so they
+  // are queued while offline and survive this screen closing.
   const addExpense = useMutation<void, Error, ExpenseDraft>({ mutationKey: ADD_EXPENSE })
+  const addRecurring = useMutation<void, Error, RecurringDraft>({ mutationKey: ADD_RECURRING })
+  const updateRecurring = useMutation<void, Error, RecurringUpdate>({ mutationKey: UPDATE_RECURRING })
+  const deleteRecurring = useMutation<void, Error, RecurringDelete>({ mutationKey: DELETE_RECURRING })
   const queryClient = useQueryClient()
 
-  const [amount, setAmount] = useState('')
-  const [paidBy, setPaidBy] = useState<string | null>(data.currentUserId)
-  const [categoryId, setCategoryId] = useState<string | null>(data.categories[0]?.id ?? null)
-  const [note, setNote] = useState('')
-  const [date, setDate] = useState(todayDate)
+  const [amount, setAmount] = useState(editing ? String(editing.amount) : '')
+  const [paidBy, setPaidBy] = useState<string | null>(editing?.paid_by ?? data.currentUserId)
+  const [categoryId, setCategoryId] = useState<string | null>(editing?.category_id ?? data.categories[0]?.id ?? null)
+  const [note, setNote] = useState(editing?.note ?? '')
+  const [date, setDate] = useState(editing?.start_date ?? todayDate())
+  const [recurring, setRecurring] = useState(!!editing || !!startRecurring)
+  const [settings, setSettings] = useState<RecurringSettings>({
+    frequency: editing?.frequency ?? 'monthly',
+    end_type: editing?.end_type ?? 'never',
+    end_date: editing?.end_date ?? null,
+    max_occurrences: editing?.max_occurrences ?? null,
+  })
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const today = todayDate()
+  const schedule = { ...settings, start_date: date }
+  const nextDue = editing
+    ? editedPosition(editing, schedule, today).next_due_date
+    : initialPosition(schedule, today).next_due_date
 
   async function handleAdd() {
     if (!groupId || !paidBy || !categoryId || !amount) {
@@ -41,41 +73,89 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
       setError('Enter a valid amount')
       return
     }
+    if (recurring && settings.end_type === 'on_date' && settings.end_date && settings.end_date < date) {
+      setError('The end date is before the start date')
+      return
+    }
     setLoading(true)
     setError('')
     const payer = members.find(m => m.id === paidBy)
     const category = categories.find(c => c.id === categoryId)
-    // Shows on the dashboard straight away; syncs now, or once back online.
-    addExpense.mutate({
-      id: crypto.randomUUID(),
+    const categoryDisplay = category ? { name: category.name, icon: category.icon, color: category.color, bg_color: category.bg_color } : null
+    const createdAt = new Date().toISOString()
+    const expense = (id: string, recurringId: string | null): ExpenseDraft => ({
+      id,
       group_id: groupId,
       category_id: categoryId,
       paid_by: paidBy,
       amount: parsedAmount,
       note: note || null,
       expense_date: date,
-      created_at: new Date().toISOString(),
+      created_at: createdAt,
+      recurring_id: recurringId,
       profiles: payer ? { display_name: payer.display_name, avatar_color: payer.avatar_color } : null,
-      categories: category ? { name: category.name, icon: category.icon, color: category.color, bg_color: category.bg_color } : null,
+      categories: categoryDisplay,
     })
+
+    // All of these show straight away and sync now, or once back online.
+    if (recurring) {
+      const rule: RecurringRule = {
+        id: editing?.id ?? crypto.randomUUID(),
+        group_id: groupId,
+        category_id: categoryId,
+        paid_by: paidBy,
+        amount: parsedAmount,
+        note: note || null,
+        frequency: settings.frequency,
+        start_date: date,
+        end_type: settings.end_type,
+        end_date: settings.end_date,
+        max_occurrences: settings.max_occurrences,
+      }
+      if (editing) {
+        updateRecurring.mutate({ rule, categories: categoryDisplay })
+      } else {
+        // Starting today or earlier logs the first payment now; later ones are
+        // added automatically on each due date.
+        const firstExpense = createsFirstPayment(rule, today) ? expense(crypto.randomUUID(), rule.id) : null
+        addRecurring.mutate({ rule, created_at: createdAt, categories: categoryDisplay, firstExpense })
+      }
+    } else {
+      addExpense.mutate(expense(crypto.randomUUID(), null))
+    }
     await persistNow(queryClient)
-    router.push('/dashboard')
+    router.push(editing || startRecurring ? '/recurring' : '/dashboard')
+  }
+
+  async function handleDelete() {
+    if (!editing) return
+    deleteRecurring.mutate({ id: editing.id })
+    setConfirmingDelete(false)
+    await persistNow(queryClient)
+    router.push('/recurring')
   }
 
   const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-AE', { day: 'numeric', month: 'long', year: 'numeric' })
+  const submitLabel = editing ? 'Save changes' : recurring ? 'Add recurring expense' : 'Add expense'
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: '#F6F3EE' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-0">
-        <button onClick={() => router.back()} className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
+        <button onClick={() => router.back()} aria-label="Close" className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
           <X size={16} weight="bold" />
         </button>
-        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>Add expense</span>
-        <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold text-white" style={{ background: '#20242E' }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          {groupName}
-        </div>
+        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>{editing ? 'Edit recurring' : 'Add expense'}</span>
+        {editing ? (
+          <button onClick={() => setConfirmingDelete(true)} aria-label="Delete recurring payment" className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#FDF0EB', color: '#E5683E' }}>
+            <Trash size={17} weight="bold" />
+          </button>
+        ) : (
+          <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold text-white" style={{ background: '#20242E' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            {groupName}
+          </div>
+        )}
       </div>
 
       {/* Amount */}
@@ -192,7 +272,29 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
         </div>
       </div>
 
-      {error && <p className="mx-5 mt-3 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
+      <RecurringSection
+        enabled={recurring}
+        onEnabledChange={editing ? undefined : setRecurring}
+        settings={settings}
+        onChange={setSettings}
+        startDate={date}
+        nextDue={nextDue}
+        showManageLink={!editing}
+      />
+
+      {editing && (
+        <ConfirmSheet
+          open={confirmingDelete}
+          onClose={() => setConfirmingDelete(false)}
+          onConfirm={handleDelete}
+          icon={<Trash size={24} weight="bold" />}
+          title="Delete recurring payment?"
+          description="No more payments will be added. Payments already logged stay in your history."
+          confirmLabel="Delete"
+        />
+      )}
+
+      {error &&<p className="mx-5 mt-3 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
 
       {/* Add button */}
       <div className="sticky bottom-0 px-5 mt-auto pt-6 pb-[calc(env(safe-area-inset-bottom)+16px)]" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>
@@ -202,8 +304,8 @@ export default function ExpenseAddForm({ data }: { data: ExpenseAddData }) {
           className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold text-white transition-opacity disabled:opacity-60"
           style={{ background: '#3B6FF6', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
         >
-          <PlusCircle size={18} weight="fill" />
-          {loading ? 'Adding…' : 'Add expense'}
+          {editing ? <FloppyDisk size={18} weight="fill" /> : <PlusCircle size={18} weight="fill" />}
+          {loading ? 'Saving…' : submitLabel}
         </button>
       </div>
     </div>

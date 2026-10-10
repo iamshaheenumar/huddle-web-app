@@ -4,7 +4,7 @@ const CACHE_NAME = 'huddle-v2'
 const NO_CACHE_PREFIXES = ['/login', '/signup', '/join', '/auth']
 
 // Static app shells that should open offline even before they're first visited.
-const SHELLS = ['/dashboard', '/expense/add']
+const SHELLS = ['/dashboard', '/expense/add', '/recurring']
 
 // Stores each shell only if it comes back as itself — signed out, the proxy
 // redirects to /login, which must not be stored.

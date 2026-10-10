@@ -4,6 +4,7 @@ import DayTransactionsSection from '@/features/dashboard/dayTransactionsSection/
 import CategoriesSection from '@/features/dashboard/categoriesSection/CategoriesSection'
 import MembersSection from '@/features/dashboard/membersSection/MembersSection'
 import EmptyBudget from '@/features/dashboard/emptyBudget/EmptyBudget'
+import RecurringCard from '@/features/dashboard/recurringCard/RecurringCard'
 
 // Static shell: each section reads the client query cache and shows its own
 // skeleton only until it has data.
@@ -13,6 +14,7 @@ export default function DashboardPage() {
       <DashboardHeader />
       <BudgetHeroCard />
       <DayTransactionsSection />
+      <RecurringCard />
       <CategoriesSection />
       <EmptyBudget />
       <MembersSection />

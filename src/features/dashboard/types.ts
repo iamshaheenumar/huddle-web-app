@@ -17,6 +17,8 @@ export type DayExpense = {
   created_at: string
   // Queued on this device, not yet synced
   pending?: boolean
+  // Added by a recurring payment
+  recurring?: boolean
   profile: { display_name: string; avatar_color: string } | null
   category: { name: string; icon: string; color: string; bg_color: string } | null
 }

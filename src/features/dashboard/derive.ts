@@ -2,7 +2,7 @@ import type { Member, BudgetCategory, SpendDay } from './types'
 import type { MemberRow } from '@/features/common/queries'
 
 export type BudgetRow = { id: string; total_amount: number }
-export type ExpRow = { id: string; pending?: boolean; amount: number; note: string | null; expense_date: string; created_at: string; category_id: string; paid_by: string; profiles: { display_name: string; avatar_color: string } | null; categories: { name: string; icon: string; color: string; bg_color: string } | null }
+export type ExpRow = { id: string; pending?: boolean; recurring_id?: string | null; amount: number; note: string | null; expense_date: string; created_at: string; category_id: string; paid_by: string; profiles: { display_name: string; avatar_color: string } | null; categories: { name: string; icon: string; color: string; bg_color: string } | null }
 export type BCRow = { allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 
 export function budgetSummary(budget: BudgetRow | null, expenses: ExpRow[]) {
@@ -52,6 +52,7 @@ export function spendDay(date: string | null, rows: ExpRow[], today: string): Sp
         note: e.note,
         created_at: e.created_at,
         pending: e.pending,
+        recurring: !!e.recurring_id,
         profile: e.profiles,
         category: e.categories,
       })),
