@@ -4,23 +4,26 @@ import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useAppContext, useGroupMembers } from '@/features/common/queries'
 import { applyPendingExpenses, usePendingExpenseWrites, type ExpenseDraft } from '@/lib/query/mutations'
-import { historyContext, periodSummary, periodCategories, earlierMonths, periodMembers, periodTransactions, type BudgetRow, type BCRow, type ExpRow } from './derive'
+import { isIncome } from '@/lib/transactions'
+import { historyContext, periodSummary, periodCategories, earlierMonths, periodMembers, periodTransactions, periodCashFlow, type BudgetRow, type BCRow, type ExpRow } from './derive'
 
 // A queued expense in the shape of a fetched history row.
 const draftToRow = (d: ExpenseDraft): ExpRow => ({
   id: d.id,
+  kind: d.kind ?? 'expense',
   note: d.note,
   amount: d.amount,
   expense_date: d.expense_date,
   created_at: d.created_at,
   category_id: d.category_id,
   paid_by: d.paid_by,
-  categories: d.categories ? { id: d.category_id, ...d.categories } : null,
+  categories: d.categories && d.category_id ? { id: d.category_id, ...d.categories } : null,
 })
 
-// The group's whole expense history — fetched once and aggregated per period on
-// the client so every section shares one query — plus writes queued on this device.
-export function useAllExpenses(): ExpRow[] | undefined {
+// The group's whole transaction history, income included — fetched once and
+// aggregated per period on the client so every section shares one query — plus
+// writes queued on this device.
+export function useAllTransactions(): ExpRow[] | undefined {
   const { group } = useAppContext()
   const { adds, deletedIds } = usePendingExpenseWrites()
   const { data } = useQuery({
@@ -34,7 +37,9 @@ export function useAllExpenses(): ExpRow[] | undefined {
       for (let from = 0; ; from += PAGE) {
         const { data, error } = await supabase
           .from('expenses')
-          .select('id, note, amount, expense_date, created_at, category_id, paid_by, categories(id, name, icon, color, bg_color)')
+          // * rather than naming kind, so this still works on a database the
+          // income migration hasn't reached (rows without kind are expenses).
+          .select('*, categories(id, name, icon, color, bg_color)')
           .eq('group_id', group!.id)
           .order('expense_date', { ascending: false })
           .order('id')
@@ -51,6 +56,11 @@ export function useAllExpenses(): ExpRow[] | undefined {
   if (data === undefined) return undefined
   const groupAdds = adds.filter(a => a.group_id === group?.id).map(draftToRow)
   return applyPendingExpenses(data, groupAdds, deletedIds)
+}
+
+// Spend only: what budget totals, categories and member spend count.
+export function useAllExpenses(): ExpRow[] | undefined {
+  return useAllTransactions()?.filter(e => !isIncome(e))
 }
 
 export function useAllBudgets() {
@@ -91,7 +101,7 @@ function useAllBudgetCategories() {
 
 export function useHistoryContext(periodParam?: string) {
   const { data: budgets } = useAllBudgets()
-  const expenses = useAllExpenses()
+  const expenses = useAllTransactions()
   if (!budgets || !expenses) return undefined
   return historyContext(budgets, expenses, periodParam)
 }
@@ -118,9 +128,16 @@ export function usePeriodCategories(periodParam?: string) {
 export function useEarlierMonths(periodParam?: string) {
   const ctx = useHistoryContext(periodParam)
   const { data: budgets } = useAllBudgets()
-  const expenses = useAllExpenses()
-  if (!ctx || !budgets || !expenses) return undefined
-  return earlierMonths(ctx, budgets, expenses)
+  const transactions = useAllTransactions()
+  if (!ctx || !budgets || !transactions) return undefined
+  return earlierMonths(ctx, budgets, transactions.filter(e => !isIncome(e)), transactions)
+}
+
+export function usePeriodCashFlow(periodParam?: string) {
+  const ctx = useHistoryContext(periodParam)
+  const transactions = useAllTransactions()
+  if (!ctx || !transactions) return undefined
+  return { period: ctx.selected, flow: periodCashFlow(ctx.selected, transactions) }
 }
 
 export function usePeriodMembers(periodParam?: string) {
@@ -133,7 +150,7 @@ export function usePeriodMembers(periodParam?: string) {
 
 export function usePeriodTransactions(periodParam?: string) {
   const ctx = useHistoryContext(periodParam)
-  const expenses = useAllExpenses()
+  const expenses = useAllTransactions()
   const { data: members } = useGroupMembers()
   if (!ctx || !expenses || !members) return undefined
   return periodTransactions(ctx.selected, members, expenses)

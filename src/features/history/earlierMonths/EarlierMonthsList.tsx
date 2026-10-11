@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { fmt } from '@/lib/format'
+import { signedNet } from '@/lib/transactions'
 import { historyHref } from '../links'
 import type { EarlierMonth, HistoryView } from '../types'
 
@@ -31,9 +32,12 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
           <div className="flex-1 min-w-0">
             <div className="text-[15px] font-bold" style={{ color: '#20242E' }}>{m.label}</div>
             <div className="text-[12px] font-medium mt-0.5 truncate" style={{ color: '#9A9FA8' }}>
-              {m.hasBudget
-                ? `Spent ${fmt(m.totalSpent)} of ${fmt(m.totalBudget)} · ${m.overspent ? 'over budget' : 'under budget'}`
-                : `Spent ${fmt(m.totalSpent)} · no budget`}
+              {[
+                m.hasBudget ? `Spent ${fmt(m.totalSpent)} of ${fmt(m.totalBudget)}` : `Spent ${fmt(m.totalSpent)}`,
+                // Only months with income show a net, so spend-only months read as before.
+                m.income > 0 && `Net ${signedNet(m.net)}`,
+                m.hasBudget ? (m.overspent ? 'over budget' : 'under budget') : 'no budget',
+              ].filter(Boolean).join(' · ')}
             </div>
           </div>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C6C2B9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>

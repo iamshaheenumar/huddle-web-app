@@ -3,7 +3,7 @@
 import { useMutationState, type QueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { revalidateAppData } from '@/lib/actions'
-import type { EndType, Frequency } from '@/types'
+import type { EndType, Frequency, TxnKind } from '@/types'
 
 export const ADD_EXPENSE = ['expense', 'add'] as const
 export const DELETE_EXPENSE = ['expense', 'delete'] as const
@@ -17,7 +17,10 @@ export const DELETE_RECURRING = ['recurring', 'delete'] as const
 export type ExpenseDraft = {
   id: string
   group_id: string
-  category_id: string
+  // Missing on drafts queued before income existed: those are expenses.
+  kind?: TxnKind
+  // null for income
+  category_id: string | null
   paid_by: string
   amount: number
   note: string | null
@@ -73,7 +76,8 @@ export function registerMutationDefaults(queryClient: QueryClient) {
 
   queryClient.setMutationDefaults(ADD_EXPENSE, {
     mutationFn: async (d: ExpenseDraft) => {
-      const row = { id: d.id, group_id: d.group_id, category_id: d.category_id, paid_by: d.paid_by, amount: d.amount, note: d.note, expense_date: d.expense_date, created_at: d.created_at }
+      // kind is only sent for income; expenses rely on the column default.
+      const row = { id: d.id, group_id: d.group_id, ...(d.kind === 'income' && { kind: d.kind }), category_id: d.category_id, paid_by: d.paid_by, amount: d.amount, note: d.note, expense_date: d.expense_date, created_at: d.created_at }
       const { error } = await createClient().from('expenses').insert(row as never)
       // 23505: an earlier attempt already inserted this id.
       if (error && error.code !== '23505') throw error

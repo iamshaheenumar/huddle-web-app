@@ -2,6 +2,7 @@
 
 import MemberAvatar from '@/features/common/MemberAvatar'
 import { fmt } from '@/lib/format'
+import { INCOME_COLOR } from '@/lib/transactions'
 import { useAppContext } from '@/features/common/queries'
 import { useMemberStats, useIsOwner } from '../queries'
 import RemoveMemberButton from '../removeMemberButton/RemoveMemberButton'
@@ -33,7 +34,9 @@ export default function MemberList() {
                       <span className="text-[10px] font-bold rounded-[5px] px-1.5 py-0.5" style={{ color: '#3B6FF6', background: '#E9F0FE' }}>Owner</span>
                     )}
                   </div>
-                  <div className="text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}</div>
+                  <div className="text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}
+                    {m.income > 0 && <> · <span style={{ color: INCOME_COLOR }}>+{fmt(m.income)} in</span></>}
+                  </div>
                 </div>
                 <span className="text-[16px] font-extrabold tabular-nums text-right" style={{ color: '#20242E' }}>{fmt(m.spent)}</span>
                 {isOwner && (

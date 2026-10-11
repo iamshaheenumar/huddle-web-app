@@ -60,10 +60,15 @@ export type BudgetCategory = {
   category?: Category
 }
 
+// 'income' rows are money in: no category, never recurring, never counted against a budget.
+export type TxnKind = 'expense' | 'income'
+
 export type Expense = {
   id: string
   group_id: string
-  category_id: string
+  kind: TxnKind
+  // null for income
+  category_id: string | null
   paid_by: string
   amount: number
   note: string | null

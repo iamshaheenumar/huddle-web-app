@@ -5,7 +5,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { persistNow } from '@/lib/query/client'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import ConfirmSheet from '@/features/common/ConfirmSheet'
-import { fmt } from '@/lib/format'
+import IncomeIcon from '@/features/common/IncomeIcon'
+import { INCOME_COLOR, isIncome, signedAmount } from '@/lib/transactions'
 import { DELETE_EXPENSE, type ExpenseDelete } from '@/lib/query/mutations'
 import type { HistoryTxn } from '../types'
 
@@ -20,6 +21,7 @@ export default function DeleteTxnButton({ txn }: { txn: HistoryTxn }) {
   const deleteExpense = useMutation<void, Error, ExpenseDelete>({ mutationKey: DELETE_EXPENSE })
   const queryClient = useQueryClient()
   const label = txn.note || txn.categoryName
+  const income = isIncome(txn)
 
   const close = useCallback(() => setOpen(false), [])
 
@@ -51,12 +53,14 @@ export default function DeleteTxnButton({ txn }: { txn: HistoryTxn }) {
         confirmLabel="Delete"
       >
         <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-          {txn.category && <CategoryIcon icon={txn.category.icon} color={txn.category.color} bg_color={txn.category.bg_color} size={40} iconSize={20} radius={12} />}
+          {income
+            ? <IncomeIcon size={40} iconSize={20} radius={12} />
+            : txn.category && <CategoryIcon icon={txn.category.icon} color={txn.category.color} bg_color={txn.category.bg_color} size={40} iconSize={20} radius={12} />}
           <div className="flex-1 min-w-0 text-left">
             <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{label}</div>
             <div className="text-[12px] font-semibold mt-0.5 truncate" style={{ color: '#9A9FA8' }}>{txn.categoryName} · {dateLabel(txn.date)}</div>
           </div>
-          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(txn.amount)}</span>
+          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : '#20242E' }}>{signedAmount(txn)}</span>
         </div>
       </ConfirmSheet>
     </>

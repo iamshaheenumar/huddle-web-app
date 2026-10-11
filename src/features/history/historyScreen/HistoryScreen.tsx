@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import HistoryHeader from '../historyHeader/HistoryHeader'
 import MonthTabs from '../monthTabs/MonthTabs'
 import PeriodHeroCard from '../periodHeroCard/PeriodHeroCard'
+import PeriodCashFlow from '../periodCashFlow/PeriodCashFlow'
 import ViewTabs from '../viewTabs/ViewTabs'
 import PeriodTransactions from '../periodTransactions/PeriodTransactions'
 import CategoryBreakdown from '../categoryBreakdown/CategoryBreakdown'
@@ -23,6 +24,7 @@ export default function HistoryScreen() {
       <HistoryHeader />
       <MonthTabs period={period} view={view} />
       <PeriodHeroCard period={period} />
+      <PeriodCashFlow period={period} />
       <ViewTabs period={period} view={view} />
       {view === 'transactions' && <PeriodTransactions period={period} />}
       {view === 'categories' && <CategoryBreakdown period={period} />}

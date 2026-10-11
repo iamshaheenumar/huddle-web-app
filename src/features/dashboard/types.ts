@@ -1,3 +1,5 @@
+import type { TxnKind } from '@/types'
+
 export type Member = {
   user_id: string
   profile: { display_name: string; avatar_color: string } | null
@@ -12,6 +14,7 @@ export type BudgetCategory = {
 
 export type DayExpense = {
   id: string
+  kind: TxnKind
   amount: number
   note: string | null
   created_at: string

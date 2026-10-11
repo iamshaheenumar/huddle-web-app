@@ -3,7 +3,8 @@
 import CategoryIcon from '@/features/common/CategoryIcon'
 import MemberAvatar from '@/features/common/MemberAvatar'
 import SyncingBadge from '@/features/common/SyncingBadge'
-import { fmt } from '@/lib/format'
+import IncomeIcon from '@/features/common/IncomeIcon'
+import { INCOME_COLOR, isIncome, signedAmount, signedNet } from '@/lib/transactions'
 import { usePeriodTransactions } from '../queries'
 import DeleteTxnButton from '../deleteTxnButton/DeleteTxnButton'
 import PeriodTransactionsSkeleton from './PeriodTransactionsSkeleton'
@@ -30,18 +31,21 @@ export default function PeriodTransactions({ period }: { period?: string }) {
         <div key={d.date}>
           <div className="flex items-center justify-between px-1">
             <span className="text-[13px] font-extrabold" style={{ color: '#20242E' }}>{dayLabel(d.date)}</span>
-            <span className="text-[12px] font-bold tabular-nums" style={{ color: '#9A9FA8' }}>−{fmt(d.total)}</span>
+            <span className="text-[12px] font-bold tabular-nums" style={{ color: '#9A9FA8' }}>{signedNet(d.total)}</span>
           </div>
           <div className="mt-2 rounded-[22px] px-4 overflow-hidden" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
             {d.transactions.map((t, i) => {
               const payer = t.payerName.split(' ')[0]
+              const income = isIncome(t)
               return (
                 <div
                   key={t.id}
                   className="flex items-center gap-3 py-[13px]"
                   style={{ borderBottom: i < d.transactions.length - 1 ? '1px solid #F4F0E9' : 'none' }}
                 >
-                  {t.category && <CategoryIcon icon={t.category.icon} color={t.category.color} bg_color={t.category.bg_color} size={40} iconSize={20} radius={12} />}
+                  {income
+                    ? <IncomeIcon size={40} iconSize={20} radius={12} />
+                    : t.category && <CategoryIcon icon={t.category.icon} color={t.category.color} bg_color={t.category.bg_color} size={40} iconSize={20} radius={12} />}
                   <div className="flex-1 min-w-0">
                     <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{t.note || t.categoryName}</div>
                     <div className="flex items-center gap-1.5 mt-[3px] min-w-0">
@@ -50,7 +54,7 @@ export default function PeriodTransactions({ period }: { period?: string }) {
                       {t.pending && <SyncingBadge />}
                     </div>
                   </div>
-                  <span className="text-[16px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(t.amount)}</span>
+                  <span className="text-[16px] font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : '#20242E' }}>{signedAmount(t)}</span>
                   <DeleteTxnButton txn={t} />
                 </div>
               )

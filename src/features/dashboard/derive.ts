@@ -1,8 +1,10 @@
 import type { Member, BudgetCategory, SpendDay } from './types'
 import type { MemberRow } from '@/features/common/queries'
+import type { TxnKind } from '@/types'
 
 export type BudgetRow = { id: string; total_amount: number }
-export type ExpRow = { id: string; pending?: boolean; recurring_id?: string | null; amount: number; note: string | null; expense_date: string; created_at: string; category_id: string; paid_by: string; profiles: { display_name: string; avatar_color: string } | null; categories: { name: string; icon: string; color: string; bg_color: string } | null }
+// kind is missing on rows cached before income existed; treat those as expenses.
+export type ExpRow = { id: string; kind?: TxnKind; pending?: boolean; recurring_id?: string | null; amount: number; note: string | null; expense_date: string; created_at: string; category_id: string | null; paid_by: string; profiles: { display_name: string; avatar_color: string } | null; categories: { name: string; icon: string; color: string; bg_color: string } | null }
 export type BCRow = { allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 
 export function budgetSummary(budget: BudgetRow | null, expenses: ExpRow[]) {
@@ -48,6 +50,7 @@ export function spendDay(date: string | null, rows: ExpRow[], today: string): Sp
       .filter(e => e.expense_date === date)
       .map(e => ({
         id: e.id,
+        kind: e.kind ?? 'expense',
         amount: e.amount,
         note: e.note,
         created_at: e.created_at,

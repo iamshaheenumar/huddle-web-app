@@ -1,7 +1,8 @@
 'use client'
 
 import { useAppContext, useGroupMembers } from '@/features/common/queries'
-import { useBudget, useMonthExpenses } from '@/features/dashboard/queries'
+import { useBudget, useMonthExpenses, useMonthTransactions } from '@/features/dashboard/queries'
+import { isIncome } from '@/lib/transactions'
 import type { MemberStat } from './types'
 
 // Fallback color sequence used when a member has no avatar_color (5 colors,
@@ -10,20 +11,23 @@ const MEMBER_COLORS_PALETTE = ['#3B6FF6', '#2E9E6B', '#E5683E', '#8A5CF0', '#1FA
 
 // Members sorted by this month's spend (desc) with a resolved display color, so
 // the total-card bar and the member list share an identical index→color mapping.
-// Shares the dashboard's month-expenses query, queued writes included.
+// Income is counted separately and never adds to spend.
+// Shares the dashboard's month-transactions query, queued writes included.
 export function useMemberStats(): MemberStat[] | undefined {
   const { data: members } = useGroupMembers()
-  const expenses = useMonthExpenses()
-  if (!members || !expenses) return undefined
+  const transactions = useMonthTransactions()
+  if (!members || !transactions) return undefined
   return members
     .map(m => {
-      const memberExpenses = expenses.filter(e => e.paid_by === m.user_id)
+      const own = transactions.filter(e => e.paid_by === m.user_id)
+      const sum = (rows: typeof own) => rows.reduce((s, e) => s + e.amount, 0)
       return {
         user_id: m.user_id,
         role: m.role,
         profile: m.profiles,
-        spent: memberExpenses.reduce((s, e) => s + e.amount, 0),
-        txCount: memberExpenses.length,
+        spent: sum(own.filter(e => !isIncome(e))),
+        income: sum(own.filter(isIncome)),
+        txCount: own.length,
       }
     })
     .sort((a, b) => b.spent - a.spent)

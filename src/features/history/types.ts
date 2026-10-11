@@ -1,3 +1,5 @@
+import type { TxnKind } from '@/types'
+
 export type Period = { year: number; month: number }
 
 export type PeriodSummary = {
@@ -30,6 +32,9 @@ export type EarlierMonth = {
   totalBudget: number
   overspent: boolean
   hasBudget: boolean
+  income: number
+  // income minus spend
+  net: number
   accent: { color: string; bg: string }
 }
 
@@ -45,6 +50,7 @@ export type HistoryTxn = {
   // Queued on this device, not yet synced
   pending?: boolean
   id: string
+  kind: TxnKind
   amount: number
   note: string | null
   date: string
@@ -58,6 +64,7 @@ export type HistoryTxn = {
 
 export type HistoryDay = {
   date: string
+  // net: income minus spend
   total: number
   transactions: HistoryTxn[]
 }

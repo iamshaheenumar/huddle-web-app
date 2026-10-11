@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Plus, PlusCircle, NotePencil, CalendarBlank, CaretDown, Trash, FloppyDisk } from '@phosphor-icons/react'
+import { X, Plus, PlusCircle, CheckCircle, NotePencil, CalendarBlank, CaretDown, Trash, FloppyDisk } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import AddCategorySheet from '@/features/common/AddCategorySheet'
 import ConfirmSheet from '@/features/common/ConfirmSheet'
@@ -13,22 +13,26 @@ import {
 } from '@/lib/query/mutations'
 import { persistNow } from '@/lib/query/client'
 import { CURRENCY } from '@/lib/constants'
+import { INCOME_COLOR } from '@/lib/transactions'
 import { createsFirstPayment, editedPosition, initialPosition } from '@/lib/recurring'
 import { todayDate } from '@/features/dashboard/dates'
 import type { RecurringRow } from '@/features/recurring/queries'
 import RecurringSection, { type RecurringSettings } from '../recurringSection/RecurringSection'
+import KindToggle from '../kindToggle/KindToggle'
 import type { ExpenseAddData } from '../queries'
-import type { Category } from '@/types'
+import type { Category, TxnKind } from '@/types'
 
 type Props = {
   data: ExpenseAddData
   // Opens with the recurring toggle on (from the recurring screen's "+").
   startRecurring?: boolean
+  // Opens on the Income tab.
+  startIncome?: boolean
   // Edits this recurring payment instead of adding an expense.
   editing?: RecurringRow
 }
 
-export default function ExpenseAddForm({ data, startRecurring, editing }: Props) {
+export default function ExpenseAddForm({ data, startRecurring, startIncome, editing }: Props) {
   const router = useRouter()
   const { groupId, groupName, members } = data
   const [categories, setCategories] = useState<Category[]>(data.categories)
@@ -41,6 +45,9 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
   const deleteRecurring = useMutation<void, Error, RecurringDelete>({ mutationKey: DELETE_RECURRING })
   const queryClient = useQueryClient()
 
+  // Recurring payments are always expenses.
+  const [kind, setKind] = useState<TxnKind>(startIncome && !editing && !startRecurring ? 'income' : 'expense')
+  const income = kind === 'income'
   const [amount, setAmount] = useState(editing ? String(editing.amount) : '')
   const [paidBy, setPaidBy] = useState<string | null>(editing?.paid_by ?? data.currentUserId)
   const [categoryId, setCategoryId] = useState<string | null>(editing?.category_id ?? data.categories[0]?.id ?? null)
@@ -64,7 +71,7 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
     : initialPosition(schedule, today).next_due_date
 
   async function handleAdd() {
-    if (!groupId || !paidBy || !categoryId || !amount) {
+    if (!groupId || !paidBy || (!income && !categoryId) || !amount) {
       setError('Please fill in all required fields')
       return
     }
@@ -73,20 +80,22 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
       setError('Enter a valid amount')
       return
     }
-    if (recurring && settings.end_type === 'on_date' && settings.end_date && settings.end_date < date) {
+    if (!income && recurring && settings.end_type === 'on_date' && settings.end_date && settings.end_date < date) {
       setError('The end date is before the start date')
       return
     }
     setLoading(true)
     setError('')
     const payer = members.find(m => m.id === paidBy)
-    const category = categories.find(c => c.id === categoryId)
+    const category = income ? undefined : categories.find(c => c.id === categoryId)
     const categoryDisplay = category ? { name: category.name, icon: category.icon, color: category.color, bg_color: category.bg_color } : null
     const createdAt = new Date().toISOString()
     const expense = (id: string, recurringId: string | null): ExpenseDraft => ({
       id,
       group_id: groupId,
-      category_id: categoryId,
+      kind,
+      // Income has no category.
+      category_id: income ? null : categoryId,
       paid_by: paidBy,
       amount: parsedAmount,
       note: note || null,
@@ -98,7 +107,7 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
     })
 
     // All of these show straight away and sync now, or once back online.
-    if (recurring) {
+    if (recurring && !income && categoryId) {
       const rule: RecurringRule = {
         id: editing?.id ?? crypto.randomUUID(),
         group_id: groupId,
@@ -124,7 +133,7 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
       addExpense.mutate(expense(crypto.randomUUID(), null))
     }
     await persistNow(queryClient)
-    router.push(editing || startRecurring ? '/recurring' : '/dashboard')
+    router.push(editing || (startRecurring && !income) ? '/recurring' : '/dashboard')
   }
 
   async function handleDelete() {
@@ -136,7 +145,8 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
   }
 
   const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-AE', { day: 'numeric', month: 'long', year: 'numeric' })
-  const submitLabel = editing ? 'Save changes' : recurring ? 'Add recurring expense' : 'Add expense'
+  const submitLabel = editing ? 'Save changes' : income ? 'Add income' : recurring ? 'Add recurring expense' : 'Add expense'
+  const SubmitIcon = editing ? FloppyDisk : income ? CheckCircle : PlusCircle
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: '#F6F3EE' }}>
@@ -145,7 +155,7 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
         <button onClick={() => router.back()} aria-label="Close" className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
           <X size={16} weight="bold" />
         </button>
-        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>{editing ? 'Edit recurring' : 'Add expense'}</span>
+        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>{editing ? 'Edit recurring' : income ? 'Add income' : 'Add expense'}</span>
         {editing ? (
           <button onClick={() => setConfirmingDelete(true)} aria-label="Delete recurring payment" className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#FDF0EB', color: '#E5683E' }}>
             <Trash size={17} weight="bold" />
@@ -158,11 +168,13 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
         )}
       </div>
 
+      {!editing && <KindToggle value={kind} onChange={setKind} />}
+
       {/* Amount */}
       <div className="text-center px-5 pt-7 pb-2">
         <div className="text-[13px] font-semibold" style={{ color: '#9A9FA8' }}>Amount</div>
         <div className="flex items-start justify-center gap-2 mt-2">
-          <span className="text-[20px] font-bold pt-2.5" style={{ color: '#9A9FA8' }}>{CURRENCY}</span>
+          <span className="text-[20px] font-bold pt-2.5" style={{ color: '#9A9FA8' }}>{income ? `+ ${CURRENCY}` : CURRENCY}</span>
           <input
             type="number"
             inputMode="decimal"
@@ -170,15 +182,15 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
             value={amount}
             onChange={e => setAmount(e.target.value)}
             className="text-[50px] font-extrabold tracking-tight leading-none text-center bg-transparent outline-none w-44"
-            style={{ color: '#20242E' }}
+            style={{ color: income ? INCOME_COLOR : '#20242E' }}
           />
           <span className="text-[28px] font-bold pt-1.5" style={{ color: '#B6BAC1' }}>.00</span>
         </div>
       </div>
 
-      {/* Paid by */}
+      {/* Paid by / Received by */}
       <div className="px-5 pt-5">
-        <div className="text-[13px] font-bold mb-2.5" style={{ color: '#6B707A' }}>Paid by</div>
+        <div className="text-[13px] font-bold mb-2.5" style={{ color: '#6B707A' }}>{income ? 'Received by' : 'Paid by'}</div>
         <div className="flex gap-2.5 flex-wrap">
           {members.map(m => {
             const selected = paidBy === m.id
@@ -203,8 +215,8 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
         </div>
       </div>
 
-      {/* Category */}
-      <div className="px-5 pt-5">
+      {/* Category (expenses only) */}
+      {!income && <div className="px-5 pt-5">
         <div className="text-[13px] font-bold mb-2.5" style={{ color: '#6B707A' }}>Category</div>
         <div className="flex flex-wrap gap-2.5">
           {categories.map(cat => {
@@ -233,7 +245,7 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
             New
           </button>
         </div>
-      </div>
+      </div>}
 
       <AddCategorySheet
         open={addingCategory}
@@ -272,15 +284,17 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
         </div>
       </div>
 
-      <RecurringSection
-        enabled={recurring}
-        onEnabledChange={editing ? undefined : setRecurring}
-        settings={settings}
-        onChange={setSettings}
-        startDate={date}
-        nextDue={nextDue}
-        showManageLink={!editing}
-      />
+      {!income && (
+        <RecurringSection
+          enabled={recurring}
+          onEnabledChange={editing ? undefined : setRecurring}
+          settings={settings}
+          onChange={setSettings}
+          startDate={date}
+          nextDue={nextDue}
+          showManageLink={!editing}
+        />
+      )}
 
       {editing && (
         <ConfirmSheet
@@ -304,7 +318,7 @@ export default function ExpenseAddForm({ data, startRecurring, editing }: Props)
           className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold text-white transition-opacity disabled:opacity-60"
           style={{ background: '#3B6FF6', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
         >
-          {editing ? <FloppyDisk size={18} weight="fill" /> : <PlusCircle size={18} weight="fill" />}
+          <SubmitIcon size={18} weight="fill" />
           {loading ? 'Saving…' : submitLabel}
         </button>
       </div>

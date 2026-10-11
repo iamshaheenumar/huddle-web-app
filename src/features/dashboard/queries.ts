@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useAppContext, useGroupMembers } from '@/features/common/queries'
 import { applyPendingExpenses, usePendingExpenseWrites } from '@/lib/query/mutations'
+import { cashFlow, isIncome } from '@/lib/transactions'
 import { todayDate } from './dates'
 import { budgetSummary, memberSpend, budgetCategoryUsage, latestSpendDate, spendDay, type BudgetRow, type ExpRow, type BCRow } from './derive'
 import type { SpendDay } from './types'
@@ -12,8 +13,8 @@ const EXPENSE_SELECT = '*, profiles(display_name, avatar_color), categories(name
 
 const monthStart = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}-01`
 
-// This month's expenses, including writes still queued on this device.
-export function useMonthExpenses(): ExpRow[] | undefined {
+// This month's transactions, income included, plus writes still queued on this device.
+export function useMonthTransactions(): ExpRow[] | undefined {
   const { group, month, year } = useAppContext()
   const { adds, deletedIds } = usePendingExpenseWrites()
   const { data } = useQuery({
@@ -34,6 +35,16 @@ export function useMonthExpenses(): ExpRow[] | undefined {
   const from = monthStart(year, month)
   const monthAdds = adds.filter(a => a.group_id === group?.id && a.expense_date >= from)
   return applyPendingExpenses<ExpRow>(data, monthAdds, deletedIds)
+}
+
+// This month's spend only: everything budgets, categories and member spend count.
+export function useMonthExpenses(): ExpRow[] | undefined {
+  return useMonthTransactions()?.filter(e => !isIncome(e))
+}
+
+export function useMonthCashFlow() {
+  const rows = useMonthTransactions()
+  return rows && cashFlow(rows)
 }
 
 export function useBudget() {
@@ -96,15 +107,15 @@ export function useBudgetCategories() {
   return budgetCategoryUsage(rows.data, expenses)
 }
 
-// Today's expenses or, when nothing was spent today, the most recent day that
-// had spend. Usually derived from this month's expenses; only queries further
-// back when the month has no spend up to today.
+// Today's transactions (income included) or, when there are none today, the most
+// recent day that had any. Usually derived from this month's transactions; only
+// queries further back when the month has none up to today.
 export function useSpendDay(): SpendDay | undefined {
   const { group } = useAppContext()
   const { deletedIds } = usePendingExpenseWrites()
   // Same UTC date basis the add-expense form uses for its default expense_date.
   const today = todayDate()
-  const month = useMonthExpenses()
+  const month = useMonthTransactions()
   const inMonth = month === undefined ? undefined : latestSpendDate(month, today)
 
   const earlier = useQuery({

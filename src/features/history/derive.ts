@@ -1,9 +1,12 @@
 import { MONTHS } from '@/lib/constants'
 import type { MemberRow } from '@/features/common/queries'
+import { cashFlow, isIncome, type CashFlow } from '@/lib/transactions'
+import type { TxnKind } from '@/types'
 import type { Period, PeriodSummary, HistoryCategory, EarlierMonth, HistoryMember, HistoryTxn, HistoryDay } from './types'
 
 export type BudgetRow = { id: string; month: number; year: number; total_amount: number }
-export type ExpRow = { id: string; pending?: boolean; note: string | null; amount: number; expense_date: string; created_at: string; category_id: string; paid_by: string; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
+// kind is missing on rows cached before income existed; treat those as expenses.
+export type ExpRow = { id: string; kind?: TxnKind; pending?: boolean; note: string | null; amount: number; expense_date: string; created_at: string; category_id: string | null; paid_by: string; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 export type BCRow = { budget_id: string; allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 export type HistoryContext = { periods: Period[]; selected: Period; currentPeriod: Period }
 
@@ -48,13 +51,14 @@ const sumSpent = (expenses: ExpRow[], p: Period) =>
 
 const toTxn = (e: ExpRow, payer: MemberRow | undefined): HistoryTxn => ({
   id: e.id,
+  kind: e.kind ?? 'expense',
   pending: e.pending,
   amount: Number(e.amount),
   note: e.note,
   date: e.expense_date,
   createdAt: e.created_at,
   payerId: e.paid_by,
-  categoryName: e.categories?.name ?? 'Expense',
+  categoryName: isIncome(e) ? 'Income' : e.categories?.name ?? 'Expense',
   category: e.categories,
   payerName: payer?.profiles?.display_name ?? 'Unknown',
   payerColor: payer?.profiles?.avatar_color ?? '#3B6FF6',
@@ -125,7 +129,8 @@ export function periodCategories(selected: Period, budgets: BudgetRow[], allBc: 
   return [...byId.values()].sort((a, b) => b.allocated - a.allocated || b.consumed - a.consumed)
 }
 
-export function earlierMonths(ctx: HistoryContext, budgets: BudgetRow[], expenses: ExpRow[]): EarlierMonth[] {
+// `expenses` is spend only; `transactions` also has income, for each month's net.
+export function earlierMonths(ctx: HistoryContext, budgets: BudgetRow[], expenses: ExpRow[], transactions: ExpRow[]): EarlierMonth[] {
   return ctx.periods
     .filter(p => isBefore(p, ctx.selected))
     .map((p, i) => {
@@ -133,6 +138,7 @@ export function earlierMonths(ctx: HistoryContext, budgets: BudgetRow[], expense
       const totalBudget = Number(budget?.total_amount ?? 0)
       const totalSpent = sumSpent(expenses, p)
       const hasBudget = totalBudget > 0
+      const flow = periodCashFlow(p, transactions)
       return {
         period: p,
         label: periodLabel(p),
@@ -142,6 +148,8 @@ export function earlierMonths(ctx: HistoryContext, budgets: BudgetRow[], expense
         totalBudget,
         overspent: hasBudget && totalSpent > totalBudget,
         hasBudget,
+        income: flow.income,
+        net: flow.net,
         accent: ACCENTS[i % ACCENTS.length],
       }
     })
@@ -169,7 +177,12 @@ export function periodMembers(selected: Period, members: MemberRow[], expenses: 
     .sort((a, b) => b.spent - a.spent)
 }
 
-// The selected month's expenses grouped by day — newest day first, newest entry first within a day.
+export function periodCashFlow(p: Period, transactions: ExpRow[]): CashFlow {
+  return cashFlow(transactions.filter(e => inPeriod(e, p)))
+}
+
+// The selected month's transactions grouped by day — newest day first, newest entry
+// first within a day. A day's total is its net: income minus spend.
 export function periodTransactions(selected: Period, members: MemberRow[], expenses: ExpRow[]): HistoryDay[] {
   const memberById = new Map(members.map(m => [m.user_id, m]))
 
@@ -178,7 +191,7 @@ export function periodTransactions(selected: Period, members: MemberRow[], expen
     if (!inPeriod(e, selected)) continue
     const txn = toTxn(e, memberById.get(e.paid_by))
     const day = byDate.get(e.expense_date) ?? { date: e.expense_date, total: 0, transactions: [] }
-    day.total += txn.amount
+    day.total += isIncome(txn) ? txn.amount : -txn.amount
     day.transactions.push(txn)
     byDate.set(e.expense_date, day)
   }

@@ -8,8 +8,11 @@ import ExpenseAddSkeleton from '../expenseAddSkeleton/ExpenseAddSkeleton'
 export default function ExpenseAddSection() {
   const data = useExpenseAddData()
   // ?recurring=1 opens the form with the recurring toggle on.
-  const startRecurring = useSearchParams().get('recurring') === '1'
+  const params = useSearchParams()
+  const startRecurring = params.get('recurring') === '1'
+  // ?kind=income opens the form on the Income tab.
+  const startIncome = params.get('kind') === 'income'
   if (!data) return <ExpenseAddSkeleton />
   // Keyed so switching groups resets the form's selections.
-  return <ExpenseAddForm key={data.groupId} data={data} startRecurring={startRecurring} />
+  return <ExpenseAddForm key={data.groupId} data={data} startRecurring={startRecurring} startIncome={startIncome} />
 }

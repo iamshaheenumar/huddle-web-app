@@ -887,6 +887,22 @@ create extension if not exists pg_cron;
 select cron.schedule('process-recurring-expenses', '5 0 * * *', $$select public.process_recurring_expenses()$$);
 
 -- ============================================================
+-- Income
+-- Income shares the ledger: kind = 'income' rows are money in, have no
+-- category and are never recurring. Budgets and categories only count
+-- kind = 'expense', so existing rows (and the recurring job, which inserts
+-- with the default) stay expenses.
+-- ============================================================
+
+alter table public.expenses add column if not exists kind text not null default 'expense' check (kind in ('expense', 'income'));
+alter table public.expenses alter column category_id drop not null;
+alter table public.expenses drop constraint if exists expenses_kind_shape;
+alter table public.expenses add constraint expenses_kind_shape check (
+  (kind = 'expense' and category_id is not null)
+  or (kind = 'income' and category_id is null and recurring_id is null)
+);
+
+-- ============================================================
 -- Seed: default categories
 -- ============================================================
 insert into public.categories (name, icon, color, bg_color, is_default) values

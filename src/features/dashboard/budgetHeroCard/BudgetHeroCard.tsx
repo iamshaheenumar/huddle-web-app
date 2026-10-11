@@ -2,6 +2,7 @@
 
 import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
+import { isIncome } from '@/lib/transactions'
 import { useAppContext } from '@/features/common/queries'
 import { useBudgetSummary, useSpendDay } from '../queries'
 import { dayLabel, todayDate } from '../dates'
@@ -35,7 +36,8 @@ export default function BudgetHeroCard() {
       ? `over budget of ${CURRENCY} ${fmt(totalBudget)}`
       : `remaining of ${CURRENCY} ${fmt(totalBudget)}`
 
-  const todayExpenses = spendDay.isToday ? spendDay.expenses : []
+  // Spend only: income shows in the list below but never counts as spent.
+  const todayExpenses = spendDay.isToday ? spendDay.expenses.filter(e => !isIncome(e)) : []
   const todayTotal = todayExpenses.reduce((s, e) => s + e.amount, 0)
   const payers = new Set(todayExpenses.map(e => e.profile?.display_name)).size
   const countLabel = todayExpenses.length
