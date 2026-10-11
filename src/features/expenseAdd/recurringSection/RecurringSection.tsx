@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ArrowsClockwise, CalendarCheck, CaretDown } from '@phosphor-icons/react'
 import Toggle from '@/features/common/Toggle'
 import Segmented from '@/features/common/Segmented'
-import { FREQUENCIES, FREQUENCY_LABEL, endsLabel, scheduleLabel, shortDate } from '@/lib/recurring'
+import { FREQUENCIES, FREQUENCY_LABEL, endsLabel, occurrenceNoun, scheduleLabel, shortDate } from '@/lib/recurring'
 import type { EndType, Frequency } from '@/types'
 import EndsSheet from './EndsSheet'
 
@@ -17,23 +17,27 @@ export type RecurringSettings = {
 }
 
 type Props = {
+  // Recurring income (e.g. a salary) rather than a payment.
+  income?: boolean
   enabled: boolean
   // Omitted when editing an existing recurring payment: it can't be turned off there.
   onEnabledChange?: (enabled: boolean) => void
   settings: RecurringSettings
   onChange: (settings: RecurringSettings) => void
   startDate: string
-  // The payment after the one being saved now; null when there won't be one.
+  // The occurrence after the one being saved now; null when there won't be one.
   nextDue: string | null
   showManageLink?: boolean
 }
 
 const FREQUENCY_OPTIONS = FREQUENCIES.map(f => ({ value: f, label: FREQUENCY_LABEL[f] }))
 
-// The "Recurring payment" card on the add-expense form: frequency, when it
-// ends, and a preview of the next due date.
-export default function RecurringSection({ enabled, onEnabledChange, settings, onChange, startDate, nextDue, showManageLink }: Props) {
+// The "Recurring payment" / "Recurring income" card on the add form: frequency,
+// when it ends, and a preview of the next due date.
+export default function RecurringSection({ income, enabled, onEnabledChange, settings, onChange, startDate, nextDue, showManageLink }: Props) {
   const [endsOpen, setEndsOpen] = useState(false)
+  const title = income ? 'Recurring income' : 'Recurring payment'
+  const noun = occurrenceNoun(income)
 
   return (
     <div className="px-5 pt-2.5">
@@ -43,10 +47,10 @@ export default function RecurringSection({ enabled, onEnabledChange, settings, o
             <ArrowsClockwise size={17} weight="bold" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[14px] font-extrabold" style={{ color: '#20242E' }}>Recurring payment</div>
+            <div className="text-[14px] font-extrabold" style={{ color: '#20242E' }}>{title}</div>
             <div className="text-[11px] font-semibold" style={{ color: '#9A9FA8' }}>Added automatically on each due date</div>
           </div>
-          {onEnabledChange && <Toggle checked={enabled} onChange={onEnabledChange} label="Recurring payment" />}
+          {onEnabledChange && <Toggle checked={enabled} onChange={onEnabledChange} label={title} />}
         </div>
 
         {enabled && (
@@ -66,7 +70,7 @@ export default function RecurringSection({ enabled, onEnabledChange, settings, o
             >
               <div className="text-[10px] font-bold uppercase tracking-[.4px]" style={{ color: '#9A9FA8' }}>Ends</div>
               <div className="flex items-center justify-between mt-0.5">
-                <span className="text-[13px] font-bold" style={{ color: '#2A2E37' }}>{endsLabel(settings)}</span>
+                <span className="text-[13px] font-bold" style={{ color: '#2A2E37' }}>{endsLabel(settings, noun)}</span>
                 <CaretDown size={11} weight="bold" color="#B6BAC1" />
               </div>
             </button>
@@ -77,7 +81,7 @@ export default function RecurringSection({ enabled, onEnabledChange, settings, o
                 {scheduleLabel(settings.frequency, startDate)}
                 {nextDue
                   ? <> · next on <b className="font-extrabold" style={{ color: '#20242E' }}>{shortDate(nextDue)}</b></>
-                  : ' · no further payments'}
+                  : ` · no further ${noun}s`}
               </span>
               {showManageLink && (
                 <Link href="/recurring" className="text-[12px] font-bold whitespace-nowrap" style={{ color: '#3B6FF6' }}>
@@ -94,6 +98,7 @@ export default function RecurringSection({ enabled, onEnabledChange, settings, o
         onClose={() => setEndsOpen(false)}
         settings={settings}
         startDate={startDate}
+        income={income}
         onSave={ends => {
           onChange({ ...settings, ...ends })
           setEndsOpen(false)

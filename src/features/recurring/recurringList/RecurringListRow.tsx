@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import { Trash } from '@phosphor-icons/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import CategoryIcon from '@/features/common/CategoryIcon'
+import IncomeIcon from '@/features/common/IncomeIcon'
 import SyncingBadge from '@/features/common/SyncingBadge'
 import Toggle from '@/features/common/Toggle'
-import { fmt } from '@/lib/format'
+import { INCOME_COLOR, isIncome, signedAmount } from '@/lib/transactions'
 import { persistNow } from '@/lib/query/client'
 import { TOGGLE_RECURRING, type RecurringToggle } from '@/lib/query/mutations'
 import { FREQUENCY_LABEL, shortDate } from '@/lib/recurring'
@@ -41,7 +42,8 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
 
   const running = isRunning(row)
   const ended = row.is_active && !row.next_due_date
-  const title = row.note || row.categories?.name || 'Payment'
+  const income = isIncome(row)
+  const title = row.note || row.categories?.name || (income ? 'Income' : 'Payment')
   const status = running ? `due ${shortDate(row.next_due_date!)}` : ended ? 'ended' : 'paused'
 
   function onPointerDown(e: React.PointerEvent) {
@@ -116,7 +118,9 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
         }}
       >
         <div className="flex items-center gap-3 py-[13px]" style={{ borderBottom: isLast ? 'none' : '1px solid #F4F0E9' }}>
-          {running && row.categories
+          {income
+            ? <IncomeIcon size={36} iconSize={18} radius={11} muted={!running} />
+            : running && row.categories
             ? <CategoryIcon icon={row.categories.icon} color={row.categories.color} bg_color={row.categories.bg_color} size={36} iconSize={18} radius={11} />
             : <CategoryIcon icon={row.categories?.icon ?? ''} color="#9A9FA8" bg_color="#F2EFEA" size={36} iconSize={18} radius={11} />}
           <div className="flex-1 min-w-0">
@@ -129,7 +133,7 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
             </div>
           </div>
           <div className="flex flex-col items-end gap-[5px]">
-            <span className="text-[14px] font-extrabold tabular-nums" style={{ color: running ? '#20242E' : '#B4B8C0' }}>−{fmt(Number(row.amount))}</span>
+            <span className="text-[14px] font-extrabold tabular-nums" style={{ color: !running ? '#B4B8C0' : income ? INCOME_COLOR : '#20242E' }}>{signedAmount({ kind: row.kind, amount: Number(row.amount) })}</span>
             <Toggle
               size="sm"
               checked={running}

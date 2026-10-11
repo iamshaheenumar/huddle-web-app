@@ -8,6 +8,7 @@ import { useOnline } from '@/lib/query/online'
 import { useAppContext } from '@/features/common/queries'
 import { todayDate } from '@/features/dashboard/dates'
 import { editedPosition, initialPosition, monthlyEquivalent, resumedPosition } from '@/lib/recurring'
+import { isIncome } from '@/lib/transactions'
 import type { RecurringDelete, RecurringDraft, RecurringToggle, RecurringUpdate } from '@/lib/query/mutations'
 import type { RecurringExpense } from '@/types'
 
@@ -35,6 +36,7 @@ function applyPendingRecurring(rows: RecurringRow[], writes: PendingWrite[], gro
       if (d.rule.group_id !== groupId || out.some(r => r.id === d.rule.id)) continue
       out = [...out, {
         ...d.rule,
+        kind: d.rule.kind ?? 'expense',
         ...initialPosition(d.rule, today),
         is_active: true,
         created_by: null,
@@ -97,16 +99,20 @@ export function useRecurring(): RecurringRow[] | undefined {
 export type RecurringSummary = {
   activeCount: number
   pausedCount: number
+  // Spend committed each month; income is counted separately.
   monthlyTotal: number
+  monthlyIncome: number
   next: RecurringRow | null
 }
 
 export function recurringSummary(rows: RecurringRow[]): RecurringSummary {
   const running = rows.filter(isRunning)
+  const monthly = (list: RecurringRow[]) => list.reduce((sum, r) => sum + monthlyEquivalent(Number(r.amount), r.frequency), 0)
   return {
     activeCount: running.length,
     pausedCount: rows.filter(r => !r.is_active).length,
-    monthlyTotal: running.reduce((sum, r) => sum + monthlyEquivalent(Number(r.amount), r.frequency), 0),
+    monthlyTotal: monthly(running.filter(r => !isIncome(r))),
+    monthlyIncome: monthly(running.filter(isIncome)),
     // rows are sorted, so the first running one is due soonest
     next: running[0] ?? null,
   }

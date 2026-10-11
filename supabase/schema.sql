@@ -690,8 +690,8 @@ begin
     -- Capped so a long-missed daily rule can't run away in one call; the next
     -- run carries on from where this one stopped.
     while r.next_due_date is not null and r.next_due_date <= v_today and v_steps < 400 loop
-      insert into public.expenses (group_id, category_id, paid_by, amount, note, expense_date, recurring_id)
-      values (r.group_id, r.category_id, r.paid_by, r.amount, r.note, r.next_due_date, r.id)
+      insert into public.expenses (group_id, kind, category_id, paid_by, amount, note, expense_date, recurring_id)
+      values (r.group_id, r.kind, r.category_id, r.paid_by, r.amount, r.note, r.next_due_date, r.id)
       on conflict (recurring_id, expense_date) where recurring_id is not null do nothing;
       get diagnostics v_rows = row_count;
       v_inserted := v_inserted + v_rows;
@@ -743,8 +743,9 @@ grant execute on function public.catch_up_recurring(uuid) to authenticated;
 -- Creates a rule and, when it starts today or earlier, its first payment, in
 -- one transaction. Ids come from the device, so a retried call is a no-op.
 -- security invoker: RLS decides whether the caller may write.
--- p_rule: { id, group_id, category_id, paid_by, amount, note, frequency,
+-- p_rule: { id, group_id, kind, category_id, paid_by, amount, note, frequency,
 --           start_date, end_type, end_date, max_occurrences }
+-- kind is optional ('expense' when missing); income rules have no category_id.
 create or replace function public.create_recurring_expense(
   p_rule jsonb,
   p_first_expense_id uuid default null,
@@ -757,6 +758,7 @@ set search_path = public
 as $$
 declare
   v_id uuid := (p_rule->>'id')::uuid;
+  v_kind text := coalesce(p_rule->>'kind', 'expense');
   v_start date := (p_rule->>'start_date')::date;
   v_frequency text := p_rule->>'frequency';
   v_end_type text := coalesce(p_rule->>'end_type', 'never');
@@ -768,10 +770,10 @@ declare
   v_created integer := case when v_first then 1 else 0 end;
 begin
   insert into public.recurring_expenses (
-    id, group_id, category_id, paid_by, amount, note, frequency, start_date,
+    id, group_id, kind, category_id, paid_by, amount, note, frequency, start_date,
     end_type, end_date, max_occurrences, occurrences_created, next_index, next_due_date
   ) values (
-    v_id, (p_rule->>'group_id')::uuid, (p_rule->>'category_id')::uuid, (p_rule->>'paid_by')::uuid,
+    v_id, (p_rule->>'group_id')::uuid, v_kind, (p_rule->>'category_id')::uuid, (p_rule->>'paid_by')::uuid,
     (p_rule->>'amount')::numeric, nullif(p_rule->>'note', ''), v_frequency, v_start,
     v_end_type, v_end_date, v_max, v_created, v_created,
     public.recurring_next_due(v_start, v_frequency, v_created, v_end_type, v_end_date, v_max, v_created)
@@ -784,9 +786,9 @@ begin
   end if;
 
   if v_first then
-    insert into public.expenses (id, group_id, category_id, paid_by, amount, note, expense_date, recurring_id, created_at)
+    insert into public.expenses (id, group_id, kind, category_id, paid_by, amount, note, expense_date, recurring_id, created_at)
     values (
-      p_first_expense_id, (p_rule->>'group_id')::uuid, (p_rule->>'category_id')::uuid, (p_rule->>'paid_by')::uuid,
+      p_first_expense_id, (p_rule->>'group_id')::uuid, v_kind, (p_rule->>'category_id')::uuid, (p_rule->>'paid_by')::uuid,
       (p_rule->>'amount')::numeric, nullif(p_rule->>'note', ''), v_start, v_id, coalesce(p_first_created_at, now())
     )
     on conflict do nothing;
@@ -799,7 +801,7 @@ grant execute on function public.create_recurring_expense(jsonb, uuid, timestamp
 -- Saves an edited rule. Changes apply to future payments only. A new schedule
 -- (frequency or start date) restarts from its first date on or after today;
 -- an ended rule whose end was extended resumes from today, never backfilling.
--- p_rule: same shape as create_recurring_expense.
+-- p_rule: same shape as create_recurring_expense. kind can't change.
 create or replace function public.update_recurring_expense(p_rule jsonb)
 returns void
 language plpgsql
@@ -888,18 +890,24 @@ select cron.schedule('process-recurring-expenses', '5 0 * * *', $$select public.
 
 -- ============================================================
 -- Income
--- Income shares the ledger: kind = 'income' rows are money in, have no
--- category and are never recurring. Budgets and categories only count
--- kind = 'expense', so existing rows (and the recurring job, which inserts
--- with the default) stay expenses.
+-- Income shares the ledger: kind = 'income' rows are money in and have no
+-- category. Budgets and categories only count kind = 'expense', so existing
+-- rows stay expenses. Recurring rules carry the same kind (a salary is a
+-- recurring income) and copy it onto every row they create.
 -- ============================================================
 
 alter table public.expenses add column if not exists kind text not null default 'expense' check (kind in ('expense', 'income'));
 alter table public.expenses alter column category_id drop not null;
 alter table public.expenses drop constraint if exists expenses_kind_shape;
 alter table public.expenses add constraint expenses_kind_shape check (
-  (kind = 'expense' and category_id is not null)
-  or (kind = 'income' and category_id is null and recurring_id is null)
+  (kind = 'expense' and category_id is not null) or (kind = 'income' and category_id is null)
+);
+
+alter table public.recurring_expenses add column if not exists kind text not null default 'expense' check (kind in ('expense', 'income'));
+alter table public.recurring_expenses alter column category_id drop not null;
+alter table public.recurring_expenses drop constraint if exists recurring_expenses_kind_shape;
+alter table public.recurring_expenses add constraint recurring_expenses_kind_shape check (
+  (kind = 'expense' and category_id is not null) or (kind = 'income' and category_id is null)
 );
 
 -- ============================================================

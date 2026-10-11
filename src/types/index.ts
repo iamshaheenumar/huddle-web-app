@@ -86,7 +86,10 @@ export type EndType = 'never' | 'on_date' | 'after_count'
 export type RecurringExpense = {
   id: string
   group_id: string
-  category_id: string
+  // A salary is a recurring 'income'.
+  kind: TxnKind
+  // null for income
+  category_id: string | null
   paid_by: string
   amount: number
   note: string | null

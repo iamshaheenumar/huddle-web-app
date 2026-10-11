@@ -5,8 +5,9 @@ import Link from 'next/link'
 import { Trash } from '@phosphor-icons/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import CategoryIcon from '@/features/common/CategoryIcon'
+import IncomeIcon from '@/features/common/IncomeIcon'
 import ConfirmSheet from '@/features/common/ConfirmSheet'
-import { fmt } from '@/lib/format'
+import { INCOME_COLOR, isIncome, signedAmount } from '@/lib/transactions'
 import { persistNow } from '@/lib/query/client'
 import { DELETE_RECURRING, type RecurringDelete } from '@/lib/query/mutations'
 import { FREQUENCY_LABEL } from '@/lib/recurring'
@@ -16,9 +17,9 @@ import RecurringListRow from './RecurringListRow'
 export type RecurringFilter = 'all' | 'active' | 'paused'
 
 const EMPTY_TEXT: Record<RecurringFilter, string> = {
-  all: 'No recurring payments yet.',
-  active: 'No recurring payments are running.',
-  paused: 'No paused payments.',
+  all: 'Nothing recurring yet.',
+  active: 'Nothing recurring is running.',
+  paused: 'Nothing is paused.',
 }
 
 export default function RecurringList({ rows, filter }: { rows: RecurringRow[]; filter: RecurringFilter }) {
@@ -73,18 +74,22 @@ export default function RecurringList({ rows, filter }: { rows: RecurringRow[]; 
         onClose={closeConfirm}
         onConfirm={handleDelete}
         icon={<Trash size={24} weight="bold" />}
-        title="Delete recurring payment?"
-        description="No more payments will be added. Payments already logged stay in your history."
+        title={deleting && isIncome(deleting) ? 'Delete recurring income?' : 'Delete recurring payment?'}
+        description={deleting && isIncome(deleting)
+          ? 'No more deposits will be added. Income already logged stays in your history.'
+          : 'No more payments will be added. Payments already logged stay in your history.'}
         confirmLabel="Delete"
       >
         {deleting && (
           <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-            {deleting.categories && <CategoryIcon icon={deleting.categories.icon} color={deleting.categories.color} bg_color={deleting.categories.bg_color} size={40} iconSize={20} radius={12} />}
+            {isIncome(deleting)
+              ? <IncomeIcon size={40} iconSize={20} radius={12} />
+              : deleting.categories && <CategoryIcon icon={deleting.categories.icon} color={deleting.categories.color} bg_color={deleting.categories.bg_color} size={40} iconSize={20} radius={12} />}
             <div className="flex-1 min-w-0 text-left">
-              <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{deleting.note || deleting.categories?.name || 'Payment'}</div>
+              <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{deleting.note || deleting.categories?.name || (isIncome(deleting) ? 'Income' : 'Payment')}</div>
               <div className="text-[12px] font-semibold mt-0.5 truncate" style={{ color: '#9A9FA8' }}>{FREQUENCY_LABEL[deleting.frequency]}</div>
             </div>
-            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(Number(deleting.amount))}</span>
+            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: isIncome(deleting) ? INCOME_COLOR : '#20242E' }}>{signedAmount({ kind: deleting.kind, amount: Number(deleting.amount) })}</span>
           </div>
         )}
       </ConfirmSheet>

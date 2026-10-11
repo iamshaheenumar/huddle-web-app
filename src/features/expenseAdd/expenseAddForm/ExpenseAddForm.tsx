@@ -45,8 +45,8 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
   const deleteRecurring = useMutation<void, Error, RecurringDelete>({ mutationKey: DELETE_RECURRING })
   const queryClient = useQueryClient()
 
-  // Recurring payments are always expenses.
-  const [kind, setKind] = useState<TxnKind>(startIncome && !editing && !startRecurring ? 'income' : 'expense')
+  // A recurring payment keeps its kind when edited.
+  const [kind, setKind] = useState<TxnKind>(editing?.kind ?? (startIncome ? 'income' : 'expense'))
   const income = kind === 'income'
   const [amount, setAmount] = useState(editing ? String(editing.amount) : '')
   const [paidBy, setPaidBy] = useState<string | null>(editing?.paid_by ?? data.currentUserId)
@@ -80,7 +80,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
       setError('Enter a valid amount')
       return
     }
-    if (!income && recurring && settings.end_type === 'on_date' && settings.end_date && settings.end_date < date) {
+    if (recurring && settings.end_type === 'on_date' && settings.end_date && settings.end_date < date) {
       setError('The end date is before the start date')
       return
     }
@@ -107,11 +107,12 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
     })
 
     // All of these show straight away and sync now, or once back online.
-    if (recurring && !income && categoryId) {
+    if (recurring) {
       const rule: RecurringRule = {
         id: editing?.id ?? crypto.randomUUID(),
         group_id: groupId,
-        category_id: categoryId,
+        kind,
+        category_id: income ? null : categoryId,
         paid_by: paidBy,
         amount: parsedAmount,
         note: note || null,
@@ -133,7 +134,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
       addExpense.mutate(expense(crypto.randomUUID(), null))
     }
     await persistNow(queryClient)
-    router.push(editing || (startRecurring && !income) ? '/recurring' : '/dashboard')
+    router.push(editing || startRecurring ? '/recurring' : '/dashboard')
   }
 
   async function handleDelete() {
@@ -145,7 +146,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
   }
 
   const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-AE', { day: 'numeric', month: 'long', year: 'numeric' })
-  const submitLabel = editing ? 'Save changes' : income ? 'Add income' : recurring ? 'Add recurring expense' : 'Add expense'
+  const submitLabel = editing ? 'Save changes' : `Add ${recurring ? 'recurring ' : ''}${income ? 'income' : 'expense'}`
   const SubmitIcon = editing ? FloppyDisk : income ? CheckCircle : PlusCircle
 
   return (
@@ -157,7 +158,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
         </button>
         <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>{editing ? 'Edit recurring' : income ? 'Add income' : 'Add expense'}</span>
         {editing ? (
-          <button onClick={() => setConfirmingDelete(true)} aria-label="Delete recurring payment" className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#FDF0EB', color: '#E5683E' }}>
+          <button onClick={() => setConfirmingDelete(true)} aria-label={income ? 'Delete recurring income' : 'Delete recurring payment'} className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#FDF0EB', color: '#E5683E' }}>
             <Trash size={17} weight="bold" />
           </button>
         ) : (
@@ -284,17 +285,16 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
         </div>
       </div>
 
-      {!income && (
-        <RecurringSection
-          enabled={recurring}
-          onEnabledChange={editing ? undefined : setRecurring}
-          settings={settings}
-          onChange={setSettings}
-          startDate={date}
-          nextDue={nextDue}
-          showManageLink={!editing}
-        />
-      )}
+      <RecurringSection
+        income={income}
+        enabled={recurring}
+        onEnabledChange={editing ? undefined : setRecurring}
+        settings={settings}
+        onChange={setSettings}
+        startDate={date}
+        nextDue={nextDue}
+        showManageLink={!editing}
+      />
 
       {editing && (
         <ConfirmSheet
@@ -302,8 +302,10 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
           onClose={() => setConfirmingDelete(false)}
           onConfirm={handleDelete}
           icon={<Trash size={24} weight="bold" />}
-          title="Delete recurring payment?"
-          description="No more payments will be added. Payments already logged stay in your history."
+          title={income ? 'Delete recurring income?' : 'Delete recurring payment?'}
+          description={income
+            ? 'No more deposits will be added. Income already logged stays in your history.'
+            : 'No more payments will be added. Payments already logged stay in your history.'}
           confirmLabel="Delete"
         />
       )}

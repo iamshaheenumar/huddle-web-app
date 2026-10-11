@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import BottomSheet from '@/features/common/BottomSheet'
-import { longDate, occurrence } from '@/lib/recurring'
+import { longDate, occurrence, occurrenceNoun } from '@/lib/recurring'
 import type { EndType } from '@/types'
 import type { RecurringSettings } from './RecurringSection'
 
@@ -13,25 +13,29 @@ type Props = {
   onClose: () => void
   settings: RecurringSettings
   startDate: string
+  // Recurring income: counts deposits rather than payments.
+  income?: boolean
   onSave: (ends: Ends) => void
 }
 
-const OPTIONS: { value: EndType; label: string }[] = [
+const options = (noun: string): { value: EndType; label: string }[] => [
   { value: 'never', label: 'Never' },
   { value: 'on_date', label: 'On a date' },
-  { value: 'after_count', label: 'After a number of payments' },
+  { value: 'after_count', label: `After a number of ${noun}s` },
 ]
 
-// Picks when a recurring payment stops. Remounted on each open so it starts
+// Picks when a recurring payment or income stops. Remounted on each open so it starts
 // from the saved settings.
 export default function EndsSheet(props: Props) {
   if (!props.open) return null
   return <EndsSheetBody {...props} />
 }
 
-function EndsSheetBody({ onClose, settings, startDate, onSave }: Props) {
+function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) {
+  const noun = occurrenceNoun(income)
+  const endOptions = options(noun)
   const [endType, setEndType] = useState<EndType>(settings.end_type)
-  // Defaults: a year of payments.
+  // Defaults: a year of them.
   const [endDate, setEndDate] = useState(settings.end_date ?? occurrence(startDate, 'yearly', 1))
   const [count, setCount] = useState(String(settings.max_occurrences ?? 12))
   const [error, setError] = useState('')
@@ -46,7 +50,7 @@ function EndsSheetBody({ onClose, settings, startDate, onSave }: Props) {
     } else if (endType === 'after_count') {
       const n = Number(count)
       if (!Number.isInteger(n) || n < 1) {
-        setError('Enter a whole number of payments, 1 or more')
+        setError(`Enter a whole number of ${noun}s, 1 or more`)
         return
       }
       onSave({ end_type: 'after_count', end_date: null, max_occurrences: n })
@@ -60,10 +64,10 @@ function EndsSheetBody({ onClose, settings, startDate, onSave }: Props) {
       <div id="ends-sheet-title" className="text-[18px] font-extrabold text-center pt-5" style={{ color: '#20242E' }}>Ends</div>
 
       <div role="radiogroup" aria-labelledby="ends-sheet-title" className="mt-4 rounded-[20px] px-4 py-1" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-        {OPTIONS.map((o, i) => {
+        {endOptions.map((o, i) => {
           const selected = endType === o.value
           return (
-            <div key={o.value} style={{ borderBottom: i < OPTIONS.length - 1 ? '1px solid #F4F0E9' : 'none' }}>
+            <div key={o.value} style={{ borderBottom: i < endOptions.length - 1 ? '1px solid #F4F0E9' : 'none' }}>
               <button
                 type="button"
                 role="radio"
@@ -98,7 +102,7 @@ function EndsSheetBody({ onClose, settings, startDate, onSave }: Props) {
                   <input
                     type="number"
                     inputMode="numeric"
-                    aria-label="Number of payments"
+                    aria-label={`Number of ${noun}s`}
                     min={1}
                     step={1}
                     value={count}
@@ -106,7 +110,7 @@ function EndsSheetBody({ onClose, settings, startDate, onSave }: Props) {
                     className="w-16 text-[14px] font-extrabold bg-transparent outline-none"
                     style={{ color: '#20242E' }}
                   />
-                  <span className="text-[13px] font-semibold" style={{ color: '#6B707A' }}>payments in total</span>
+                  <span className="text-[13px] font-semibold" style={{ color: '#6B707A' }}>{noun}s in total</span>
                 </div>
               )}
             </div>

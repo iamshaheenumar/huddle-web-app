@@ -9,7 +9,7 @@ import { useExpenseAddData } from '@/features/expenseAdd/queries'
 import { DELETE_RECURRING, type RecurringDelete } from '@/lib/query/mutations'
 import { useRecurring } from '../queries'
 
-// Edits a recurring payment with the add-expense form.
+// Edits a recurring payment or income with the add form.
 export default function RecurringEditScreen() {
   const { id } = useParams<{ id: string }>()
   const data = useExpenseAddData()
@@ -26,8 +26,8 @@ export default function RecurringEditScreen() {
   if (!row) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-5 text-center" style={{ background: '#F6F3EE' }}>
-        <p className="text-[15px] font-bold" style={{ color: '#20242E' }}>This recurring payment isn&apos;t in your group</p>
-        <Link href="/recurring" className="mt-3 text-[13px] font-bold" style={{ color: '#3B6FF6' }}>Back to recurring payments</Link>
+        <p className="text-[15px] font-bold" style={{ color: '#20242E' }}>This recurring item isn&apos;t in your group</p>
+        <Link href="/recurring" className="mt-3 text-[13px] font-bold" style={{ color: '#3B6FF6' }}>Back to recurring</Link>
       </div>
     )
   }

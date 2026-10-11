@@ -136,10 +136,13 @@ export function scheduleLabel(frequency: Frequency, start: string) {
   }
 }
 
-export function endsLabel(s: Pick<Schedule, 'end_type' | 'end_date' | 'max_occurrences'>) {
+// What one occurrence is called: a payment goes out, a deposit (e.g. a salary) comes in.
+export const occurrenceNoun = (income?: boolean) => (income ? 'deposit' : 'payment')
+
+export function endsLabel(s: Pick<Schedule, 'end_type' | 'end_date' | 'max_occurrences'>, noun = 'payment') {
   if (s.end_type === 'on_date' && s.end_date) return `On ${longDate(s.end_date)}`
   if (s.end_type === 'after_count' && s.max_occurrences) {
-    return `After ${s.max_occurrences} payment${s.max_occurrences === 1 ? '' : 's'}`
+    return `After ${s.max_occurrences} ${noun}${s.max_occurrences === 1 ? '' : 's'}`
   }
   return 'Never'
 }

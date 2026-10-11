@@ -40,7 +40,10 @@ type CategoryDisplay = { name: string; icon: string; color: string; bg_color: st
 export type RecurringRule = {
   id: string
   group_id: string
-  category_id: string
+  // Missing on rules queued before income existed: the server treats those as expenses.
+  kind?: TxnKind
+  // null for income
+  category_id: string | null
   paid_by: string
   amount: number
   note: string | null
