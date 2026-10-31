@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CaretLeft, Plus, Check, CheckCircle } from '@phosphor-icons/react'
+import { CaretLeft, Plus, Check, CheckCircle, PencilSimple, WarningCircle } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import AddCategorySheet from '@/features/common/AddCategorySheet'
 import { createClient } from '@/lib/supabase/client'
@@ -20,8 +20,14 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
   const invalidateAppData = useInvalidateAppData()
   const { groupId, groupName, month, year } = data
 
-  const [totalBudget, setTotalBudget] = useState(data.totalBudget)
   const [allocations, setAllocations] = useState<Record<string, number>>(data.allocations)
+  // null: the total is the sum of the categories. A number: a total the user set
+  // themselves, which category changes leave alone. A saved budget whose total
+  // differs from its allocations opens with that total kept.
+  const [fixedTotal, setFixedTotal] = useState<number | null>(() => {
+    const sum = Object.values(data.allocations).reduce((s, v) => s + v, 0)
+    return data.totalBudget > 0 && data.totalBudget !== sum ? data.totalBudget : null
+  })
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
   const [editingTotal, setEditingTotal] = useState(false)
@@ -35,12 +41,9 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
     setAllocations(prev => ({ ...prev, [cat.id]: 0 }))
   }
 
+  // Only ever changes this category; the total follows on its own or stays as set.
   function setCategoryAmount(catId: string, newValue: number) {
-    const clamped = Math.max(0, newValue)
-    const old = allocations[catId] ?? 0
-    const delta = clamped - old
-    setAllocations(prev => ({ ...prev, [catId]: clamped }))
-    if (delta !== 0) setTotalBudget(prev => Math.max(0, prev + delta))
+    setAllocations(prev => ({ ...prev, [catId]: Math.max(0, newValue) }))
   }
 
   function adjust(catId: string, delta: number) {
@@ -48,8 +51,10 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
   }
 
   const totalAllocated = Object.values(allocations).reduce((s, v) => s + v, 0)
+  const totalBudget = fixedTotal ?? totalAllocated
   const unallocated = totalBudget - totalAllocated
   const allocPct = totalBudget > 0 ? Math.min(100, (totalAllocated / totalBudget) * 100) : 0
+  const categoryCount = Object.values(allocations).filter(v => v > 0).length
 
   async function handleSave() {
     setLoading(true)
@@ -90,44 +95,81 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
 
       {/* Total card */}
       <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-        <div className="text-[13px] font-semibold" style={{ color: 'var(--muted)' }}>Total monthly budget</div>
+        <label htmlFor="budget-total" className="text-[13px] font-semibold" style={{ color: 'var(--muted)' }}>Total for {MONTHS[month - 1]}</label>
         <div className="flex items-end gap-2 mt-1.5">
           <span className="text-[15px] font-bold pb-1.5" style={{ color: 'var(--muted)' }}>{CURRENCY}</span>
           {editingTotal ? (
             <input
-              type="number"
+              id="budget-total"
+              type="text"
+              inputMode="numeric"
               autoFocus
-              value={totalBudget}
-              onChange={e => setTotalBudget(Math.max(0, parseInt(e.target.value) || 0))}
+              value={fixedTotal ? fmt(fixedTotal) : ''}
+              placeholder="0"
+              onChange={e => setFixedTotal(parseInt(e.target.value.replace(/\D/g, '')) || 0)}
+              // Selected on open so typing replaces the total rather than adding digits to it.
+              onFocus={e => e.target.select()}
               onBlur={() => setEditingTotal(false)}
-              className="text-[38px] font-extrabold tracking-tight leading-none w-40 outline-none bg-transparent"
+              className="text-[38px] font-extrabold tracking-tight leading-none tabular-nums w-48 outline-none bg-transparent"
               style={{ color: '#20242E' }}
             />
           ) : (
-            <span className="text-[38px] font-extrabold tracking-tight leading-none" style={{ color: '#20242E' }}>{fmt(totalBudget)}</span>
+            <span className="text-[38px] font-extrabold tracking-tight leading-none tabular-nums" style={{ color: '#20242E' }}>{fmt(totalBudget)}</span>
           )}
-          <button onClick={() => setEditingTotal(true)} aria-label="Edit total budget" className="tap-target pb-1.5" style={{ color: 'var(--primary)' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-          </button>
+          {!editingTotal && (
+            <button
+              type="button"
+              // Typing a total takes it off auto from here on.
+              onClick={() => { setFixedTotal(totalBudget); setEditingTotal(true) }}
+              aria-label="Edit total budget"
+              className="tap-target pb-1.5"
+              style={{ color: 'var(--primary)' }}
+            >
+              <PencilSimple size={18} weight="bold" />
+            </button>
+          )}
         </div>
-        <div className="h-2.5 rounded-full mt-4 overflow-hidden" style={{ background: '#EFEBE3' }}>
-          <div className="h-full rounded-full transition-all" style={{ width: `${allocPct}%`, background: 'var(--primary)' }} />
-        </div>
-        <div className="flex justify-between mt-3">
-          <span className="text-[12px] font-bold flex items-center gap-1" style={{ color: unallocated >= 0 ? 'var(--income)' : 'var(--danger)' }}>
-            <CheckCircle size={13} weight="fill" /> Allocated {fmt(totalAllocated)}
-          </span>
-          <span className="text-[12px] font-bold" style={{ color: unallocated >= 0 ? 'var(--muted)' : 'var(--danger)' }}>
-            {unallocated >= 0 ? `Unallocated ${fmt(unallocated)}` : `Over by ${fmt(-unallocated)}`}
-          </span>
-        </div>
+
+        {fixedTotal === null ? (
+          <div className="flex items-center gap-1.5 mt-3 text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>
+            <CheckCircle size={15} weight="fill" style={{ color: 'var(--income)' }} aria-hidden="true" />
+            {categoryCount === 0
+              ? 'Add amounts below and the total adds them up'
+              : `Sum of ${categoryCount} categor${categoryCount === 1 ? 'y' : 'ies'} · changes as you edit them`}
+          </div>
+        ) : (
+          <>
+            <div className="h-2.5 rounded-full mt-4 overflow-hidden" style={{ background: '#EFEBE3' }}>
+              <div className="h-full rounded-full transition-all" style={{ width: `${allocPct}%`, background: unallocated < 0 ? 'var(--danger)' : 'var(--primary)' }} />
+            </div>
+            {unallocated >= 0 ? (
+              <div className="flex justify-between gap-3 mt-3 text-[12px] font-bold">
+                <span style={{ color: 'var(--ink-2)' }}>Allocated {fmt(totalAllocated)}</span>
+                <span style={{ color: 'var(--muted)' }}>{unallocated > 0 ? `${fmt(unallocated)} not in a category` : 'All allocated'}</span>
+              </div>
+            ) : (
+              <div className="flex items-start gap-1.5 mt-3 text-[12px] font-bold" style={{ color: 'var(--danger)' }}>
+                <WarningCircle size={15} weight="fill" className="shrink-0" aria-hidden="true" />
+                Categories add up to {fmt(totalAllocated)}, {fmt(-unallocated)} more than this total
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => { setFixedTotal(null); setEditingTotal(false) }}
+              className="mt-3 min-h-10 rounded-full px-3.5 text-[13px] font-bold"
+              style={{ background: '#E9F0FE', color: 'var(--primary)' }}
+            >
+              {unallocated < 0 ? `Raise total to ${fmt(totalAllocated)}` : `Use sum of categories (${fmt(totalAllocated)})`}
+            </button>
+          </>
+        )}
       </div>
 
       {/* Category steppers */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <span className="text-base font-extrabold" style={{ color: '#20242E' }}>Allocate by category</span>
-        <button onClick={() => setAddingCategory(true)} className="flex items-center gap-1 text-[12px] font-bold" style={{ color: 'var(--primary)' }}>
-          <Plus size={12} weight="bold" /> Add
+        <button onClick={() => setAddingCategory(true)} className="flex items-center gap-1 min-h-10 px-1 text-[13px] font-bold" style={{ color: 'var(--primary)' }}>
+          <Plus size={13} weight="bold" /> Add category
         </button>
       </div>
       <div className="mx-5 flex flex-col gap-2.5">
