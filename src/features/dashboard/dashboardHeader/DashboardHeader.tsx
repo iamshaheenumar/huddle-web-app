@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import Greeting from '@/features/common/Greeting'
 import GroupSwitcher from '@/features/common/GroupSwitcher'
 import { useAppContext, useProfile, useGroups } from '@/features/common/queries'
@@ -20,12 +21,14 @@ export default function DashboardHeader() {
         <Greeting name={displayName} />
         <GroupSwitcher currentGroup={group} groups={groups} />
       </div>
-      <div
+      <Link
+        href="/profile"
+        aria-label="Your profile"
         className="w-11 h-11 rounded-full flex items-center justify-center font-extrabold text-row text-white"
-        style={{ background: avatarColor, boxShadow: '0 6px 14px -6px rgba(59,111,246,.7)' }}
+        style={{ background: avatarColor }}
       >
         {displayName.charAt(0).toUpperCase()}
-      </div>
+      </Link>
     </div>
   )
 }

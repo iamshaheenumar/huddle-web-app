@@ -3,13 +3,16 @@
 import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
 import { useAppContext } from '@/features/common/queries'
-import { useBudgetSummary } from '../queries'
+import { signedNet } from '@/lib/transactions'
+import { useBudgetSummary, useMonthCashFlow } from '../queries'
 import { HERO_FILL as FILL, HERO_OVER_FILL as OVER_FILL, HERO_SOFT as SOFT, HERO_PANEL as PANEL, HERO_TRACK } from '@/features/common/heroCard'
 import BudgetHeroCardSkeleton from './BudgetHeroCardSkeleton'
 
 export default function BudgetHeroCard() {
   const { month, year } = useAppContext()
   const summary = useBudgetSummary()
+  // Same month's rows as the summary, so it's ready at the same time.
+  const flow = useMonthCashFlow()
   if (!summary) return <BudgetHeroCardSkeleton />
   const { remaining, totalBudget, totalSpent } = summary
 
@@ -38,6 +41,16 @@ export default function BudgetHeroCard() {
     : over
       ? `Over your ${CURRENCY} ${fmt(totalBudget)} budget`
       : `of ${CURRENCY} ${fmt(totalBudget)} · ${fasterThanPlanned ? 'spending faster than planned' : 'on track'}`
+
+  // What's safe to spend, and (once there's income) the month's net, side by side.
+  // On the last day "per day" is just everything left, so it says so plainly.
+  const tiles: { label: string; value: string; currency?: boolean; detail?: string }[] = []
+  if (hasBudget && !over) {
+    tiles.push({ label: daysLeft === 1 ? 'Left for today' : 'Safe to spend per day', value: fmt(perDay), currency: true })
+  }
+  if (flow && flow.income > 0) {
+    tiles.push({ label: 'Net this month', value: signedNet(flow.net), detail: `+${fmt(flow.income)} in · ${fmt(flow.spent)} out` })
+  }
 
   return (
     <div className="mx-5 mt-5 rounded-3xl p-5 text-white" style={{ background: over ? OVER_FILL : FILL }}>
@@ -69,13 +82,18 @@ export default function BudgetHeroCard() {
         </div>
       )}
 
-      {hasBudget && !over && (
-        <div className="flex items-center justify-between gap-3 mt-2 rounded-2xl px-3.5 py-3" style={{ background: PANEL }}>
-          <span className="text-body font-bold" style={{ color: SOFT }}>Safe to spend per day</span>
-          <span className="flex items-baseline gap-1 whitespace-nowrap tabular-nums">
-            <span className="text-meta font-bold" style={{ color: SOFT }}>{CURRENCY}</span>
-            <span className="text-title font-extrabold">{fmt(perDay)}</span>
-          </span>
+      {tiles.length > 0 && (
+        <div className={`grid gap-2 ${hasBudget ? 'mt-2' : 'mt-4'} ${tiles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {tiles.map(t => (
+            <div key={t.label} className="min-w-0 rounded-2xl px-3.5 py-3" style={{ background: PANEL }}>
+              <div className="text-meta font-bold truncate" style={{ color: SOFT }}>{t.label}</div>
+              <div className="flex items-baseline gap-1 mt-1 whitespace-nowrap tabular-nums">
+                {t.currency && <span className="text-meta font-bold" style={{ color: SOFT }}>{CURRENCY}</span>}
+                <span className="text-title font-extrabold">{t.value}</span>
+              </div>
+              {t.detail && <div className="text-label font-semibold mt-0.5 truncate" style={{ color: SOFT }}>{t.detail}</div>}
+            </div>
+          ))}
         </div>
       )}
     </div>

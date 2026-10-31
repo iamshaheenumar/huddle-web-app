@@ -1,6 +1,5 @@
 import DashboardHeader from '@/features/dashboard/dashboardHeader/DashboardHeader'
 import BudgetHeroCard from '@/features/dashboard/budgetHeroCard/BudgetHeroCard'
-import CashFlowSection from '@/features/dashboard/cashFlowSection/CashFlowSection'
 import DayTransactionsSection from '@/features/dashboard/dayTransactionsSection/DayTransactionsSection'
 import CategoriesSection from '@/features/dashboard/categoriesSection/CategoriesSection'
 import MembersSection from '@/features/dashboard/membersSection/MembersSection'
@@ -14,7 +13,6 @@ export default function DashboardPage() {
     <div className="flex flex-col pb-7">
       <DashboardHeader />
       <BudgetHeroCard />
-      <CashFlowSection />
       <DayTransactionsSection />
       <RecurringCard />
       <CategoriesSection />

@@ -16,31 +16,30 @@ export default function RecurringCard() {
   if (!summary || summary.activeCount === 0) return null
   const { activeCount, monthlyTotal, monthlyIncome, next } = summary
   const nextName = next ? next.note || next.categories?.name || (isIncome(next) ? 'income' : 'payment') : null
+  // The money first ("AED 2,150 · +12,000 in a month"), then what's coming next.
   const amounts = [
     monthlyTotal > 0 && `${CURRENCY} ${fmt(monthlyTotal)}`,
     monthlyIncome > 0 && `+${fmt(monthlyIncome)} in`,
+  ].filter(Boolean).join(' · ')
+  const details = [
+    next?.next_due_date && `Next: ${nextName} on ${shortDate(next.next_due_date)}`,
+    `${activeCount} active`,
   ].filter(Boolean).join(' · ')
 
   return (
     <Link
       href="/recurring"
-      className="mx-5 mt-3 flex items-center gap-[13px] rounded-[18px] px-[15px] py-3"
+      className="mx-5 mt-3 flex items-center gap-3 rounded-[18px] px-3.5 py-3"
       style={{ background: '#fff', border: '1px solid var(--hairline)' }}
     >
       <div className="flex items-center justify-center flex-shrink-0 rounded-[12px]" style={{ width: 38, height: 38, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
-        <ArrowsClockwise size={19} weight="bold" />
+        <ArrowsClockwise size={19} weight="bold" aria-hidden="true" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-body font-bold" style={{ color: 'var(--ink)' }}>
-          {/* "payments" while every running rule is spend; "transactions" once one is income. */}
-          {activeCount} recurring {monthlyIncome > 0 ? 'transaction' : 'payment'}{activeCount === 1 ? '' : 's'}
-        </div>
-        <div className="text-label font-semibold truncate" style={{ color: 'var(--muted)' }}>
-          {amounts} / month
-          {next?.next_due_date && ` · next ${nextName} on ${shortDate(next.next_due_date)}`}
-        </div>
+        <div className="text-body font-bold truncate" style={{ color: 'var(--ink)' }}>Recurring · {amounts} a month</div>
+        <div className="text-meta font-medium mt-0.5 truncate" style={{ color: 'var(--muted)' }}>{details}</div>
       </div>
-      <CaretRight size={14} weight="bold" color="#C4C8CF" />
+      <CaretRight size={16} weight="bold" color="#8A8F98" aria-hidden="true" />
     </Link>
   )
 }

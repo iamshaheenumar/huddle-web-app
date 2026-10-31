@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { UsersThree } from '@phosphor-icons/react'
 import { fmt } from '@/lib/format'
 import { useAppContext } from '@/features/common/queries'
 import { useMemberSpend } from '../queries'
@@ -8,10 +9,28 @@ import MembersSectionSkeleton from './MembersSectionSkeleton'
 
 // Who spent what this month: one stacked bar plus a legend, in place of a row per member.
 export default function MembersSection() {
-  const { user } = useAppContext()
+  const { user, group } = useAppContext()
   const members = useMemberSpend()
   if (!members) return <MembersSectionSkeleton />
   if (members.length === 0) return null
+
+  // A split of one says nothing; point at what makes the group useful instead.
+  if (members.length === 1) {
+    return (
+      <div className="mx-5 mt-6 flex items-center gap-3.5 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="flex items-center justify-center shrink-0 rounded-[12px]" style={{ width: 40, height: 40, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+          <UsersThree size={20} weight="fill" aria-hidden="true" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-body font-bold" style={{ color: 'var(--ink)' }}>Budgeting on your own</div>
+          <div className="text-meta font-medium mt-0.5" style={{ color: 'var(--muted)' }}>Invite someone to {group?.name ?? 'this group'} to share it.</div>
+        </div>
+        <Link href="/members/invite" className="shrink-0 flex items-center min-h-10 rounded-full px-3.5 text-body font-bold" style={{ background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+          Invite
+        </Link>
+      </div>
+    )
+  }
 
   const total = members.reduce((s, m) => s + m.spent, 0)
   const ranked = [...members].sort((a, b) => b.spent - a.spent).map(m => ({
