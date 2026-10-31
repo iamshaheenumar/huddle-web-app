@@ -25,7 +25,7 @@ export default function ShareButton({ groupName }: { groupName: string }) {
     <button
       onClick={onShare}
       aria-label="Share spending history"
-      className="w-10 h-10 rounded-[13px] flex items-center justify-center"
+      className="w-11 h-11 rounded-[14px] flex items-center justify-center"
       style={{ background: copied ? '#20242E' : '#fff', border: '1px solid #EAE5DD', color: copied ? '#fff' : '#3A3F49' }}
     >
       {copied ? (

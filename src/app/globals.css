@@ -1,17 +1,31 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
+/* Text colours each pass WCAG AA (4.5:1) on white and on the cream background.
+   Inline styles use these as var(--muted) etc.; category and avatar colours are
+   user data and stay as stored hex. */
 :root {
   --background: #F6F3EE;
   --foreground: #20242E;
+  --primary: #2F63E0;
+  --muted: #666B75;
+  --ink-2: #5C616B;
+  --danger: #B53D27;
+  --warning: #9A5B00;
+  --income: #1F7A52;
+  --focus-ring: #2F63E0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: #3B6FF6;
+  --color-primary: var(--primary);
   --color-dark: #20242E;
-  --color-muted: #9A9FA8;
+  --color-muted: var(--muted);
+  --color-ink-2: var(--ink-2);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-income: var(--income);
   --color-border: #F0ECE4;
   --color-card: #ffffff;
   --font-sans: 'Plus Jakarta Sans', sans-serif;
@@ -36,6 +50,30 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* Inputs set outline: none for taps; keyboard focus still needs to show. */
+:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Grows a small control's hit area to 44×44 without changing how it looks. */
+.tap-target {
+  position: relative;
+}
+
+.tap-target::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
 }
 
 @keyframes splash-dot {

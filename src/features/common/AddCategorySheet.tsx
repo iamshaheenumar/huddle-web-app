@@ -102,7 +102,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
       </div>
 
       <div className="mt-5">
-        <label htmlFor="category-name" className="text-[13px] font-bold block mb-2" style={{ color: '#6B707A' }}>Name</label>
+        <label htmlFor="category-name" className="text-[13px] font-bold block mb-2" style={{ color: 'var(--ink-2)' }}>Name</label>
         <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
           <input
             id="category-name"
@@ -114,15 +114,15 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
             value={name}
             onChange={e => { setName(e.target.value); if (error) setError('') }}
             onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
-            className="flex-1 text-[14px] font-semibold bg-transparent outline-none"
+            className="flex-1 text-[16px] font-semibold bg-transparent outline-none"
             style={{ color: '#2A2E37' }}
           />
-          <span className="text-[11px] font-bold tabular-nums" style={{ color: '#B6BAC1' }}>{name.length}/{MAX_NAME}</span>
+          <span className="text-[11px] font-bold tabular-nums" style={{ color: 'var(--muted)' }}>{name.length}/{MAX_NAME}</span>
         </div>
       </div>
 
       <div className="mt-5">
-        <div className="text-[13px] font-bold mb-2" style={{ color: '#6B707A' }}>Icon</div>
+        <div className="text-[13px] font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Icon</div>
         <div className="grid grid-cols-6 gap-2 rounded-[18px] p-2.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
           {CATEGORY_ICON_NAMES.map(n => {
             const selected = n === icon
@@ -138,7 +138,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
               >
                 <CategoryIcon
                   icon={n}
-                  color={selected ? color.color : '#787D87'}
+                  color={selected ? color.color : 'var(--ink-2)'}
                   bg_color={selected ? color.bg_color : 'transparent'}
                   size={38}
                   iconSize={19}
@@ -151,7 +151,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
       </div>
 
       <div className="mt-5">
-        <div className="text-[13px] font-bold mb-2" style={{ color: '#6B707A' }}>Color</div>
+        <div className="text-[13px] font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Color</div>
         <div className="flex flex-wrap gap-2.5">
           {CATEGORY_COLORS.map(c => {
             const selected = c.color === color.color
@@ -179,17 +179,17 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
             )
           })}
         </div>
-        <p className="text-[11px] font-semibold mt-2" style={{ color: '#B6BAC1' }}>Dotted colors are already used by another category.</p>
+        <p className="text-[11px] font-semibold mt-2" style={{ color: 'var(--muted)' }}>Dotted colors are already used by another category.</p>
       </div>
 
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
+      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
 
       <div className="flex flex-col gap-2.5 mt-5">
         <button
           onClick={handleSave}
           disabled={pending}
           className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold text-white transition-opacity disabled:opacity-60"
-          style={{ background: '#3B6FF6', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
+          style={{ background: 'var(--primary)', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
         >
           <PlusCircle size={18} weight="fill" />
           {pending ? 'Adding…' : 'Add category'}

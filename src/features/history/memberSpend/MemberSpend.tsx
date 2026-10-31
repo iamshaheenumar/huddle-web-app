@@ -21,7 +21,7 @@ export default function MemberSpend({ period }: { period?: string }) {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[14px] font-bold truncate" style={{ color: '#2A2E37' }}>{m.profile?.display_name ?? 'Unknown'}</span>
                 <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: '#20242E' }}>
-                  {fmt(m.spent)} <span style={{ color: '#B6BAC1', fontWeight: 600 }}>· {m.share}%</span>
+                  {fmt(m.spent)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>· {m.share}%</span>
                 </span>
               </div>
               <div className="h-1.5 rounded-full mt-2.5 overflow-hidden" style={{ background: '#EFEBE3' }}>

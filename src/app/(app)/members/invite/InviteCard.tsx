@@ -69,7 +69,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
     <div className="mx-5 mt-5 rounded-[22px] px-5 pt-5.5 pb-5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-[12px] font-bold uppercase tracking-[0.04em]" style={{ color: '#9A9FA8' }}>Invite code</div>
+          <div className="text-[12px] font-bold uppercase tracking-[0.04em]" style={{ color: 'var(--muted)' }}>Invite code</div>
           <div className="text-[32px] font-extrabold tracking-[0.06em] mt-1.5 tabular-nums leading-none" style={{ color: '#20242E' }}>{codeDisplay}</div>
         </div>
         <button
@@ -84,7 +84,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           {regenerating ? 'Generating…' : 'New code'}
         </button>
       </div>
-      <div className="text-[12px] font-semibold mt-2.5" style={{ color: '#9A9FA8' }}>Expires in 7 days</div>
+      <div className="text-[12px] font-semibold mt-2.5" style={{ color: 'var(--muted)' }}>Expires in 7 days</div>
 
       <div className="flex items-center gap-2 mt-4.5 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: '#F6F3EE' }}>
         <div className="flex-1 min-w-0 text-[14px] font-semibold truncate" style={{ color: '#3A3F49' }}>
@@ -94,8 +94,8 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           onClick={handleCopy}
           className={inlineBtn}
           style={copied
-            ? { minWidth: 84, background: '#E6F4EC', color: '#2E9E6B' }
-            : { minWidth: 84, background: '#3B6FF6', color: '#fff', boxShadow: '0 8px 16px -8px rgba(59,111,246,.7)' }}
+            ? { minWidth: 84, background: '#E6F4EC', color: 'var(--income)' }
+            : { minWidth: 84, background: 'var(--primary)', color: '#fff', boxShadow: '0 8px 16px -8px rgba(59,111,246,.7)' }}
         >
           {copied ? 'Copied' : 'Copy'}
         </button>
@@ -103,7 +103,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
 
       <div className="flex items-center gap-3 mt-5.5 mb-4.5">
         <div className="flex-1 h-px" style={{ background: '#F4F0E9' }} />
-        <div className="text-[12px] font-semibold" style={{ color: '#9A9FA8' }}>or send it by email</div>
+        <div className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>or send it by email</div>
         <div className="flex-1 h-px" style={{ background: '#F4F0E9' }} />
       </div>
 
@@ -113,7 +113,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="friend@example.com"
-          className="flex-1 min-w-0 bg-transparent outline-none py-2 text-[15px] font-medium"
+          className="flex-1 min-w-0 bg-transparent outline-none py-2 text-[16px] font-medium"
           style={{ color: '#20242E' }}
         />
         <button
@@ -122,14 +122,14 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           className={inlineBtn}
           style={valid
             ? { minWidth: 84, background: '#20242E', color: '#fff', opacity: sending ? 0.7 : 1 }
-            : { minWidth: 84, background: '#F1EEE8', color: '#B4B8C0', cursor: 'default' }}
+            : { minWidth: 84, background: '#F1EEE8', color: 'var(--muted)', cursor: 'default' }}
         >
           {sending ? 'Sending…' : 'Send'}
         </button>
       </form>
 
-      {sentTo && <div className="text-[13px] font-semibold mt-2.5" style={{ color: '#2E9E6B' }}>Invite sent to {sentTo}</div>}
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
+      {sentTo && <div className="text-[13px] font-semibold mt-2.5" style={{ color: 'var(--income)' }}>Invite sent to {sentTo}</div>}
+      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
     </div>
   )
 }

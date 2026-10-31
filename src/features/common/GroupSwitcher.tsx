@@ -30,10 +30,10 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
 
   return (
     <div className="relative">
-      <button onClick={() => setOpen(o => !o)} className="flex items-center gap-2 mt-0.5">
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="menu" className="flex items-center gap-2 mt-0.5 min-h-11">
         <span className="text-[22px] font-extrabold tracking-tight" style={{ color: '#20242E' }}>{currentGroup.name}</span>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: open ? 'rotate(180deg)' : undefined, transition: 'transform .15s' }}>
-          <path d="M2 4l4 4 4-4" stroke="#9A9FA8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M2 4l4 4 4-4" stroke="#666B75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
@@ -50,14 +50,14 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
                 style={{ color: '#2A2E37', borderBottom: '1px solid #F4F0E9' }}
               >
                 {g.name}
-                {g.id === currentGroup.id && <Check size={15} weight="bold" color="#3B6FF6" />}
+                {g.id === currentGroup.id && <Check size={15} weight="bold" color="#2F63E0" />}
               </button>
             ))}
             <Link
               href="/groups/new"
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-3 text-[14px] font-bold"
-              style={{ color: '#3B6FF6' }}
+              style={{ color: 'var(--primary)' }}
             >
               <Plus size={15} weight="bold" /> Create new group
             </Link>

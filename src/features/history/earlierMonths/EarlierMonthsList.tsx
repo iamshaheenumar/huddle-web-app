@@ -31,7 +31,7 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-[15px] font-bold" style={{ color: '#20242E' }}>{m.label}</div>
-            <div className="text-[12px] font-medium mt-0.5 truncate" style={{ color: '#9A9FA8' }}>
+            <div className="text-[12px] font-medium mt-0.5 truncate" style={{ color: 'var(--muted)' }}>
               {[
                 m.hasBudget ? `Spent ${fmt(m.totalSpent)} of ${fmt(m.totalBudget)}` : `Spent ${fmt(m.totalSpent)}`,
                 // Only months with income show a net, so spend-only months read as before.
@@ -47,7 +47,7 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
         <button
           onClick={() => setVisible(v => v + PAGE_SIZE)}
           className="rounded-[20px] py-3 text-[13px] font-bold"
-          style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3B6FF6' }}
+          style={{ background: '#fff', border: '1px solid #EAE5DD', color: 'var(--primary)' }}
         >
           Show {Math.min(PAGE_SIZE, remaining)} more · {remaining} left
         </button>

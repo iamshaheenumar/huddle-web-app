@@ -17,13 +17,13 @@ export default function CategoryTransactions({ id }: { id: string }) {
     <>
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <span className="text-base font-extrabold" style={{ color: '#20242E' }}>Transactions</span>
-        <span className="text-[12px] font-bold" style={{ color: '#9A9FA8' }}>{expenses.length} this month</span>
+        <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>{expenses.length} this month</span>
       </div>
 
       {expenses.length === 0 && (
         <div className="mx-5 rounded-3xl p-6 text-center" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-          <p className="text-sm font-semibold" style={{ color: '#9A9FA8' }}>No transactions in {MONTHS[month - 1]} yet</p>
-          <Link href="/expense/add" className="inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-extrabold text-white mt-3" style={{ background: '#3B6FF6' }}>
+          <p className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>No transactions in {MONTHS[month - 1]} yet</p>
+          <Link href="/expense/add" className="inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-extrabold text-white mt-3" style={{ background: 'var(--primary)' }}>
             Add first expense
           </Link>
         </div>
@@ -38,7 +38,7 @@ export default function CategoryTransactions({ id }: { id: string }) {
                 <MemberAvatar name={exp.profile?.display_name ?? '?'} color={exp.profile?.avatar_color ?? '#3B6FF6'} size={36} fontSize={13} />
                 <div className="flex-1 min-w-0">
                   <div className="text-[14px] font-bold truncate" style={{ color: '#2A2E37' }}>{exp.note ?? category.name}</div>
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>
                     {exp.profile?.display_name?.split(' ')[0]} · {new Date(exp.expense_date + 'T00:00:00').toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                     {exp.pending && <SyncingBadge />}
                   </div>

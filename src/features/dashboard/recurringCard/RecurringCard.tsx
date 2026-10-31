@@ -27,7 +27,7 @@ export default function RecurringCard() {
       className="mx-5 mt-3 flex items-center gap-[13px] rounded-[18px] px-[15px] py-3"
       style={{ background: '#fff', border: '1px solid #F0ECE4' }}
     >
-      <div className="flex items-center justify-center flex-shrink-0 rounded-[12px]" style={{ width: 38, height: 38, background: '#E9F0FE', color: '#3B6FF6' }}>
+      <div className="flex items-center justify-center flex-shrink-0 rounded-[12px]" style={{ width: 38, height: 38, background: '#E9F0FE', color: 'var(--primary)' }}>
         <ArrowsClockwise size={19} weight="bold" />
       </div>
       <div className="flex-1 min-w-0">
@@ -35,7 +35,7 @@ export default function RecurringCard() {
           {/* "payments" while every running rule is spend; "transactions" once one is income. */}
           {activeCount} recurring {monthlyIncome > 0 ? 'transaction' : 'payment'}{activeCount === 1 ? '' : 's'}
         </div>
-        <div className="text-[11px] font-semibold truncate" style={{ color: '#9A9FA8' }}>
+        <div className="text-[11px] font-semibold truncate" style={{ color: 'var(--muted)' }}>
           {amounts} / month
           {next?.next_due_date && ` · next ${nextName} on ${shortDate(next.next_due_date)}`}
         </div>

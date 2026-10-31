@@ -14,7 +14,7 @@ export default function CashFlowCard({ label, flow }: { label: string; flow: Cas
       <div className="grid grid-cols-3 gap-2 mt-1.5">
         {cells.map(c => (
           <div key={c.title} className="min-w-0">
-            <div className="text-[10px] font-bold" style={{ color: '#9A9FA8' }}>{c.title}</div>
+            <div className="text-[10px] font-bold" style={{ color: 'var(--muted)' }}>{c.title}</div>
             <div className="text-[14px] font-extrabold tabular-nums mt-0.5 truncate" style={{ color: c.color }}>{c.value}</div>
           </div>
         ))}

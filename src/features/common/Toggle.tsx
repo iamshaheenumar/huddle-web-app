@@ -28,7 +28,7 @@ export default function Toggle({ checked, onChange, label, size = 'md', disabled
         onChange(!checked)
       }}
       className="flex-shrink-0 rounded-full transition-colors disabled:opacity-50"
-      style={{ width: s.width, height: s.height, padding: s.pad, background: checked ? '#3B6FF6' : '#E2DED7' }}
+      style={{ width: s.width, height: s.height, padding: s.pad, background: checked ? 'var(--primary)' : '#E2DED7' }}
     >
       <span
         className="block rounded-full transition-transform"

@@ -59,7 +59,7 @@ function SyncErrorBanner() {
   }
 
   return (
-    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 rounded-2xl px-4 py-3 text-[13px] font-bold text-white" style={{ width: 'calc(100% - 40px)', maxWidth: 390, background: '#E0563E' }}>
+    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 rounded-2xl px-4 py-3 text-[13px] font-bold text-white" style={{ width: 'calc(100% - 40px)', maxWidth: 390, background: 'var(--danger)' }}>
       <span className="flex-1">{failed.length === 1 ? 'A change' : `${failed.length} changes`} couldn&apos;t be saved.</span>
       <button onClick={dismiss} className="underline">Dismiss</button>
     </div>

@@ -5,7 +5,7 @@ import { fmt } from '@/lib/format'
 import { useCategoryDetail } from '../queries'
 import CategoryRingSkeleton from './CategoryRingSkeleton'
 
-const OVER = '#E0563E'
+const OVER = 'var(--danger)'
 
 export default function CategoryRing({ id }: { id: string }) {
   const detail = useCategoryDetail(id)
@@ -28,13 +28,13 @@ export default function CategoryRing({ id }: { id: string }) {
         >
           {overspent ? (
             <>
-              <span className="text-[12px] font-bold" style={{ color: '#9A9FA8' }}>Over by</span>
+              <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>Over by</span>
               <span className="text-[28px] font-extrabold tracking-tight mt-0.5" style={{ color: OVER }}>{fmt(overspendAmount)}</span>
               <span className="text-[11px] font-bold mt-0.5" style={{ color: OVER }}>{CURRENCY} · {Math.round(overspendPct)}% over</span>
             </>
           ) : (
             <>
-              <span className="text-[12px] font-bold" style={{ color: '#9A9FA8' }}>Available</span>
+              <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>Available</span>
               <span className="text-[28px] font-extrabold tracking-tight mt-0.5" style={{ color: '#20242E' }}>{fmt(Math.max(0, available))}</span>
               <span className="text-[11px] font-bold mt-0.5" style={{ color: category.color }}>{CURRENCY} · {Math.round(pctLeft)}% left</span>
             </>

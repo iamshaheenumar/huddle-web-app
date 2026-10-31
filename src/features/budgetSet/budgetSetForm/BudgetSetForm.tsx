@@ -79,20 +79,20 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
     <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
       {/* Header */}
       <div className="flex items-center gap-3.5 px-5 pt-12 pb-0">
-        <button onClick={() => router.back()} className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
+        <button onClick={() => router.back()} aria-label="Back" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
           <CaretLeft size={17} weight="bold" />
         </button>
         <div>
-          <div className="text-[13px] font-semibold" style={{ color: '#9A9FA8' }}>{groupName} group</div>
+          <div className="text-[13px] font-semibold" style={{ color: 'var(--muted)' }}>{groupName} group</div>
           <div className="text-[19px] font-extrabold tracking-tight" style={{ color: '#20242E' }}>Set {MONTHS[month - 1]} budget</div>
         </div>
       </div>
 
       {/* Total card */}
       <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-        <div className="text-[13px] font-semibold" style={{ color: '#9A9FA8' }}>Total monthly budget</div>
+        <div className="text-[13px] font-semibold" style={{ color: 'var(--muted)' }}>Total monthly budget</div>
         <div className="flex items-end gap-2 mt-1.5">
-          <span className="text-[15px] font-bold pb-1.5" style={{ color: '#9A9FA8' }}>{CURRENCY}</span>
+          <span className="text-[15px] font-bold pb-1.5" style={{ color: 'var(--muted)' }}>{CURRENCY}</span>
           {editingTotal ? (
             <input
               type="number"
@@ -106,18 +106,18 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
           ) : (
             <span className="text-[38px] font-extrabold tracking-tight leading-none" style={{ color: '#20242E' }}>{fmt(totalBudget)}</span>
           )}
-          <button onClick={() => setEditingTotal(true)} className="pb-1.5" style={{ color: '#3B6FF6' }}>
+          <button onClick={() => setEditingTotal(true)} aria-label="Edit total budget" className="tap-target pb-1.5" style={{ color: 'var(--primary)' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
           </button>
         </div>
         <div className="h-2.5 rounded-full mt-4 overflow-hidden" style={{ background: '#EFEBE3' }}>
-          <div className="h-full rounded-full transition-all" style={{ width: `${allocPct}%`, background: 'linear-gradient(90deg,#3B6FF6,#5A86F8)' }} />
+          <div className="h-full rounded-full transition-all" style={{ width: `${allocPct}%`, background: 'var(--primary)' }} />
         </div>
         <div className="flex justify-between mt-3">
-          <span className="text-[12px] font-bold flex items-center gap-1" style={{ color: unallocated >= 0 ? '#2E9E6B' : '#E0563E' }}>
+          <span className="text-[12px] font-bold flex items-center gap-1" style={{ color: unallocated >= 0 ? 'var(--income)' : 'var(--danger)' }}>
             <CheckCircle size={13} weight="fill" /> Allocated {fmt(totalAllocated)}
           </span>
-          <span className="text-[12px] font-bold" style={{ color: unallocated >= 0 ? '#9A9FA8' : '#E0563E' }}>
+          <span className="text-[12px] font-bold" style={{ color: unallocated >= 0 ? 'var(--muted)' : 'var(--danger)' }}>
             {unallocated >= 0 ? `Unallocated ${fmt(unallocated)}` : `Over by ${fmt(-unallocated)}`}
           </span>
         </div>
@@ -126,7 +126,7 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
       {/* Category steppers */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <span className="text-base font-extrabold" style={{ color: '#20242E' }}>Allocate by category</span>
-        <button onClick={() => setAddingCategory(true)} className="flex items-center gap-1 text-[12px] font-bold" style={{ color: '#3B6FF6' }}>
+        <button onClick={() => setAddingCategory(true)} className="flex items-center gap-1 text-[12px] font-bold" style={{ color: 'var(--primary)' }}>
           <Plus size={12} weight="bold" /> Add
         </button>
       </div>
@@ -136,7 +136,7 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
             <CategoryIcon icon={cat.icon} color={cat.color} bg_color={cat.bg_color} size={40} iconSize={20} radius={12} />
             <span className="flex-1 text-[14px] font-bold" style={{ color: '#2A2E37' }}>{cat.name}</span>
             <div className="flex items-center gap-2.5">
-              <button onClick={() => adjust(cat.id, -STEP)} className="w-7 h-7 rounded-[9px] flex items-center justify-center" style={{ background: '#F4F0E9', color: '#787D87' }}>
+              <button onClick={() => adjust(cat.id, -STEP)} aria-label={`Decrease ${cat.name} by ${STEP}`} className="tap-target w-7 h-7 rounded-[9px] flex items-center justify-center" style={{ background: '#F4F0E9', color: 'var(--ink-2)' }}>
                 <svg width="13" height="2" viewBox="0 0 13 2"><rect x="0" y="0" width="13" height="2" rx="1" fill="currentColor"/></svg>
               </button>
               <input
@@ -145,10 +145,10 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
                 value={allocations[cat.id] ?? 0}
                 onChange={e => setCategoryAmount(cat.id, parseInt(e.target.value) || 0)}
                 onFocus={e => e.target.select()}
-                className="text-[15px] font-extrabold text-center tabular-nums outline-none bg-transparent"
+                className="text-[16px] font-extrabold text-center tabular-nums outline-none bg-transparent"
                 style={{ color: '#20242E', width: 56 }}
               />
-              <button onClick={() => adjust(cat.id, STEP)} className="w-7 h-7 rounded-[9px] flex items-center justify-center" style={{ background: '#E9F0FE', color: '#3B6FF6' }}>
+              <button onClick={() => adjust(cat.id, STEP)} aria-label={`Increase ${cat.name} by ${STEP}`} className="tap-target w-7 h-7 rounded-[9px] flex items-center justify-center" style={{ background: '#E9F0FE', color: 'var(--primary)' }}>
                 <Plus size={13} weight="bold" />
               </button>
             </div>
@@ -164,7 +164,7 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
         onCreated={handleCategoryCreated}
       />
 
-      {error && <p className="mx-5 mt-4 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
+      {error && <p className="mx-5 mt-4 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
 
       {/* Save button */}
       <div className="sticky bottom-20 px-5 mt-6" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>
@@ -172,7 +172,7 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
           onClick={handleSave}
           disabled={loading || saved || !online}
           className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold text-white transition-opacity disabled:opacity-70"
-          style={{ background: saved ? '#2E9E6B' : '#3B6FF6', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
+          style={{ background: saved ? 'var(--income)' : 'var(--primary)', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
         >
           {saved ? <><Check size={18} weight="bold" /> Saved!</> : loading ? 'Saving…' : !online ? 'Connect to save the budget' : <><Check size={18} weight="fill" /> Save {MONTHS[month - 1]} budget</>}
         </button>

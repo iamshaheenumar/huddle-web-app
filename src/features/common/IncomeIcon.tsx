@@ -9,7 +9,7 @@ export default function IncomeIcon({ size = 42, iconSize = 21, radius = 13, mute
   return (
     <div
       className="flex items-center justify-center flex-shrink-0"
-      style={{ width: size, height: size, borderRadius: radius, background: muted ? '#F2EFEA' : '#E6F4EC', color: muted ? '#9A9FA8' : INCOME_COLOR }}
+      style={{ width: size, height: size, borderRadius: radius, background: muted ? '#F2EFEA' : '#E6F4EC', color: muted ? 'var(--muted)' : INCOME_COLOR }}
     >
       <ArrowDownLeft size={iconSize} weight="bold" />
     </div>

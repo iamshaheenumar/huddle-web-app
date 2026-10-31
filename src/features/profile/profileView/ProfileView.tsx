@@ -12,6 +12,9 @@ import { MEMBER_COLORS } from '@/lib/constants'
 import type { Profile } from '@/types'
 import HuddleMark from '@/features/common/HuddleMark'
 
+// Spoken names for the avatar swatches, in MEMBER_COLORS order.
+const COLOR_NAMES = ['Blue', 'Green', 'Orange', 'Purple', 'Teal', 'Amber']
+
 export default function ProfileView({ profile: initialProfile }: { profile: Profile | null }) {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -46,7 +49,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
           <HuddleMark size={56} shadow />
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: '#20242E' }}>Huddle</h1>
-            <p className="text-sm font-semibold" style={{ color: '#9A9FA8' }}>Budget together</p>
+            <p className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>Budget together</p>
           </div>
         </div>
 
@@ -59,21 +62,23 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
               </div>
               <div>
                 <div className="text-lg font-extrabold" style={{ color: '#20242E' }}>{profile.display_name}</div>
-                <div className="text-sm font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>Member</div>
+                <div className="text-sm font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>Member</div>
               </div>
             </div>
             <div className="mt-4">
-              <div className="text-xs font-bold mb-2" style={{ color: '#6B707A' }}>Avatar colour</div>
-              <div className="flex gap-2 flex-wrap">
-                {MEMBER_COLORS.map(c => (
+              <div className="text-xs font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Avatar colour</div>
+              <div className="flex gap-3 flex-wrap">
+                {MEMBER_COLORS.map((c, i) => (
                   <button
                     key={c}
+                    aria-label={`${COLOR_NAMES[i] ?? c} avatar colour`}
+                    aria-pressed={profile.avatar_color === c}
                     onClick={() => changeColor(c)}
-                    className="w-8 h-8 rounded-full transition-all"
+                    className="tap-target w-8 h-8 rounded-full transition-all"
                     style={{
                       background: c,
-                      outline: profile.avatar_color === c ? `3px solid ${c}` : 'none',
-                      outlineOffset: 2,
+                      // A ring via box-shadow leaves outline free for the keyboard focus ring.
+                      boxShadow: profile.avatar_color === c ? `0 0 0 2px #fff, 0 0 0 5px ${c}` : undefined,
                     }}
                   />
                 ))}
@@ -86,7 +91,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
           onClick={handleSignOut}
           disabled={loading}
           className="w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 text-base font-extrabold transition-opacity disabled:opacity-60"
-          style={{ background: '#fff', border: '1px solid #F0ECE4', color: '#E0563E' }}
+          style={{ background: '#fff', border: '1px solid #F0ECE4', color: 'var(--danger)' }}
         >
           <SignOut size={18} weight="bold" />
           {loading ? 'Signing out…' : 'Sign out'}

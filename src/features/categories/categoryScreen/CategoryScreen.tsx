@@ -16,7 +16,7 @@ export default function CategoryScreen() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-5 text-center" style={{ background: '#F6F3EE' }}>
         <p className="text-[15px] font-bold" style={{ color: '#20242E' }}>This category isn&apos;t in your group</p>
-        <Link href="/dashboard" className="mt-3 text-[13px] font-bold" style={{ color: '#3B6FF6' }}>Back to dashboard</Link>
+        <Link href="/dashboard" className="mt-3 text-[13px] font-bold" style={{ color: 'var(--primary)' }}>Back to dashboard</Link>
       </div>
     )
   }

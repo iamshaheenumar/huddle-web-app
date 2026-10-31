@@ -31,10 +31,10 @@ export default function MemberList() {
                   <div className="text-[14px] font-extrabold flex items-center gap-2" style={{ color: '#2A2E37' }}>
                     {m.profile?.display_name ?? 'Unknown'}
                     {m.role === 'owner' && (
-                      <span className="text-[10px] font-bold rounded-[5px] px-1.5 py-0.5" style={{ color: '#3B6FF6', background: '#E9F0FE' }}>Owner</span>
+                      <span className="text-[10px] font-bold rounded-[5px] px-1.5 py-0.5" style={{ color: 'var(--primary)', background: '#E9F0FE' }}>Owner</span>
                     )}
                   </div>
-                  <div className="text-[11px] font-semibold mt-0.5" style={{ color: '#9A9FA8' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}
+                  <div className="text-[11px] font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}
                     {m.income > 0 && <> · <span style={{ color: INCOME_COLOR }}>+{fmt(m.income)} in</span></>}
                   </div>
                 </div>
