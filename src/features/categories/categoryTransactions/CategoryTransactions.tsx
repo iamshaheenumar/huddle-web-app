@@ -21,7 +21,7 @@ export default function CategoryTransactions({ id }: { id: string }) {
       </div>
 
       {expenses.length === 0 && (
-        <div className="mx-5 rounded-3xl p-6 text-center" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="mx-5 rounded-3xl p-6 text-center" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           <p className="text-body font-medium" style={{ color: 'var(--muted)' }}>No transactions in {MONTHS[month - 1]} yet</p>
           <Link href="/expense/add" className="inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-body font-extrabold text-white mt-3" style={{ background: 'var(--primary)' }}>
             Add first expense
@@ -30,7 +30,7 @@ export default function CategoryTransactions({ id }: { id: string }) {
       )}
 
       {expenses.length > 0 && (
-        <div className="mx-5 rounded-[20px] py-1 px-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="mx-5 rounded-[20px] py-1 px-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           {expenses.map((exp, i) => {
             const isLast = i === expenses.length - 1
             return (

@@ -1,7 +1,8 @@
 import { fmt } from './format'
 import type { TxnKind } from '@/types'
 
-export const INCOME_COLOR = 'var(--income)'
+// Text colour: brightens in dark mode (the --income fill doesn't).
+export const INCOME_COLOR = 'var(--income-text)'
 
 // Rows cached or queued before income existed have no kind; they're expenses.
 export const isIncome = (t: { kind?: TxnKind | null }) => t.kind === 'income'

@@ -30,16 +30,16 @@ export default function RecurringCard() {
     <Link
       href="/recurring"
       className="mx-5 mt-3 flex items-center gap-3 rounded-[18px] px-3.5 py-3"
-      style={{ background: '#fff', border: '1px solid var(--hairline)' }}
+      style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}
     >
-      <div className="flex items-center justify-center flex-shrink-0 rounded-[12px]" style={{ width: 38, height: 38, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+      <div className="flex items-center justify-center flex-shrink-0 rounded-[12px]" style={{ width: 38, height: 38, background: 'var(--primary-soft)', color: 'var(--primary-text)' }}>
         <ArrowsClockwise size={19} weight="bold" aria-hidden="true" />
       </div>
       <div className="flex-1 min-w-0">
         <div className="text-body font-bold truncate" style={{ color: 'var(--ink)' }}>Recurring · {amounts} a month</div>
         <div className="text-meta font-medium mt-0.5 truncate" style={{ color: 'var(--muted)' }}>{details}</div>
       </div>
-      <CaretRight size={16} weight="bold" color="#8A8F98" aria-hidden="true" />
+      <CaretRight size={16} weight="bold" style={{ color: 'var(--icon-subtle)' }} aria-hidden="true" />
     </Link>
   )
 }

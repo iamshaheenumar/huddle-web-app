@@ -37,16 +37,16 @@ export default function GroupsNewForm() {
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Header */}
       <div className="flex items-center gap-3.5 px-5 pt-12 pb-0">
-        <button onClick={() => router.back()} aria-label="Back" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}>
+        <button onClick={() => router.back()} aria-label="Back" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: 'var(--card)', border: '1px solid var(--line)', color: 'var(--ink)' }}>
           <CaretLeft size={17} weight="bold" />
         </button>
         <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>Create new group</span>
       </div>
 
       {/* Form card */}
-      <div className="mx-5 mt-5 rounded-3xl p-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div className="mx-5 mt-5 rounded-3xl p-6" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'var(--primary-soft)' }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#2F63E0"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--primary-text)' }}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
         </div>
         <div className="text-body font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Group name</div>
         <input
@@ -58,7 +58,7 @@ export default function GroupsNewForm() {
           className="w-full rounded-2xl px-4 py-3.5 text-input font-semibold outline-none"
           style={{ background: 'var(--background)', color: 'var(--ink)' }}
         />
-        {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+        {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
       </div>
 
       {/* Create button */}

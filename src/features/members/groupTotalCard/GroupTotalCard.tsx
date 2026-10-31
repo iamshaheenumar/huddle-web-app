@@ -14,7 +14,7 @@ export default function GroupTotalCard() {
   const { month, totalSpent, totalBudget, pctUsed, memberCount } = summary
 
   return (
-    <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+    <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
       <div className="flex justify-between items-start">
         <div>
           <div className="text-meta font-medium" style={{ color: 'var(--muted)' }}>Spent in {MONTHS[month - 1]}</div>

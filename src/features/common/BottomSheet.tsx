@@ -38,7 +38,7 @@ export default function BottomSheet({ open, onClose, locked, labelledBy, childre
         className="sheet-up relative self-end w-full rounded-t-3xl px-5 pt-3 max-h-[92vh] overflow-y-auto"
         style={{ maxWidth: 430, background: 'var(--background)', paddingBottom: 'max(env(safe-area-inset-bottom), 20px)', boxShadow: '0 -20px 40px -20px rgba(32,36,46,.35)' }}
       >
-        <div className="mx-auto rounded-full" style={{ width: 40, height: 4, background: '#DCD6CC' }} />
+        <div className="mx-auto rounded-full" style={{ width: 40, height: 4, background: 'var(--disabled)' }} />
         {children}
       </div>
     </div>,

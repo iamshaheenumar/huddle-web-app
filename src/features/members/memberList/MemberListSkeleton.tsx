@@ -8,7 +8,7 @@ export default function MemberListSkeleton() {
       </div>
       <div className="mx-5 flex flex-col gap-2.5">
         {[0, 1, 2].map(i => (
-          <div key={i} className="rounded-[18px] p-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <div key={i} className="rounded-[18px] p-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             <div className="flex items-center gap-3">
               <Sk className="rounded-full flex-shrink-0" style={{ width: 40, height: 40 }} />
               <div className="flex-1 flex flex-col gap-2">

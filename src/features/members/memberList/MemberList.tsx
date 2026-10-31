@@ -24,14 +24,14 @@ export default function MemberList() {
         {members.map(m => {
           const barPct = maxSpent > 0 ? (m.spent / maxSpent) * 100 : 0
           return (
-            <div key={m.user_id} className="rounded-[18px] p-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+            <div key={m.user_id} className="rounded-[18px] p-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
               <div className="flex items-center gap-3">
                 <MemberAvatar name={m.profile?.display_name ?? '?'} color={m.color} size={40} fontSize={15} />
                 <div className="flex-1 min-w-0">
                   <div className="text-body font-extrabold flex items-center gap-2" style={{ color: 'var(--ink)' }}>
                     {m.profile?.display_name ?? 'Unknown'}
                     {m.role === 'owner' && (
-                      <span className="text-label font-bold rounded-[5px] px-1.5 py-0.5" style={{ color: 'var(--primary)', background: 'var(--primary-soft)' }}>Owner</span>
+                      <span className="text-label font-bold rounded-[5px] px-1.5 py-0.5" style={{ color: 'var(--primary-text)', background: 'var(--primary-soft)' }}>Owner</span>
                     )}
                   </div>
                   <div className="text-label font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}

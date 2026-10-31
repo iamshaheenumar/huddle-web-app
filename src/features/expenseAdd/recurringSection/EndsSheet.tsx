@@ -63,7 +63,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
     <BottomSheet open onClose={onClose} labelledBy="ends-sheet-title">
       <div id="ends-sheet-title" className="text-section font-extrabold text-center pt-5" style={{ color: 'var(--ink)' }}>Ends</div>
 
-      <div role="radiogroup" aria-labelledby="ends-sheet-title" className="mt-4 rounded-[20px] px-4 py-1" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div role="radiogroup" aria-labelledby="ends-sheet-title" className="mt-4 rounded-[20px] px-4 py-1" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         {endOptions.map((o, i) => {
           const selected = endType === o.value
           return (
@@ -77,7 +77,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
               >
                 <span
                   className="flex items-center justify-center rounded-full flex-shrink-0"
-                  style={{ width: 20, height: 20, border: selected ? '6px solid var(--primary)' : '1.5px solid #D5D0C7', background: '#fff' }}
+                  style={{ width: 20, height: 20, border: selected ? '6px solid var(--primary)' : '1.5px solid var(--control-off)', background: 'var(--card)' }}
                 />
                 <span className="text-body font-bold" style={{ color: 'var(--ink)' }}>{o.label}</span>
               </button>
@@ -85,7 +85,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
               {selected && o.value === 'on_date' && (
                 <label className="relative flex items-center justify-between mb-3.5 rounded-[12px] px-3 py-2.5" style={{ background: 'var(--background)' }}>
                   <span className="text-body font-bold" style={{ color: 'var(--ink)' }}>{endDate ? longDate(endDate) : 'Pick a date'}</span>
-                  <span className="text-meta font-bold" style={{ color: 'var(--primary)' }}>Change</span>
+                  <span className="text-meta font-bold" style={{ color: 'var(--primary-text)' }}>Change</span>
                   <input
                     type="date"
                     aria-label="End date"
@@ -118,7 +118,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
         })}
       </div>
 
-      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <button
         type="button"

@@ -27,9 +27,9 @@ export default function CategoriesSection() {
     <>
       <div className="flex items-baseline justify-between px-5 pt-6">
         <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>Categories</span>
-        <Link href="/budget/set" className="text-body font-bold py-2" style={{ color: 'var(--primary)' }}>Edit budget</Link>
+        <Link href="/budget/set" className="text-body font-bold py-2" style={{ color: 'var(--primary-text)' }}>Edit budget</Link>
       </div>
-      <div className="mx-5 mt-1 rounded-[22px] py-1 px-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div className="mx-5 mt-1 rounded-[22px] py-1 px-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         {sorted.map((bc, i) => {
           const pct = bc.allocated_amount > 0 ? Math.min(100, Math.round((bc.consumed / bc.allocated_amount) * 100)) : 0
           const isLast = i === sorted.length - 1
@@ -54,7 +54,7 @@ export default function CategoriesSection() {
                   </div>
                   {/* Said in words too, so it doesn't rest on telling red from the category colour. */}
                   {overspent && (
-                    <div className="flex items-center gap-1 mt-1.5 text-meta font-bold" style={{ color: 'var(--danger)' }}>
+                    <div className="flex items-center gap-1 mt-1.5 text-meta font-bold" style={{ color: 'var(--danger-text)' }}>
                       <WarningCircle size={14} weight="fill" aria-hidden="true" />
                       Over by {fmt(bc.consumed - bc.allocated_amount)}
                     </div>

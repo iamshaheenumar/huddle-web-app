@@ -23,7 +23,7 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
           href={historyHref(periodKey(m), view)}
           scroll={false}
           className="flex items-center gap-3.5 rounded-[20px] p-3.5"
-          style={{ background: '#fff', border: '1px solid var(--hairline)' }}
+          style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}
         >
           <div className="flex flex-col items-center justify-center rounded-2xl flex-shrink-0" style={{ width: 46, height: 46, background: m.accent.bg }}>
             <span className="text-label font-extrabold leading-none" style={{ color: m.accent.color }}>{m.monthAbbr}</span>
@@ -40,14 +40,14 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
               ].filter(Boolean).join(' · ')}
             </div>
           </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C6C2B9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color: 'var(--icon-subtle)' }} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
         </Link>
       ))}
       {remaining > 0 && (
         <button
           onClick={() => setVisible(v => v + PAGE_SIZE)}
           className="rounded-[20px] py-3 text-body font-bold"
-          style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--primary)' }}
+          style={{ background: 'var(--card)', border: '1px solid var(--line)', color: 'var(--primary-text)' }}
         >
           Show {Math.min(PAGE_SIZE, remaining)} more · {remaining} left
         </button>

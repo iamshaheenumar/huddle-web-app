@@ -18,7 +18,12 @@ export const viewport: Viewport = {
   // Pinch-zoom stays on (WCAG 1.4.4); text inputs are 16px so iOS doesn't
   // auto-zoom when one is focused.
   viewportFit: 'cover',
-  themeColor: '#3B6FF6',
+  // Matches the page background (--background in globals.css) so the browser
+  // bar blends in rather than showing a blue strip.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F6F3EE' },
+    { media: '(prefers-color-scheme: dark)', color: '#121418' },
+  ],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

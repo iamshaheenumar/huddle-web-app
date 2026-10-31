@@ -12,7 +12,7 @@ export default function BudgetSetSkeleton() {
         </div>
       </div>
       {/* Total card */}
-      <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         <Sk style={{ width: 140, height: 13 }} />
         <Sk style={{ width: 160, height: 38, marginTop: 6 }} />
         <Sk className="rounded-full" style={{ width: '100%', height: 10, marginTop: 16 }} />
@@ -29,7 +29,7 @@ export default function BudgetSetSkeleton() {
       {/* Category rows */}
       <div className="mx-5 flex flex-col gap-2.5">
         {[0, 1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="flex items-center gap-3.5 rounded-[18px] py-3 px-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <div key={i} className="flex items-center gap-3.5 rounded-[18px] py-3 px-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             <Sk className="rounded-[12px] flex-shrink-0" style={{ width: 40, height: 40 }} />
             <Sk className="flex-1" style={{ height: 14 }} />
             <Sk className="rounded-[11px]" style={{ width: 100, height: 28 }} />

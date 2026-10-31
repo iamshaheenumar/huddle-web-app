@@ -9,7 +9,7 @@ export default function CashFlowCard({ label, flow }: { label: string; flow: Cas
     { title: 'Net', value: signedNet(flow.net), color: 'var(--ink)' },
   ]
   return (
-    <div className="mx-5 mt-3 rounded-2xl px-3.5 py-2.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+    <div className="mx-5 mt-3 rounded-2xl px-3.5 py-2.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
       <div className="text-meta font-extrabold" style={{ color: 'var(--ink)' }}>Cash flow · {label}</div>
       <div className="grid grid-cols-3 gap-2 mt-1.5">
         {cells.map(c => (

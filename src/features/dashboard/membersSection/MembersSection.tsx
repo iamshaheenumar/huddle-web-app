@@ -17,15 +17,15 @@ export default function MembersSection() {
   // A split of one says nothing; point at what makes the group useful instead.
   if (members.length === 1) {
     return (
-      <div className="mx-5 mt-6 flex items-center gap-3.5 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
-        <div className="flex items-center justify-center shrink-0 rounded-[12px]" style={{ width: 40, height: 40, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+      <div className="mx-5 mt-6 flex items-center gap-3.5 rounded-[22px] p-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
+        <div className="flex items-center justify-center shrink-0 rounded-[12px]" style={{ width: 40, height: 40, background: 'var(--primary-soft)', color: 'var(--primary-text)' }}>
           <UsersThree size={20} weight="fill" aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-body font-bold" style={{ color: 'var(--ink)' }}>Budgeting on your own</div>
           <div className="text-meta font-medium mt-0.5" style={{ color: 'var(--muted)' }}>Invite someone to {group?.name ?? 'this group'} to share it.</div>
         </div>
-        <Link href="/members/invite" className="shrink-0 flex items-center min-h-10 rounded-full px-3.5 text-body font-bold" style={{ background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+        <Link href="/members/invite" className="shrink-0 flex items-center min-h-10 rounded-full px-3.5 text-body font-bold" style={{ background: 'var(--primary-soft)', color: 'var(--primary-text)' }}>
           Invite
         </Link>
       </div>
@@ -44,9 +44,9 @@ export default function MembersSection() {
     <>
       <div className="flex items-baseline justify-between px-5 pt-6">
         <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>Who spent what</span>
-        <Link href="/members" className="text-body font-bold py-2" style={{ color: 'var(--primary)' }}>See all</Link>
+        <Link href="/members" className="text-body font-bold py-2" style={{ color: 'var(--primary-text)' }}>See all</Link>
       </div>
-      <div className="mx-5 mt-1 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div className="mx-5 mt-1 rounded-[22px] p-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         {total > 0 && (
           <div className="flex gap-0.5 h-2.5 rounded-full overflow-hidden" aria-hidden="true">
             {ranked.filter(m => m.spent > 0).map(m => (

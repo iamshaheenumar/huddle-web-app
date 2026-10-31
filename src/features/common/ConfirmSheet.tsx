@@ -23,7 +23,7 @@ export default function ConfirmSheet({ open, onClose, onConfirm, title, descript
     <BottomSheet open={open} onClose={onClose} locked={pending} labelledBy="confirm-sheet-title">
       <div className="flex flex-col items-center text-center pt-5">
         {icon && (
-          <div className="flex items-center justify-center rounded-[18px]" style={{ width: 52, height: 52, background: '#FBE8E1', color: 'var(--danger)' }}>
+          <div className="flex items-center justify-center rounded-[18px]" style={{ width: 52, height: 52, background: 'var(--danger-soft)', color: 'var(--danger-text)' }}>
             {icon}
           </div>
         )}
@@ -33,7 +33,7 @@ export default function ConfirmSheet({ open, onClose, onConfirm, title, descript
 
       {children && <div className="mt-4">{children}</div>}
 
-      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <div className="flex flex-col gap-2.5 mt-5">
         <button
@@ -49,7 +49,7 @@ export default function ConfirmSheet({ open, onClose, onConfirm, title, descript
           onClick={onClose}
           disabled={pending}
           className="w-full rounded-[17px] py-3.5 text-row font-bold disabled:opacity-60"
-          style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}
+          style={{ background: 'var(--card)', border: '1px solid var(--line)', color: 'var(--ink)' }}
         >
           Cancel
         </button>

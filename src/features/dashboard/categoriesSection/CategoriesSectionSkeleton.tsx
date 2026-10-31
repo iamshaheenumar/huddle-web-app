@@ -9,7 +9,7 @@ export default function CategoriesSectionSkeleton() {
       </div>
       <div
         className="mx-5 mt-3 rounded-[22px] py-1 px-4"
-        style={{ background: '#fff', border: '1px solid var(--hairline)' }}
+        style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}
       >
         {[0, 1, 2, 3].map((i) => (
           <div

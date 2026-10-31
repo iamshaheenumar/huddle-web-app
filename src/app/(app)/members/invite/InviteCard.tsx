@@ -66,7 +66,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
   }
 
   return (
-    <div className="mx-5 mt-5 rounded-[22px] px-5 pt-5.5 pb-5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+    <div className="mx-5 mt-5 rounded-[22px] px-5 pt-5.5 pb-5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-meta font-bold uppercase tracking-[0.04em]" style={{ color: 'var(--muted)' }}>Invite code</div>
@@ -94,7 +94,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           onClick={handleCopy}
           className={inlineBtn}
           style={copied
-            ? { minWidth: 84, background: '#E6F4EC', color: 'var(--income)' }
+            ? { minWidth: 84, background: 'var(--income-soft)', color: 'var(--income-text)' }
             : { minWidth: 84, background: 'var(--primary)', color: '#fff', boxShadow: '0 8px 16px -8px rgba(59,111,246,.7)' }}
         >
           {copied ? 'Copied' : 'Copy'}
@@ -107,7 +107,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
         <div className="flex-1 h-px" style={{ background: 'var(--hairline)' }} />
       </div>
 
-      <form onSubmit={handleSend} className="flex items-center gap-2 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <form onSubmit={handleSend} className="flex items-center gap-2 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         <input
           type="email"
           value={email}
@@ -121,15 +121,15 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           disabled={!valid || sending}
           className={inlineBtn}
           style={valid
-            ? { minWidth: 84, background: 'var(--ink)', color: '#fff', opacity: sending ? 0.7 : 1 }
+            ? { minWidth: 84, background: 'var(--inverse)', color: 'var(--on-inverse)', opacity: sending ? 0.7 : 1 }
             : { minWidth: 84, background: 'var(--hairline)', color: 'var(--muted)', cursor: 'default' }}
         >
           {sending ? 'Sending…' : 'Send'}
         </button>
       </form>
 
-      {sentTo && <div className="text-meta font-semibold mt-2.5" style={{ color: 'var(--income)' }}>Invite sent to {sentTo}</div>}
-      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {sentTo && <div className="text-meta font-semibold mt-2.5" style={{ color: 'var(--income-text)' }}>Invite sent to {sentTo}</div>}
+      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
     </div>
   )
 }

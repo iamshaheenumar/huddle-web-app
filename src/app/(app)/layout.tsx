@@ -7,7 +7,7 @@ import QueryProvider from '@/features/common/QueryProvider'
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <QueryProvider>
-      <div className="flex flex-col items-center min-h-screen" style={{ background: '#ECEAE4' }}>
+      <div className="flex flex-col items-center min-h-screen" style={{ background: 'var(--gutter)' }}>
         <div
           className="relative flex flex-col w-full"
           style={{ maxWidth: 430, minHeight: '100svh', background: 'var(--background)', overflow: 'hidden' }}

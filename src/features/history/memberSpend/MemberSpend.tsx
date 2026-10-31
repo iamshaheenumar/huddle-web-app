@@ -14,7 +14,7 @@ export default function MemberSpend({ period }: { period?: string }) {
   return (
     <div className="flex flex-col gap-2.5 px-5 mt-4">
       {members.map(m => (
-        <details key={m.user_id} className="group rounded-[20px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <details key={m.user_id} className="group rounded-[20px] p-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           <summary className="flex items-center gap-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
             <MemberAvatar name={m.profile?.display_name ?? '?'} color={m.profile?.avatar_color ?? '#3B6FF6'} size={38} />
             <div className="flex-1 min-w-0">
@@ -28,7 +28,7 @@ export default function MemberSpend({ period }: { period?: string }) {
                 <div className="h-full rounded-full" style={{ width: `${m.share}%`, background: m.profile?.avatar_color ?? '#3B6FF6' }} />
               </div>
             </div>
-            <svg className="shrink-0 transition-transform group-open:rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C6C2B9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+            <svg className="shrink-0 transition-transform group-open:rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color: 'var(--icon-subtle)' }} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
           </summary>
           <TxnList transactions={m.transactions} show="category" />
         </details>

@@ -4,7 +4,7 @@ import { CaretLeft, Plus } from '@phosphor-icons/react/dist/ssr'
 export default function RecurringHeader() {
   return (
     <div className="flex items-center justify-between px-5 pt-12 pb-0">
-      <Link href="/dashboard" aria-label="Back" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}>
+      <Link href="/dashboard" aria-label="Back" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: 'var(--card)', border: '1px solid var(--line)', color: 'var(--ink)' }}>
         <CaretLeft size={17} weight="bold" />
       </Link>
       <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>Recurring</span>

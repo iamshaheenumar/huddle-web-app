@@ -28,13 +28,14 @@ export default function Toggle({ checked, onChange, label, size = 'md', disabled
         onChange(!checked)
       }}
       className="flex-shrink-0 rounded-full transition-colors disabled:opacity-50"
-      style={{ width: s.width, height: s.height, padding: s.pad, background: checked ? 'var(--primary)' : '#E2DED7' }}
+      style={{ width: s.width, height: s.height, padding: s.pad, background: checked ? 'var(--primary)' : 'var(--control-off)' }}
     >
       <span
         className="block rounded-full transition-transform"
         style={{
           width: s.knob,
           height: s.knob,
+          // The knob stays white in both themes, like iOS.
           background: '#fff',
           boxShadow: '0 1px 3px rgba(0,0,0,.2)',
           transform: `translateX(${checked ? s.width - s.knob - s.pad * 2 : 0}px)`,

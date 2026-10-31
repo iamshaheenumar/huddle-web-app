@@ -70,7 +70,7 @@ function OfflineBanner() {
   const online = useOnline()
   if (online) return null
   return (
-    <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full z-30 px-4 pb-1.5 text-center text-meta font-bold text-white" style={{ maxWidth: 430, background: 'var(--ink)', paddingTop: 'calc(env(safe-area-inset-top) + 6px)' }}>
+    <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full z-30 px-4 pb-1.5 text-center text-meta font-bold" style={{ maxWidth: 430, background: 'var(--inverse)', color: 'var(--on-inverse)', paddingTop: 'calc(env(safe-area-inset-top) + 6px)' }}>
       You&apos;re offline · showing saved data
     </div>
   )

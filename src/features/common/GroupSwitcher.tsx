@@ -33,14 +33,14 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
       <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="menu" className="flex items-center gap-2 mt-0.5 min-h-11">
         <span className="text-title font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>{currentGroup.name}</span>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: open ? 'rotate(180deg)' : undefined, transition: 'transform .15s' }}>
-          <path d="M2 4l4 4 4-4" stroke="#666B75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M2 4l4 4 4-4" stroke="currentColor" style={{ color: 'var(--muted)' }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full mt-2 z-20 w-56 rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid var(--hairline)', boxShadow: '0 16px 32px -12px rgba(32,36,46,.18)' }}>
+          <div className="absolute left-0 top-full mt-2 z-20 w-56 rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--hairline)', boxShadow: '0 16px 32px -12px rgba(32,36,46,.18)' }}>
             {groups.map(g => (
               <button
                 key={g.id}
@@ -50,14 +50,14 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
                 style={{ color: 'var(--ink)', borderBottom: '1px solid var(--hairline)' }}
               >
                 {g.name}
-                {g.id === currentGroup.id && <Check size={15} weight="bold" color="#2F63E0" />}
+                {g.id === currentGroup.id && <Check size={15} weight="bold" style={{ color: 'var(--primary-text)' }} />}
               </button>
             ))}
             <Link
               href="/groups/new"
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-3 text-body font-bold"
-              style={{ color: 'var(--primary)' }}
+              style={{ color: 'var(--primary-text)' }}
             >
               <Plus size={15} weight="bold" /> Create new group
             </Link>

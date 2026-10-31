@@ -11,7 +11,7 @@ export default function ProfileSkeleton() {
             <Sk style={{ width: 90, height: 14 }} />
           </div>
         </div>
-        <div className="rounded-3xl p-5 mb-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="rounded-3xl p-5 mb-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           <div className="flex items-center gap-4">
             <Sk className="rounded-full" style={{ width: 56, height: 56 }} />
             <div className="flex flex-col gap-2">

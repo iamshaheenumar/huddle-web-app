@@ -24,7 +24,7 @@ export default async function JoinGroupPage({ params }: { params: Promise<{ code
   if (!invite) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-6" style={{ background: 'var(--background)' }}>
-        <div className="w-full max-w-sm rounded-3xl p-6 text-center" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="w-full max-w-sm rounded-3xl p-6 text-center" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           <p className="text-row font-bold mb-2" style={{ color: 'var(--ink)' }}>Invite link invalid or expired</p>
           <p className="text-meta font-medium mb-4" style={{ color: 'var(--muted)' }}>Ask whoever invited you to send a new link.</p>
           <Link href={user ? '/dashboard' : '/login'} className="inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-body font-extrabold text-white" style={{ background: 'var(--primary)' }}>

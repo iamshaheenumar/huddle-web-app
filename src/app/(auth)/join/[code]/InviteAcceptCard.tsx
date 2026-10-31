@@ -71,7 +71,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
           <p className="text-body font-medium mt-1" style={{ color: 'var(--muted)' }}>Invited by {inviterName}</p>
         </div>
 
-        <div className="rounded-3xl p-5 mb-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="rounded-3xl p-5 mb-6" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           <div className="text-meta font-bold mb-3" style={{ color: 'var(--muted)' }}>
             {memberCount} member{memberCount !== 1 ? 's' : ''} already here
           </div>
@@ -86,8 +86,8 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
         </div>
 
         {isAuthenticated && !needsSetup ? (
-          <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
-            {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mb-4" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+          <div className="rounded-3xl p-6" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
+            {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mb-4" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
             <button
               onClick={handleJoin}
               disabled={loading}
@@ -98,7 +98,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
             </button>
           </div>
         ) : (
-          <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <div className="rounded-3xl p-6" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             <h2 className="text-title font-extrabold mb-6" style={{ color: 'var(--ink)' }}>{needsSetup ? 'Finish setting up' : 'Create your account'}</h2>
             <form onSubmit={handleSignupAndJoin} className="flex flex-col gap-4">
               <div>
@@ -139,7 +139,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
                   style={{ background: 'var(--background)', border: '1px solid var(--line)', color: 'var(--ink)' }}
                 />
               </div>
-              {error && <p className="text-meta font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+              {error && <p className="text-meta font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
               <button
                 type="submit"
                 disabled={loading}
@@ -154,11 +154,11 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
 
         {!needsSetup && <p className="text-center text-body font-medium mt-6" style={{ color: 'var(--muted)' }}>
           {isAuthenticated ? (
-            <Link href="/dashboard" className="font-bold" style={{ color: 'var(--primary)' }}>Maybe later</Link>
+            <Link href="/dashboard" className="font-bold" style={{ color: 'var(--primary-text)' }}>Maybe later</Link>
           ) : (
             <>
               Already have an account?{' '}
-              <Link href={`/login?next=/join/${code}`} className="font-bold" style={{ color: 'var(--primary)' }}>Sign in</Link>
+              <Link href={`/login?next=/join/${code}`} className="font-bold" style={{ color: 'var(--primary-text)' }}>Sign in</Link>
             </>
           )}
         </p>}

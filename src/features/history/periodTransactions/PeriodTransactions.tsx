@@ -19,7 +19,7 @@ export default function PeriodTransactions({ period }: { period?: string }) {
 
   if (days.length === 0) {
     return (
-      <div className="mx-5 mt-4 rounded-[22px] py-[22px] text-center text-body font-medium" style={{ background: '#fff', border: '1px solid var(--hairline)', color: 'var(--muted)' }}>
+      <div className="mx-5 mt-4 rounded-[22px] py-[22px] text-center text-body font-medium" style={{ background: 'var(--card)', border: '1px solid var(--hairline)', color: 'var(--muted)' }}>
         No transactions this month
       </div>
     )
@@ -33,7 +33,7 @@ export default function PeriodTransactions({ period }: { period?: string }) {
             <span className="text-body font-extrabold" style={{ color: 'var(--ink)' }}>{dayLabel(d.date)}</span>
             <span className="text-meta font-bold tabular-nums" style={{ color: 'var(--muted)' }}>{signedNet(d.total)}</span>
           </div>
-          <div className="mt-2 rounded-[22px] px-4 overflow-hidden" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <div className="mt-2 rounded-[22px] px-4 overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             {d.transactions.map((t, i) => {
               const payer = t.payerName.split(' ')[0]
               const income = isIncome(t)

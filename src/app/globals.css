@@ -1,28 +1,84 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
-/* Text colours each pass WCAG AA (4.5:1) on white and on the cream background.
+/* Text colours each pass WCAG AA (4.5:1) on their surfaces, in both themes.
    Inline styles use these as var(--muted) etc.; category and avatar colours are
-   user data and stay as stored hex. */
+   user data and stay as stored hex.
+   --primary, --danger and --income are FILLS (white text sits on them); text
+   in those colours uses the -text variants, which brighten in dark mode. */
 :root {
+  color-scheme: light dark;
   --background: #F6F3EE;
   --foreground: #20242E;
+  /* Cards, sheets, tiles */
+  --card: #FFFFFF;
+  /* Behind the 430px app column on wide screens */
+  --gutter: #ECEAE4;
   --ink: #20242E;
+  --ink-2: #5C616B;
+  --muted: #666B75;
+  /* Chevrons and other decorative icons (3:1) */
+  --icon-subtle: #8A8F98;
   /* Card edges and row dividers */
   --hairline: #F0ECE4;
   /* Borders on controls: buttons, chips, fields */
   --line: #EAE5DD;
   /* Empty part of a progress bar or segmented control */
   --track: #EFEBE3;
+  /* Quiet tile behind a muted icon */
+  --subtle: #F2EFEA;
+  /* Toggle and radio "off" */
+  --control-off: #E2DED7;
+  --disabled: #DCD6CC;
+  --disabled-ink: #4A4F59;
+  /* Selected chips and tabs: dark on light, light on dark */
+  --inverse: #20242E;
+  --on-inverse: #FFFFFF;
   --primary: #2F63E0;
+  --primary-text: #2F63E0;
   --primary-soft: #E9F0FE;
-  --danger-soft: #FBE7E1;
-  --muted: #666B75;
-  --ink-2: #5C616B;
+  --primary-line: #B9CCFB;
   --danger: #B53D27;
-  --warning: #9A5B00;
+  --danger-text: #B53D27;
+  --danger-soft: #FBE7E1;
   --income: #1F7A52;
+  --income-text: #1F7A52;
+  --income-soft: #E6F4EC;
+  --warning: #9A5B00;
   --focus-ring: #2F63E0;
+}
+
+/* Follows the device setting. Fills stay put so white text on them keeps
+   its contrast; surfaces, text and tints flip. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121418;
+    --foreground: #ECEEF1;
+    --card: #1C1F25;
+    --gutter: #0C0D10;
+    --ink: #ECEEF1;
+    --ink-2: #C2C6CE;
+    --muted: #9EA4AE;
+    --icon-subtle: #7A808B;
+    --hairline: #2A2E36;
+    --line: #383D47;
+    --track: #2E323B;
+    --subtle: #262A31;
+    --control-off: #4A505B;
+    --disabled: #2E323B;
+    --disabled-ink: #A9AEB7;
+    --inverse: #ECEEF1;
+    --on-inverse: #121418;
+    --primary-text: #8DB0FF;
+    --primary-soft: #1E2A45;
+    --primary-line: #3A5290;
+    --danger-text: #FF8E7A;
+    --danger-soft: #3A1F1B;
+    --income-text: #5FD39A;
+    --income-soft: #17301F;
+    --warning: #F2B556;
+    --focus-ring: #8DB0FF;
+  }
 }
 
 @theme inline {
@@ -41,8 +97,11 @@
   --color-danger: var(--danger);
   --color-warning: var(--warning);
   --color-income: var(--income);
-  --color-border: #F0ECE4;
-  --color-card: #ffffff;
+  --color-primary-text: var(--primary-text);
+  --color-danger-text: var(--danger-text);
+  --color-income-text: var(--income-text);
+  --color-border: var(--hairline);
+  --color-card: var(--card);
   --font-sans: 'Plus Jakarta Sans', sans-serif;
 
   /* Type scale: text-label … text-display. Nothing goes below 11px; 16px is

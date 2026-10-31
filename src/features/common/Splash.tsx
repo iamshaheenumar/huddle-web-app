@@ -2,7 +2,7 @@ import HuddleMark from '@/features/common/HuddleMark'
 
 export default function Splash({ markSize = 88, showLoader = true }: { markSize?: number; showLoader?: boolean }) {
   return (
-    <div className="flex justify-center min-h-svh" style={{ background: '#ECEAE4' }}>
+    <div className="flex justify-center min-h-svh" style={{ background: 'var(--gutter)' }}>
       <div className="flex flex-col items-center w-full min-h-svh" style={{ maxWidth: 430, background: 'var(--background)' }}>
         <div className="flex-1" />
         <div className="flex flex-col items-center gap-5.5">

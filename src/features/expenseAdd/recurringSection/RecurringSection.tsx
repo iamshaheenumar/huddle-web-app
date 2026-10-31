@@ -41,9 +41,9 @@ export default function RecurringSection({ income, enabled, onEnabledChange, set
 
   return (
     <div className="px-5 pt-2.5">
-      <div className="flex flex-col gap-3.5 rounded-[18px] px-[15px] py-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div className="flex flex-col gap-3.5 rounded-[18px] px-[15px] py-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         <div className="flex items-center gap-[11px]">
-          <div className="flex items-center justify-center flex-shrink-0 rounded-[11px]" style={{ width: 34, height: 34, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+          <div className="flex items-center justify-center flex-shrink-0 rounded-[11px]" style={{ width: 34, height: 34, background: 'var(--primary-soft)', color: 'var(--primary-text)' }}>
             <ArrowsClockwise size={17} weight="bold" />
           </div>
           <div className="flex-1 min-w-0">
@@ -71,12 +71,12 @@ export default function RecurringSection({ income, enabled, onEnabledChange, set
               <div className="text-label font-bold uppercase tracking-[.4px]" style={{ color: 'var(--muted)' }}>Ends</div>
               <div className="flex items-center justify-between mt-0.5">
                 <span className="text-body font-bold" style={{ color: 'var(--ink)' }}>{endsLabel(settings, noun)}</span>
-                <CaretDown size={11} weight="bold" color="#666B75" />
+                <CaretDown size={11} weight="bold" style={{ color: 'var(--muted)' }} />
               </div>
             </button>
 
             <div className="flex items-center gap-[7px] text-meta font-medium" style={{ color: 'var(--ink-2)' }}>
-              <CalendarCheck size={15} weight="fill" color="#2F63E0" className="flex-shrink-0" />
+              <CalendarCheck size={15} weight="fill" style={{ color: 'var(--primary-text)' }} className="flex-shrink-0" />
               <span className="flex-1 min-w-0">
                 {scheduleLabel(settings.frequency, startDate)}
                 {nextDue
@@ -84,7 +84,7 @@ export default function RecurringSection({ income, enabled, onEnabledChange, set
                   : ` · no further ${noun}s`}
               </span>
               {showManageLink && (
-                <Link href="/recurring" className="text-meta font-bold whitespace-nowrap" style={{ color: 'var(--primary)' }}>
+                <Link href="/recurring" className="text-meta font-bold whitespace-nowrap" style={{ color: 'var(--primary-text)' }}>
                   Manage recurring
                 </Link>
               )}

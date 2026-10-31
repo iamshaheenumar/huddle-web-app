@@ -54,7 +54,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
         </div>
 
         {profile && (
-          <div className="rounded-3xl p-5 mb-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <div className="rounded-3xl p-5 mb-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full flex items-center justify-center font-extrabold text-title text-white"
                 style={{ background: profile.avatar_color }}>
@@ -78,7 +78,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
                     style={{
                       background: c,
                       // A ring via box-shadow leaves outline free for the keyboard focus ring.
-                      boxShadow: profile.avatar_color === c ? `0 0 0 2px #fff, 0 0 0 5px ${c}` : undefined,
+                      boxShadow: profile.avatar_color === c ? `0 0 0 2px var(--card), 0 0 0 5px ${c}` : undefined,
                     }}
                   />
                 ))}
@@ -91,7 +91,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
           onClick={handleSignOut}
           disabled={loading}
           className="w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 text-row font-extrabold transition-opacity disabled:opacity-60"
-          style={{ background: '#fff', border: '1px solid var(--hairline)', color: 'var(--danger)' }}
+          style={{ background: 'var(--card)', border: '1px solid var(--hairline)', color: 'var(--danger-text)' }}
         >
           <SignOut size={18} weight="bold" />
           {loading ? 'Signing out…' : 'Sign out'}

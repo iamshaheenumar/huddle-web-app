@@ -187,7 +187,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-0">
-        <button onClick={() => router.back()} aria-label="Close" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}>
+        <button onClick={() => router.back()} aria-label="Close" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: 'var(--card)', border: '1px solid var(--line)', color: 'var(--ink)' }}>
           <X size={16} weight="bold" />
         </button>
         <div className="flex flex-col items-center min-w-0 px-2">
@@ -195,7 +195,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
           <span className="text-meta font-medium truncate max-w-full" style={{ color: 'var(--muted)' }}>in {groupName}</span>
         </div>
         {editing ? (
-          <button onClick={() => setConfirmingDelete(true)} aria-label={income ? 'Delete recurring income' : 'Delete recurring payment'} className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: 'var(--danger-soft)', color: 'var(--danger)' }}>
+          <button onClick={() => setConfirmingDelete(true)} aria-label={income ? 'Delete recurring income' : 'Delete recurring payment'} className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: 'var(--danger-soft)', color: 'var(--danger-text)' }}>
             <Trash size={17} weight="bold" />
           </button>
         ) : (
@@ -242,7 +242,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
                 className="flex items-center gap-2 rounded-full min-h-11 pl-1 pr-3.5 text-body transition-colors"
                 style={selected
                   ? { background: 'var(--primary)', color: '#fff', fontWeight: 700 }
-                  : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600 }
+                  : { background: 'var(--card)', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600 }
                 }
               >
                 <span className="rounded-full flex items-center justify-center font-extrabold flex-shrink-0 text-meta"
@@ -274,10 +274,10 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
                 className="flex flex-col items-center gap-1.5 rounded-[16px] px-1 pt-2.5 pb-2 min-h-20 transition-colors"
                 style={selected
                   ? { background: cat.bg_color, boxShadow: `inset 0 0 0 2px ${cat.color}` }
-                  : { background: '#fff', boxShadow: 'inset 0 0 0 1px var(--hairline)' }
+                  : { background: 'var(--card)', boxShadow: 'inset 0 0 0 1px var(--hairline)' }
                 }
               >
-                <CategoryIcon icon={cat.icon} color={cat.color} bg_color={selected ? '#fff' : cat.bg_color} size={38} iconSize={19} radius={12} />
+                <CategoryIcon icon={cat.icon} color={cat.color} bg_color={selected ? 'var(--card)' : cat.bg_color} size={38} iconSize={19} radius={12} />
                 <span className="text-meta leading-tight text-center line-clamp-2" style={{ color: 'var(--ink)', fontWeight: selected ? 700 : 600 }}>{cat.name}</span>
               </button>
             )
@@ -286,7 +286,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
             type="button"
             onClick={() => setAddingCategory(true)}
             className="flex flex-col items-center gap-1.5 rounded-[16px] px-1 pt-2.5 pb-2 min-h-20"
-            style={{ color: 'var(--primary)', boxShadow: 'inset 0 0 0 1.5px #B9CCFB' }}
+            style={{ color: 'var(--primary-text)', boxShadow: 'inset 0 0 0 1.5px var(--primary-line)' }}
           >
             <span className="flex items-center justify-center rounded-[12px]" style={{ width: 38, height: 38, background: 'var(--primary-soft)' }}>
               <Plus size={18} weight="bold" />
@@ -309,8 +309,8 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
 
       {/* Note + Date */}
       <div className="px-5 pt-5 flex flex-col gap-2.5">
-        <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
-          <NotePencil size={18} color="#666B75" />
+        <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
+          <NotePencil size={18} style={{ color: 'var(--muted)' }} />
           <input
             type="text"
             aria-label="Note"
@@ -333,8 +333,8 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
                 onClick={() => setDate(c.value)}
                 className="min-h-10 rounded-full px-4 text-meta transition-colors"
                 style={selected
-                  ? { background: 'var(--ink)', color: '#fff', fontWeight: 700 }
-                  : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600 }}
+                  ? { background: 'var(--inverse)', color: 'var(--on-inverse)', fontWeight: 700 }
+                  : { background: 'var(--card)', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600 }}
               >
                 {c.label}
               </button>
@@ -344,8 +344,8 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
           <label
             className="relative flex items-center gap-1.5 min-h-10 rounded-full px-4 text-meta cursor-pointer focus-within:outline-2 focus-within:outline-offset-2"
             style={pickedDate
-              ? { background: 'var(--ink)', color: '#fff', fontWeight: 700, outlineColor: 'var(--focus-ring)' }
-              : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600, outlineColor: 'var(--focus-ring)' }}
+              ? { background: 'var(--inverse)', color: 'var(--on-inverse)', fontWeight: 700, outlineColor: 'var(--focus-ring)' }
+              : { background: 'var(--card)', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600, outlineColor: 'var(--focus-ring)' }}
           >
             <CalendarBlank size={15} weight="bold" />
             {pickedDate ? pickedLabel : 'Pick date…'}
@@ -385,7 +385,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
         />
       )}
 
-      {error &&<p className="mx-5 mt-3 text-meta font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {error &&<p className="mx-5 mt-3 text-meta font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       {/* Add button */}
       <div className="sticky bottom-0 px-5 mt-auto pt-6 pb-[calc(env(safe-area-inset-bottom)+16px)]" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),var(--background) 38%)' }}>
@@ -395,7 +395,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
           className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-row font-extrabold transition-colors disabled:cursor-not-allowed"
           style={ready
             ? { background: 'var(--primary)', color: '#fff', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }
-            : { background: '#DCD6CC', color: '#4A4F59' }}
+            : { background: 'var(--disabled)', color: 'var(--disabled-ink)' }}
         >
           {ready && <SubmitIcon size={18} weight="fill" />}
           <span className="truncate">{loading ? 'Saving…' : submitLabel}</span>

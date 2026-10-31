@@ -9,7 +9,7 @@ export default function PeriodTransactionsSkeleton() {
             <Sk style={{ width: 90, height: 13 }} />
             <Sk style={{ width: 60, height: 12 }} />
           </div>
-          <div className="mt-2 rounded-[22px] px-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <div className="mt-2 rounded-[22px] px-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             {Array.from({ length: rows }, (_, i) => (
               <div key={i} className="flex items-center gap-3 py-[13px]" style={{ borderBottom: i < rows - 1 ? '1px solid var(--hairline)' : 'none' }}>
                 <Sk className="rounded-[12px] flex-shrink-0" style={{ width: 40, height: 40 }} />

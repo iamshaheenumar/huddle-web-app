@@ -31,9 +31,9 @@ export default function DayTransactionsSection() {
             <span className="text-meta font-medium tabular-nums truncate" style={{ color: 'var(--muted)' }}>{CURRENCY} {fmt(spent)} spent</span>
           )}
         </div>
-        <Link href="/history" className="shrink-0 text-body font-bold py-2" style={{ color: 'var(--primary)' }}>See all</Link>
+        <Link href="/history" className="shrink-0 text-body font-bold py-2" style={{ color: 'var(--primary-text)' }}>See all</Link>
       </div>
-      <div className="mx-5 mt-3 rounded-[22px] py-1 px-4 overflow-hidden" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div className="mx-5 mt-3 rounded-[22px] py-1 px-4 overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         {date && !isToday && (
           <div className="text-meta font-medium pt-3" style={{ color: 'var(--muted)' }}>Nothing logged today yet — showing your last transactions.</div>
         )}

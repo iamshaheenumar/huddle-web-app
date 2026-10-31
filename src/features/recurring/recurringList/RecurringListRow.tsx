@@ -92,7 +92,7 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
         tabIndex={open ? 0 : -1}
         aria-hidden={!open}
         className="absolute top-0 right-0 bottom-0 flex flex-col items-center justify-center gap-[3px] text-white"
-        style={{ width: ACTION_WIDTH, background: '#E5483E' }}
+        style={{ width: ACTION_WIDTH, background: 'var(--danger)' }}
       >
         <Trash size={18} weight="bold" />
         <span className="text-label font-extrabold">Delete</span>
@@ -110,7 +110,7 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
         onPointerCancel={onPointerEnd}
         className="relative px-4 cursor-pointer select-none"
         style={{
-          background: '#fff',
+          background: 'var(--card)',
           touchAction: 'pan-y',
           transform: `translateX(${offset}px)`,
           transition: dragOffset === null ? 'transform .2s ease' : 'none',
@@ -122,7 +122,7 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
             ? <IncomeIcon size={36} iconSize={18} radius={11} muted={!running} />
             : running && row.categories
             ? <CategoryIcon icon={row.categories.icon} color={row.categories.color} bg_color={row.categories.bg_color} size={36} iconSize={18} radius={11} />
-            : <CategoryIcon icon={row.categories?.icon ?? ''} color="#666B75" bg_color="#F2EFEA" size={36} iconSize={18} radius={11} />}
+            : <CategoryIcon icon={row.categories?.icon ?? ''} color="var(--muted)" bg_color="var(--subtle)" size={36} iconSize={18} radius={11} />}
           <div className="flex-1 min-w-0">
             <div className="text-body font-bold truncate" style={{ color: running ? 'var(--ink)' : 'var(--muted)' }}>{title}</div>
             <div className="flex items-center gap-1.5 min-w-0">

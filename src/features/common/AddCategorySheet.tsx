@@ -103,7 +103,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
 
       <div className="mt-5">
         <label htmlFor="category-name" className="text-body font-bold block mb-2" style={{ color: 'var(--ink-2)' }}>Name</label>
-        <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           <input
             id="category-name"
             type="text"
@@ -123,7 +123,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
 
       <div className="mt-5">
         <div className="text-body font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Icon</div>
-        <div className="grid grid-cols-6 gap-2 rounded-[18px] p-2.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="grid grid-cols-6 gap-2 rounded-[18px] p-2.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           {CATEGORY_ICON_NAMES.map(n => {
             const selected = n === icon
             return (
@@ -182,7 +182,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
         <p className="text-label font-semibold mt-2" style={{ color: 'var(--muted)' }}>Dotted colors are already used by another category.</p>
       </div>
 
-      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: 'var(--danger-text)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <div className="flex flex-col gap-2.5 mt-5">
         <button
@@ -198,7 +198,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
           onClick={onCancel}
           disabled={pending}
           className="w-full rounded-[17px] py-3.5 text-row font-bold disabled:opacity-60"
-          style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}
+          style={{ background: 'var(--card)', border: '1px solid var(--line)', color: 'var(--ink)' }}
         >
           Cancel
         </button>

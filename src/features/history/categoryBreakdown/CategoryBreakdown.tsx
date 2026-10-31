@@ -11,7 +11,7 @@ export default function CategoryBreakdown({ period }: { period?: string }) {
   if (!categories) return <CategoryBreakdownSkeleton />
   if (categories.length === 0) {
     return (
-      <div className="mx-5 mt-4 rounded-[22px] py-[22px] text-center text-body font-medium" style={{ background: '#fff', border: '1px solid var(--hairline)', color: 'var(--muted)' }}>
+      <div className="mx-5 mt-4 rounded-[22px] py-[22px] text-center text-body font-medium" style={{ background: 'var(--card)', border: '1px solid var(--hairline)', color: 'var(--muted)' }}>
         No category spend this month
       </div>
     )
@@ -27,14 +27,14 @@ export default function CategoryBreakdown({ period }: { period?: string }) {
         const budgetFraction = c.consumed > 0 ? Math.min(100, (c.allocated / c.consumed) * 100) : 0
         const barColor = c.category.color
         return (
-          <details key={c.category.id} className="group rounded-[20px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <details key={c.category.id} className="group rounded-[20px] p-4" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             <summary className="flex items-center gap-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               <CategoryIcon icon={c.category.icon} color={c.category.color} bg_color={c.category.bg_color} size={38} iconSize={19} radius={12} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-body font-bold" style={{ color: 'var(--ink)' }}>{c.category.name}</span>
                   {overspent
-                    ? <span className="text-label font-bold rounded-full px-2.5 py-1 shrink-0" style={{ background: '#FBE8E1', color: 'var(--danger)' }}>Over by {fmt(c.consumed - c.allocated)}</span>
+                    ? <span className="text-label font-bold rounded-full px-2.5 py-1 shrink-0" style={{ background: 'var(--danger-soft)', color: 'var(--danger-text)' }}>Over by {fmt(c.consumed - c.allocated)}</span>
                     : hasAllocation
                       ? <span className="text-body font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(c.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(c.allocated)}</span></span>
                       : <span className="text-body font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(c.consumed)}</span>}
@@ -45,7 +45,7 @@ export default function CategoryBreakdown({ period }: { period?: string }) {
                     : <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />}
                 </div>
               </div>
-              <svg className="shrink-0 transition-transform group-open:rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C6C2B9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+              <svg className="shrink-0 transition-transform group-open:rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color: 'var(--icon-subtle)' }} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
             </summary>
             <TxnList transactions={c.transactions} show="payer" />
           </details>

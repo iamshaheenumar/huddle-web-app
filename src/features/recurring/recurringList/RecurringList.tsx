@@ -44,12 +44,12 @@ export default function RecurringList({ rows, filter }: { rows: RecurringRow[]; 
         <span className="text-row font-extrabold" style={{ color: 'var(--ink)' }}>Upcoming</span>
         <span className="text-meta font-bold" style={{ color: 'var(--muted)' }}>Sorted by due date</span>
       </div>
-      <div className="mx-5 mt-3 rounded-[20px] py-1 overflow-hidden" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+      <div className="mx-5 mt-3 rounded-[20px] py-1 overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
         {rows.length === 0 ? (
           <div className="py-[22px] px-4 text-center text-body font-medium" style={{ color: 'var(--muted)' }}>
             {EMPTY_TEXT[filter]}
             {filter === 'all' && (
-              <> <Link href="/expense/add?recurring=1" className="font-bold" style={{ color: 'var(--primary)' }}>Add one</Link></>
+              <> <Link href="/expense/add?recurring=1" className="font-bold" style={{ color: 'var(--primary-text)' }}>Add one</Link></>
             )}
           </div>
         ) : (
@@ -81,7 +81,7 @@ export default function RecurringList({ rows, filter }: { rows: RecurringRow[]; 
         confirmLabel="Delete"
       >
         {deleting && (
-          <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
             {isIncome(deleting)
               ? <IncomeIcon size={40} iconSize={20} radius={12} />
               : deleting.categories && <CategoryIcon icon={deleting.categories.icon} color={deleting.categories.color} bg_color={deleting.categories.bg_color} size={40} iconSize={20} radius={12} />}

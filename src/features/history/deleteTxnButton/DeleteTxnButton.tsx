@@ -38,7 +38,7 @@ export default function DeleteTxnButton({ txn }: { txn: HistoryTxn }) {
         onClick={() => setOpen(true)}
         aria-label={`Delete ${label}`}
         className="tap-target flex items-center justify-center rounded-[10px] shrink-0"
-        style={{ width: 30, height: 30, color: 'var(--danger)', background: 'var(--danger-soft)', border: 'none' }}
+        style={{ width: 30, height: 30, color: 'var(--danger-text)', background: 'var(--danger-soft)', border: 'none' }}
       >
         <TrashIcon size={15} weight="bold" />
       </button>
@@ -52,7 +52,7 @@ export default function DeleteTxnButton({ txn }: { txn: HistoryTxn }) {
         description="It'll be removed from this month's totals for everyone in the group. This can't be undone."
         confirmLabel="Delete"
       >
-        <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+        <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           {income
             ? <IncomeIcon size={40} iconSize={20} radius={12} />
             : txn.category && <CategoryIcon icon={txn.category.icon} color={txn.category.color} bg_color={txn.category.bg_color} size={40} iconSize={20} radius={12} />}

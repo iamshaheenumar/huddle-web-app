@@ -27,7 +27,7 @@ export default function BottomNav() {
       aria-current={active(href) ? 'page' : undefined}
       className="flex flex-col items-center justify-center gap-1 min-w-14 min-h-11"
       // Icons default to currentColor, so this colours both icon and label.
-      style={{ color: active(href) ? 'var(--primary)' : 'var(--muted)' }}
+      style={{ color: active(href) ? 'var(--primary-text)' : 'var(--muted)' }}
     >
       <Icon size={24} weight={active(href) ? 'fill' : 'regular'} />
       <span className="text-label font-bold">{label}</span>
@@ -39,7 +39,7 @@ export default function BottomNav() {
       aria-label="Main"
       className="flex items-center justify-around px-3 pt-2"
       style={{
-        background: '#fff',
+        background: 'var(--card)',
         borderTop: '1px solid var(--hairline)',
         paddingBottom: 'env(safe-area-inset-bottom, 22px)',
         marginBottom: 0,
