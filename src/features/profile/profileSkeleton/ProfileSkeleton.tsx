@@ -2,7 +2,7 @@ import { Sk } from '@/features/common/Skeleton'
 
 export default function ProfileSkeleton() {
   return (
-    <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen pb-24" style={{ background: 'var(--background)' }}>
       <div className="px-5 pt-12 pb-0">
         <div className="flex items-center gap-4 mb-8">
           <Sk className="rounded-2xl" style={{ width: 56, height: 56 }} />
@@ -11,7 +11,7 @@ export default function ProfileSkeleton() {
             <Sk style={{ width: 90, height: 14 }} />
           </div>
         </div>
-        <div className="rounded-3xl p-5 mb-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div className="rounded-3xl p-5 mb-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           <div className="flex items-center gap-4">
             <Sk className="rounded-full" style={{ width: 56, height: 56 }} />
             <div className="flex flex-col gap-2">

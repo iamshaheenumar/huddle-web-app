@@ -1,22 +1,19 @@
 'use client'
 
-import Link from 'next/link'
 import { useAppContext } from '@/features/common/queries'
 import ShareButton from './ShareButton'
 import HistoryHeaderSkeleton from './HistoryHeaderSkeleton'
 
+// A tab in the bottom nav, so it's headed like Home rather than given a back button.
 export default function HistoryHeader() {
   const { group } = useAppContext()
   if (!group) return <HistoryHeaderSkeleton />
 
   return (
     <div className="flex items-center justify-between px-5 pt-12 pb-1">
-      <Link href="/dashboard" aria-label="Back to home" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-      </Link>
-      <div className="flex flex-col items-center">
-        <span className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>{group.name} group</span>
-        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>Spending history</span>
+      <div className="min-w-0">
+        <div className="text-[13px] font-semibold truncate" style={{ color: 'var(--muted)' }}>{group.name} group</div>
+        <h1 className="text-[22px] font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>History</h1>
       </div>
       <ShareButton groupName={group.name} />
     </div>

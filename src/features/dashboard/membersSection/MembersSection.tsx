@@ -24,10 +24,10 @@ export default function MembersSection() {
   return (
     <>
       <div className="flex items-baseline justify-between px-5 pt-6">
-        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>Who spent what</span>
+        <span className="text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>Who spent what</span>
         <Link href="/members" className="text-[13px] font-bold py-2" style={{ color: 'var(--primary)' }}>See all</Link>
       </div>
-      <div className="mx-5 mt-1 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+      <div className="mx-5 mt-1 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {total > 0 && (
           <div className="flex gap-0.5 h-2.5 rounded-full overflow-hidden" aria-hidden="true">
             {ranked.filter(m => m.spent > 0).map(m => (
@@ -43,7 +43,7 @@ export default function MembersSection() {
                 <span className="truncate">{m.name}</span>
                 <span className="shrink-0">· {m.share}%</span>
               </span>
-              <span className="text-[15px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>{fmt(m.spent)}</span>
+              <span className="text-[15px] font-extrabold tabular-nums" style={{ color: 'var(--ink)' }}>{fmt(m.spent)}</span>
             </div>
           ))}
         </div>

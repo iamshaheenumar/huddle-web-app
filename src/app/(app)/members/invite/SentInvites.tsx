@@ -32,12 +32,12 @@ export default function SentInvites({ invites }: { invites: EmailInvite[] }) {
 
   return (
     <>
-      <div className="px-5 pt-6 text-[17px] font-extrabold" style={{ color: '#20242E' }}>Sent invites</div>
-      <div className="mx-5 mt-3 rounded-[22px] py-1.5 px-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+      <div className="px-5 pt-6 text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>Sent invites</div>
+      <div className="mx-5 mt-3 rounded-[22px] py-1.5 px-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {invites.map((inv, i) => (
-          <div key={inv.email} className="flex items-center gap-3 py-3" style={{ borderBottom: i < invites.length - 1 ? '1px solid #F4F0E9' : 'none' }}>
+          <div key={inv.email} className="flex items-center gap-3 py-3" style={{ borderBottom: i < invites.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
             <div className="flex-1 min-w-0">
-              <div className="text-[14px] font-bold truncate" style={{ color: '#20242E' }}>{inv.email}</div>
+              <div className="text-[14px] font-bold truncate" style={{ color: 'var(--ink)' }}>{inv.email}</div>
               <div className="text-[12px] font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>
                 {inv.accepted_at ? 'Joined the group' : `Pending · sent ${sentAgo(inv.last_sent_at)}`}
               </div>
@@ -49,7 +49,7 @@ export default function SentInvites({ invites }: { invites: EmailInvite[] }) {
                 onClick={() => handleResend(inv.email)}
                 disabled={resending !== null}
                 className="rounded-full px-3 py-1.5 text-[12px] font-bold disabled:opacity-60"
-                style={{ background: '#F6F3EE', color: 'var(--primary)' }}
+                style={{ background: 'var(--background)', color: 'var(--primary)' }}
               >
                 {resending === inv.email ? 'Sending…' : 'Resend'}
               </button>
@@ -57,7 +57,7 @@ export default function SentInvites({ invites }: { invites: EmailInvite[] }) {
           </div>
         ))}
       </div>
-      {error && <p className="mx-5 text-xs font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+      {error && <p className="mx-5 text-xs font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
     </>
   )
 }

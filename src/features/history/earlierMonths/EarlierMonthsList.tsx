@@ -23,14 +23,14 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
           href={historyHref(periodKey(m), view)}
           scroll={false}
           className="flex items-center gap-3.5 rounded-[20px] p-3.5"
-          style={{ background: '#fff', border: '1px solid #F0ECE4' }}
+          style={{ background: '#fff', border: '1px solid var(--hairline)' }}
         >
           <div className="flex flex-col items-center justify-center rounded-2xl flex-shrink-0" style={{ width: 46, height: 46, background: m.accent.bg }}>
-            <span className="text-[10px] font-extrabold leading-none" style={{ color: m.accent.color }}>{m.monthAbbr}</span>
-            <span className="text-[15px] font-extrabold leading-none mt-1" style={{ color: '#20242E' }}>{m.yearShort}</span>
+            <span className="text-[11px] font-extrabold leading-none" style={{ color: m.accent.color }}>{m.monthAbbr}</span>
+            <span className="text-[15px] font-extrabold leading-none mt-1" style={{ color: 'var(--ink)' }}>{m.yearShort}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[15px] font-bold" style={{ color: '#20242E' }}>{m.label}</div>
+            <div className="text-[15px] font-bold" style={{ color: 'var(--ink)' }}>{m.label}</div>
             <div className="text-[12px] font-medium mt-0.5 truncate" style={{ color: 'var(--muted)' }}>
               {[
                 m.hasBudget ? `Spent ${fmt(m.totalSpent)} of ${fmt(m.totalBudget)}` : `Spent ${fmt(m.totalSpent)}`,
@@ -47,7 +47,7 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
         <button
           onClick={() => setVisible(v => v + PAGE_SIZE)}
           className="rounded-[20px] py-3 text-[13px] font-bold"
-          style={{ background: '#fff', border: '1px solid #EAE5DD', color: 'var(--primary)' }}
+          style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--primary)' }}
         >
           Show {Math.min(PAGE_SIZE, remaining)} more · {remaining} left
         </button>

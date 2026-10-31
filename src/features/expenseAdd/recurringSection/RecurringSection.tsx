@@ -41,13 +41,13 @@ export default function RecurringSection({ income, enabled, onEnabledChange, set
 
   return (
     <div className="px-5 pt-2.5">
-      <div className="flex flex-col gap-3.5 rounded-[18px] px-[15px] py-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+      <div className="flex flex-col gap-3.5 rounded-[18px] px-[15px] py-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         <div className="flex items-center gap-[11px]">
-          <div className="flex items-center justify-center flex-shrink-0 rounded-[11px]" style={{ width: 34, height: 34, background: '#E9F0FE', color: 'var(--primary)' }}>
+          <div className="flex items-center justify-center flex-shrink-0 rounded-[11px]" style={{ width: 34, height: 34, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
             <ArrowsClockwise size={17} weight="bold" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[14px] font-extrabold" style={{ color: '#20242E' }}>{title}</div>
+            <div className="text-[14px] font-extrabold" style={{ color: 'var(--ink)' }}>{title}</div>
             <div className="text-[11px] font-semibold" style={{ color: 'var(--muted)' }}>Added automatically on each due date</div>
           </div>
           {onEnabledChange && <Toggle checked={enabled} onChange={onEnabledChange} label={title} />}
@@ -66,11 +66,11 @@ export default function RecurringSection({ income, enabled, onEnabledChange, set
               type="button"
               onClick={() => setEndsOpen(true)}
               className="text-left rounded-[12px] px-[11px] py-2"
-              style={{ border: '1px solid #F0ECE4' }}
+              style={{ border: '1px solid var(--hairline)' }}
             >
-              <div className="text-[10px] font-bold uppercase tracking-[.4px]" style={{ color: 'var(--muted)' }}>Ends</div>
+              <div className="text-[11px] font-bold uppercase tracking-[.4px]" style={{ color: 'var(--muted)' }}>Ends</div>
               <div className="flex items-center justify-between mt-0.5">
-                <span className="text-[13px] font-bold" style={{ color: '#2A2E37' }}>{endsLabel(settings, noun)}</span>
+                <span className="text-[13px] font-bold" style={{ color: 'var(--ink)' }}>{endsLabel(settings, noun)}</span>
                 <CaretDown size={11} weight="bold" color="#666B75" />
               </div>
             </button>
@@ -80,7 +80,7 @@ export default function RecurringSection({ income, enabled, onEnabledChange, set
               <span className="flex-1 min-w-0">
                 {scheduleLabel(settings.frequency, startDate)}
                 {nextDue
-                  ? <> · next on <b className="font-extrabold" style={{ color: '#20242E' }}>{shortDate(nextDue)}</b></>
+                  ? <> · next on <b className="font-extrabold" style={{ color: 'var(--ink)' }}>{shortDate(nextDue)}</b></>
                   : ` · no further ${noun}s`}
               </span>
               {showManageLink && (

@@ -61,13 +61,13 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
 
   return (
     <BottomSheet open onClose={onClose} labelledBy="ends-sheet-title">
-      <div id="ends-sheet-title" className="text-[18px] font-extrabold text-center pt-5" style={{ color: '#20242E' }}>Ends</div>
+      <div id="ends-sheet-title" className="text-[18px] font-extrabold text-center pt-5" style={{ color: 'var(--ink)' }}>Ends</div>
 
-      <div role="radiogroup" aria-labelledby="ends-sheet-title" className="mt-4 rounded-[20px] px-4 py-1" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+      <div role="radiogroup" aria-labelledby="ends-sheet-title" className="mt-4 rounded-[20px] px-4 py-1" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {endOptions.map((o, i) => {
           const selected = endType === o.value
           return (
-            <div key={o.value} style={{ borderBottom: i < endOptions.length - 1 ? '1px solid #F4F0E9' : 'none' }}>
+            <div key={o.value} style={{ borderBottom: i < endOptions.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
               <button
                 type="button"
                 role="radio"
@@ -79,12 +79,12 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
                   className="flex items-center justify-center rounded-full flex-shrink-0"
                   style={{ width: 20, height: 20, border: selected ? '6px solid var(--primary)' : '1.5px solid #D5D0C7', background: '#fff' }}
                 />
-                <span className="text-[14px] font-bold" style={{ color: '#2A2E37' }}>{o.label}</span>
+                <span className="text-[14px] font-bold" style={{ color: 'var(--ink)' }}>{o.label}</span>
               </button>
 
               {selected && o.value === 'on_date' && (
-                <label className="relative flex items-center justify-between mb-3.5 rounded-[12px] px-3 py-2.5" style={{ background: '#F6F3EE' }}>
-                  <span className="text-[13px] font-bold" style={{ color: '#2A2E37' }}>{endDate ? longDate(endDate) : 'Pick a date'}</span>
+                <label className="relative flex items-center justify-between mb-3.5 rounded-[12px] px-3 py-2.5" style={{ background: 'var(--background)' }}>
+                  <span className="text-[13px] font-bold" style={{ color: 'var(--ink)' }}>{endDate ? longDate(endDate) : 'Pick a date'}</span>
                   <span className="text-[12px] font-bold" style={{ color: 'var(--primary)' }}>Change</span>
                   <input
                     type="date"
@@ -98,7 +98,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
               )}
 
               {selected && o.value === 'after_count' && (
-                <div className="flex items-center gap-2.5 mb-3.5 rounded-[12px] px-3 py-2" style={{ background: '#F6F3EE' }}>
+                <div className="flex items-center gap-2.5 mb-3.5 rounded-[12px] px-3 py-2" style={{ background: 'var(--background)' }}>
                   <input
                     type="number"
                     inputMode="numeric"
@@ -108,7 +108,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
                     value={count}
                     onChange={e => setCount(e.target.value)}
                     className="w-16 text-[16px] font-extrabold bg-transparent outline-none"
-                    style={{ color: '#20242E' }}
+                    style={{ color: 'var(--ink)' }}
                   />
                   <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{noun}s in total</span>
                 </div>
@@ -118,7 +118,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
         })}
       </div>
 
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <button
         type="button"

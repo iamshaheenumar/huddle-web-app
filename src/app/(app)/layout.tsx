@@ -10,7 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col items-center min-h-screen" style={{ background: '#ECEAE4' }}>
         <div
           className="relative flex flex-col w-full"
-          style={{ maxWidth: 430, minHeight: '100svh', background: '#F6F3EE', overflow: 'hidden' }}
+          style={{ maxWidth: 430, minHeight: '100svh', background: 'var(--background)', overflow: 'hidden' }}
         >
           <AppContent>{children}</AppContent>
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full" style={{ maxWidth: 430 }}>

@@ -27,13 +27,13 @@ export default function ConfirmSheet({ open, onClose, onConfirm, title, descript
             {icon}
           </div>
         )}
-        <div id="confirm-sheet-title" className="text-[18px] font-extrabold mt-3.5" style={{ color: '#20242E' }}>{title}</div>
+        <div id="confirm-sheet-title" className="text-[18px] font-extrabold mt-3.5" style={{ color: 'var(--ink)' }}>{title}</div>
         {description && <p className="text-[13px] font-semibold mt-1.5 px-4" style={{ color: 'var(--muted)' }}>{description}</p>}
       </div>
 
       {children && <div className="mt-4">{children}</div>}
 
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <div className="flex flex-col gap-2.5 mt-5">
         <button
@@ -49,7 +49,7 @@ export default function ConfirmSheet({ open, onClose, onConfirm, title, descript
           onClick={onClose}
           disabled={pending}
           className="w-full rounded-[17px] py-3.5 text-[15px] font-bold disabled:opacity-60"
-          style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}
+          style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}
         >
           Cancel
         </button>

@@ -20,7 +20,7 @@ export default function HistoryScreen() {
   const view = parseView(params.get('view') ?? undefined)
 
   return (
-    <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen pb-24" style={{ background: 'var(--background)' }}>
       <HistoryHeader />
       <MonthTabs period={period} view={view} />
       <PeriodHeroCard period={period} />

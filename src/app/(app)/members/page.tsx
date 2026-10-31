@@ -6,7 +6,7 @@ import MemberList from '@/features/members/memberList/MemberList'
 // skeleton only until it has data.
 export default function MembersPage() {
   return (
-    <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen pb-24" style={{ background: 'var(--background)' }}>
       <MembersHeader />
       <GroupTotalCard />
       <MemberList />

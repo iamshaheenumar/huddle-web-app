@@ -41,10 +41,10 @@ export default function RecurringList({ rows, filter }: { rows: RecurringRow[]; 
   return (
     <>
       <div className="flex items-center justify-between px-5 pt-5">
-        <span className="text-[16px] font-extrabold" style={{ color: '#20242E' }}>Upcoming</span>
+        <span className="text-[16px] font-extrabold" style={{ color: 'var(--ink)' }}>Upcoming</span>
         <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>Sorted by due date</span>
       </div>
-      <div className="mx-5 mt-3 rounded-[20px] py-1 overflow-hidden" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+      <div className="mx-5 mt-3 rounded-[20px] py-1 overflow-hidden" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {rows.length === 0 ? (
           <div className="py-[22px] px-4 text-center text-[14px] font-semibold" style={{ color: 'var(--muted)' }}>
             {EMPTY_TEXT[filter]}
@@ -81,15 +81,15 @@ export default function RecurringList({ rows, filter }: { rows: RecurringRow[]; 
         confirmLabel="Delete"
       >
         {deleting && (
-          <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+          <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
             {isIncome(deleting)
               ? <IncomeIcon size={40} iconSize={20} radius={12} />
               : deleting.categories && <CategoryIcon icon={deleting.categories.icon} color={deleting.categories.color} bg_color={deleting.categories.bg_color} size={40} iconSize={20} radius={12} />}
             <div className="flex-1 min-w-0 text-left">
-              <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{deleting.note || deleting.categories?.name || (isIncome(deleting) ? 'Income' : 'Payment')}</div>
+              <div className="text-[15px] font-bold truncate" style={{ color: 'var(--ink)' }}>{deleting.note || deleting.categories?.name || (isIncome(deleting) ? 'Income' : 'Payment')}</div>
               <div className="text-[12px] font-semibold mt-0.5 truncate" style={{ color: 'var(--muted)' }}>{FREQUENCY_LABEL[deleting.frequency]}</div>
             </div>
-            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: isIncome(deleting) ? INCOME_COLOR : '#20242E' }}>{signedAmount({ kind: deleting.kind, amount: Number(deleting.amount) })}</span>
+            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: isIncome(deleting) ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount({ kind: deleting.kind, amount: Number(deleting.amount) })}</span>
           </div>
         )}
       </ConfirmSheet>

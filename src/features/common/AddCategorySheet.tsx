@@ -96,14 +96,14 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
     <>
       <div className="flex flex-col items-center text-center pt-5">
         <CategoryIcon icon={icon} color={color.color} bg_color={color.bg_color} size={56} iconSize={28} radius={18} />
-        <div id="add-category-title" className="text-[18px] font-extrabold mt-3" style={{ color: trimmed ? color.color : '#20242E' }}>
+        <div id="add-category-title" className="text-[18px] font-extrabold mt-3" style={{ color: trimmed ? color.color : 'var(--ink)' }}>
           {trimmed || 'New category'}
         </div>
       </div>
 
       <div className="mt-5">
         <label htmlFor="category-name" className="text-[13px] font-bold block mb-2" style={{ color: 'var(--ink-2)' }}>Name</label>
-        <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           <input
             id="category-name"
             type="text"
@@ -115,7 +115,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
             onChange={e => { setName(e.target.value); if (error) setError('') }}
             onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
             className="flex-1 text-[16px] font-semibold bg-transparent outline-none"
-            style={{ color: '#2A2E37' }}
+            style={{ color: 'var(--ink)' }}
           />
           <span className="text-[11px] font-bold tabular-nums" style={{ color: 'var(--muted)' }}>{name.length}/{MAX_NAME}</span>
         </div>
@@ -123,7 +123,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
 
       <div className="mt-5">
         <div className="text-[13px] font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Icon</div>
-        <div className="grid grid-cols-6 gap-2 rounded-[18px] p-2.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div className="grid grid-cols-6 gap-2 rounded-[18px] p-2.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           {CATEGORY_ICON_NAMES.map(n => {
             const selected = n === icon
             return (
@@ -168,7 +168,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
                   width: 34,
                   height: 34,
                   background: c.color,
-                  boxShadow: selected ? `0 0 0 2px #F6F3EE, 0 0 0 4px ${c.color}` : undefined,
+                  boxShadow: selected ? `0 0 0 2px var(--background), 0 0 0 4px ${c.color}` : undefined,
                 }}
               >
                 {selected && <Check size={15} weight="bold" color="#fff" />}
@@ -182,7 +182,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
         <p className="text-[11px] font-semibold mt-2" style={{ color: 'var(--muted)' }}>Dotted colors are already used by another category.</p>
       </div>
 
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <div className="flex flex-col gap-2.5 mt-5">
         <button
@@ -198,7 +198,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
           onClick={onCancel}
           disabled={pending}
           className="w-full rounded-[17px] py-3.5 text-[15px] font-bold disabled:opacity-60"
-          style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}
+          style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}
         >
           Cancel
         </button>

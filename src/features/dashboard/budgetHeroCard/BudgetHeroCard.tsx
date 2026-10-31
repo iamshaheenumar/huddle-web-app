@@ -4,15 +4,8 @@ import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
 import { useAppContext } from '@/features/common/queries'
 import { useBudgetSummary } from '../queries'
+import { HERO_FILL as FILL, HERO_OVER_FILL as OVER_FILL, HERO_SOFT as SOFT, HERO_PANEL as PANEL, HERO_TRACK } from '@/features/common/heroCard'
 import BudgetHeroCardSkeleton from './BudgetHeroCardSkeleton'
-
-// Flat fills: white text keeps AA contrast on both (no gradient end to fall short on).
-const FILL = 'var(--primary)'
-const OVER_FILL = 'var(--danger)'
-// Meta text: 92% white still passes 4.5:1 on either fill.
-const SOFT = 'rgba(255,255,255,.92)'
-// Panels darken the fill rather than lighten it, so white text on them stays readable.
-const PANEL = 'rgba(16,22,48,.18)'
 
 export default function BudgetHeroCard() {
   const { month, year } = useAppContext()
@@ -66,7 +59,7 @@ export default function BudgetHeroCard() {
 
       {hasBudget && (
         <div className="relative mt-4 mb-5" role="img" aria-label={`${pct}% of the budget used, ${Math.round(pacePct)}% of the month gone`}>
-          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.24)' }}>
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: HERO_TRACK }}>
             <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: '#fff' }} />
           </div>
           {/* Where spending would be if it were spread evenly over the month. */}

@@ -7,7 +7,16 @@
 :root {
   --background: #F6F3EE;
   --foreground: #20242E;
+  --ink: #20242E;
+  /* Card edges and row dividers */
+  --hairline: #F0ECE4;
+  /* Borders on controls: buttons, chips, fields */
+  --line: #EAE5DD;
+  /* Empty part of a progress bar or segmented control */
+  --track: #EFEBE3;
   --primary: #2F63E0;
+  --primary-soft: #E9F0FE;
+  --danger-soft: #FBE7E1;
   --muted: #666B75;
   --ink-2: #5C616B;
   --danger: #B53D27;
@@ -20,7 +29,13 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
-  --color-dark: #20242E;
+  --color-dark: var(--ink);
+  --color-ink: var(--ink);
+  --color-hairline: var(--hairline);
+  --color-line: var(--line);
+  --color-track: var(--track);
+  --color-primary-soft: var(--primary-soft);
+  --color-danger-soft: var(--danger-soft);
   --color-muted: var(--muted);
   --color-ink-2: var(--ink-2);
   --color-danger: var(--danger);

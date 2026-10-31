@@ -14,7 +14,7 @@ export default function CategoryRing({ id }: { id: string }) {
 
   const conicGradient = overspent
     ? `conic-gradient(${category.color} 0% ${budgetFraction}%, ${OVER} ${budgetFraction}% 100%)`
-    : `conic-gradient(${category.color} 0% ${pct}%, #E7E2DA ${pct}% 100%)`
+    : `conic-gradient(${category.color} 0% ${pct}%, var(--line) ${pct}% 100%)`
 
   return (
     <div className="flex justify-center pt-6 pb-2">
@@ -24,7 +24,7 @@ export default function CategoryRing({ id }: { id: string }) {
       >
         <div
           className="rounded-full flex flex-col items-center justify-center"
-          style={{ width: 134, height: 134, background: '#F6F3EE' }}
+          style={{ width: 134, height: 134, background: 'var(--background)' }}
         >
           {overspent ? (
             <>
@@ -35,7 +35,7 @@ export default function CategoryRing({ id }: { id: string }) {
           ) : (
             <>
               <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>Available</span>
-              <span className="text-[28px] font-extrabold tracking-tight mt-0.5" style={{ color: '#20242E' }}>{fmt(Math.max(0, available))}</span>
+              <span className="text-[28px] font-extrabold tracking-tight mt-0.5" style={{ color: 'var(--ink)' }}>{fmt(Math.max(0, available))}</span>
               <span className="text-[11px] font-bold mt-0.5" style={{ color: category.color }}>{CURRENCY} · {Math.round(pctLeft)}% left</span>
             </>
           )}

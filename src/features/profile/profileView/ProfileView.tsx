@@ -43,25 +43,25 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
   }
 
   return (
-    <div className="flex flex-col min-h-screen pb-24" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen pb-24" style={{ background: 'var(--background)' }}>
       <div className="px-5 pt-12 pb-0">
         <div className="flex items-center gap-4 mb-8">
           <HuddleMark size={56} shadow />
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: '#20242E' }}>Huddle</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Huddle</h1>
             <p className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>Budget together</p>
           </div>
         </div>
 
         {profile && (
-          <div className="rounded-3xl p-5 mb-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+          <div className="rounded-3xl p-5 mb-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full flex items-center justify-center font-extrabold text-xl text-white"
                 style={{ background: profile.avatar_color }}>
                 {profile.display_name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div className="text-lg font-extrabold" style={{ color: '#20242E' }}>{profile.display_name}</div>
+                <div className="text-lg font-extrabold" style={{ color: 'var(--ink)' }}>{profile.display_name}</div>
                 <div className="text-sm font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>Member</div>
               </div>
             </div>
@@ -91,7 +91,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
           onClick={handleSignOut}
           disabled={loading}
           className="w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 text-base font-extrabold transition-opacity disabled:opacity-60"
-          style={{ background: '#fff', border: '1px solid #F0ECE4', color: 'var(--danger)' }}
+          style={{ background: '#fff', border: '1px solid var(--hairline)', color: 'var(--danger)' }}
         >
           <SignOut size={18} weight="bold" />
           {loading ? 'Signing out…' : 'Sign out'}

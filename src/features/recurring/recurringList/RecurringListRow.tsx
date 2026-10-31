@@ -117,14 +117,14 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
           boxShadow: offset < 0 ? '6px 0 10px -6px rgba(32,36,46,.18)' : 'none',
         }}
       >
-        <div className="flex items-center gap-3 py-[13px]" style={{ borderBottom: isLast ? 'none' : '1px solid #F4F0E9' }}>
+        <div className="flex items-center gap-3 py-[13px]" style={{ borderBottom: isLast ? 'none' : '1px solid var(--hairline)' }}>
           {income
             ? <IncomeIcon size={36} iconSize={18} radius={11} muted={!running} />
             : running && row.categories
             ? <CategoryIcon icon={row.categories.icon} color={row.categories.color} bg_color={row.categories.bg_color} size={36} iconSize={18} radius={11} />
             : <CategoryIcon icon={row.categories?.icon ?? ''} color="#666B75" bg_color="#F2EFEA" size={36} iconSize={18} radius={11} />}
           <div className="flex-1 min-w-0">
-            <div className="text-[14px] font-bold truncate" style={{ color: running ? '#2A2E37' : 'var(--muted)' }}>{title}</div>
+            <div className="text-[14px] font-bold truncate" style={{ color: running ? 'var(--ink)' : 'var(--muted)' }}>{title}</div>
             <div className="flex items-center gap-1.5 min-w-0">
               <span className="text-[11px] font-semibold truncate" style={{ color: 'var(--muted)' }}>
                 {FREQUENCY_LABEL[row.frequency]} · {status}
@@ -133,7 +133,7 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
             </div>
           </div>
           <div className="flex flex-col items-end gap-[5px]">
-            <span className="text-[14px] font-extrabold tabular-nums" style={{ color: !running ? 'var(--muted)' : income ? INCOME_COLOR : '#20242E' }}>{signedAmount({ kind: row.kind, amount: Number(row.amount) })}</span>
+            <span className="text-[14px] font-extrabold tabular-nums" style={{ color: !running ? 'var(--muted)' : income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount({ kind: row.kind, amount: Number(row.amount) })}</span>
             <Toggle
               size="sm"
               checked={running}

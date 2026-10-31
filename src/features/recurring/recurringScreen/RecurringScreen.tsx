@@ -23,13 +23,13 @@ export default function RecurringScreen() {
     filter === 'all' ? true : filter === 'active' ? isRunning(r) : !r.is_active)
 
   return (
-    <div className="flex flex-col min-h-screen pb-[calc(env(safe-area-inset-bottom)+24px)]" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen pb-[calc(env(safe-area-inset-bottom)+24px)]" style={{ background: 'var(--background)' }}>
       <RecurringHeader />
       {rows && visible ? (
         <>
           <RecurringSummaryCard summary={recurringSummary(rows)} />
           <div className="mx-5 mt-4">
-            <Segmented label="Show" options={FILTERS} value={filter} onChange={setFilter} track="#EDE9E2" />
+            <Segmented label="Show" options={FILTERS} value={filter} onChange={setFilter} track="var(--track)" />
           </div>
           <RecurringList rows={visible} filter={filter} />
         </>

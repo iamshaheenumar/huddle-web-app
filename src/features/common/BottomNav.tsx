@@ -40,7 +40,7 @@ export default function BottomNav() {
       className="flex items-center justify-around px-3 pt-2"
       style={{
         background: '#fff',
-        borderTop: '1px solid #F0ECE4',
+        borderTop: '1px solid var(--hairline)',
         paddingBottom: 'env(safe-area-inset-bottom, 22px)',
         marginBottom: 0,
       }}

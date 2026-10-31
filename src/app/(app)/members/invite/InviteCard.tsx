@@ -66,17 +66,17 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
   }
 
   return (
-    <div className="mx-5 mt-5 rounded-[22px] px-5 pt-5.5 pb-5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+    <div className="mx-5 mt-5 rounded-[22px] px-5 pt-5.5 pb-5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-[12px] font-bold uppercase tracking-[0.04em]" style={{ color: 'var(--muted)' }}>Invite code</div>
-          <div className="text-[32px] font-extrabold tracking-[0.06em] mt-1.5 tabular-nums leading-none" style={{ color: '#20242E' }}>{codeDisplay}</div>
+          <div className="text-[32px] font-extrabold tracking-[0.06em] mt-1.5 tabular-nums leading-none" style={{ color: 'var(--ink)' }}>{codeDisplay}</div>
         </div>
         <button
           onClick={handleRegenerate}
           disabled={regenerating}
           className="flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-bold flex-shrink-0 disabled:opacity-60"
-          style={{ background: '#F6F3EE', color: '#3A3F49' }}
+          style={{ background: 'var(--background)', color: 'var(--ink)' }}
         >
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className={regenerating ? 'animate-spin' : undefined}>
             <path d="M13.5 8A5.5 5.5 0 1 1 11.8 4M13.5 2v3h-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -86,8 +86,8 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
       </div>
       <div className="text-[12px] font-semibold mt-2.5" style={{ color: 'var(--muted)' }}>Expires in 7 days</div>
 
-      <div className="flex items-center gap-2 mt-4.5 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: '#F6F3EE' }}>
-        <div className="flex-1 min-w-0 text-[14px] font-semibold truncate" style={{ color: '#3A3F49' }}>
+      <div className="flex items-center gap-2 mt-4.5 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: 'var(--background)' }}>
+        <div className="flex-1 min-w-0 text-[14px] font-semibold truncate" style={{ color: 'var(--ink)' }}>
           {link.replace(/^https?:\/\//, '')}
         </div>
         <button
@@ -102,34 +102,34 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
       </div>
 
       <div className="flex items-center gap-3 mt-5.5 mb-4.5">
-        <div className="flex-1 h-px" style={{ background: '#F4F0E9' }} />
+        <div className="flex-1 h-px" style={{ background: 'var(--hairline)' }} />
         <div className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>or send it by email</div>
-        <div className="flex-1 h-px" style={{ background: '#F4F0E9' }} />
+        <div className="flex-1 h-px" style={{ background: 'var(--hairline)' }} />
       </div>
 
-      <form onSubmit={handleSend} className="flex items-center gap-2 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: '#fff', border: '1px solid #ECE7DE' }}>
+      <form onSubmit={handleSend} className="flex items-center gap-2 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         <input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="friend@example.com"
           className="flex-1 min-w-0 bg-transparent outline-none py-2 text-[16px] font-medium"
-          style={{ color: '#20242E' }}
+          style={{ color: 'var(--ink)' }}
         />
         <button
           type="submit"
           disabled={!valid || sending}
           className={inlineBtn}
           style={valid
-            ? { minWidth: 84, background: '#20242E', color: '#fff', opacity: sending ? 0.7 : 1 }
-            : { minWidth: 84, background: '#F1EEE8', color: 'var(--muted)', cursor: 'default' }}
+            ? { minWidth: 84, background: 'var(--ink)', color: '#fff', opacity: sending ? 0.7 : 1 }
+            : { minWidth: 84, background: 'var(--hairline)', color: 'var(--muted)', cursor: 'default' }}
         >
           {sending ? 'Sending…' : 'Send'}
         </button>
       </form>
 
       {sentTo && <div className="text-[13px] font-semibold mt-2.5" style={{ color: 'var(--income)' }}>Invite sent to {sentTo}</div>}
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
     </div>
   )
 }

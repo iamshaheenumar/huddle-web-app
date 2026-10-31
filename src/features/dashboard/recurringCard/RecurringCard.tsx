@@ -25,13 +25,13 @@ export default function RecurringCard() {
     <Link
       href="/recurring"
       className="mx-5 mt-3 flex items-center gap-[13px] rounded-[18px] px-[15px] py-3"
-      style={{ background: '#fff', border: '1px solid #F0ECE4' }}
+      style={{ background: '#fff', border: '1px solid var(--hairline)' }}
     >
-      <div className="flex items-center justify-center flex-shrink-0 rounded-[12px]" style={{ width: 38, height: 38, background: '#E9F0FE', color: 'var(--primary)' }}>
+      <div className="flex items-center justify-center flex-shrink-0 rounded-[12px]" style={{ width: 38, height: 38, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
         <ArrowsClockwise size={19} weight="bold" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[14px] font-bold" style={{ color: '#2A2E37' }}>
+        <div className="text-[14px] font-bold" style={{ color: 'var(--ink)' }}>
           {/* "payments" while every running rule is spend; "transactions" once one is income. */}
           {activeCount} recurring {monthlyIncome > 0 ? 'transaction' : 'payment'}{activeCount === 1 ? '' : 's'}
         </div>

@@ -38,7 +38,7 @@ export default function DeleteTxnButton({ txn }: { txn: HistoryTxn }) {
         onClick={() => setOpen(true)}
         aria-label={`Delete ${label}`}
         className="tap-target flex items-center justify-center rounded-[10px] shrink-0"
-        style={{ width: 30, height: 30, color: 'var(--danger)', background: '#FDF0EB', border: 'none' }}
+        style={{ width: 30, height: 30, color: 'var(--danger)', background: 'var(--danger-soft)', border: 'none' }}
       >
         <TrashIcon size={15} weight="bold" />
       </button>
@@ -52,15 +52,15 @@ export default function DeleteTxnButton({ txn }: { txn: HistoryTxn }) {
         description="It'll be removed from this month's totals for everyone in the group. This can't be undone."
         confirmLabel="Delete"
       >
-        <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div className="flex items-center gap-3 rounded-[20px] p-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           {income
             ? <IncomeIcon size={40} iconSize={20} radius={12} />
             : txn.category && <CategoryIcon icon={txn.category.icon} color={txn.category.color} bg_color={txn.category.bg_color} size={40} iconSize={20} radius={12} />}
           <div className="flex-1 min-w-0 text-left">
-            <div className="text-[15px] font-bold truncate" style={{ color: '#20242E' }}>{label}</div>
+            <div className="text-[15px] font-bold truncate" style={{ color: 'var(--ink)' }}>{label}</div>
             <div className="text-[12px] font-semibold mt-0.5 truncate" style={{ color: 'var(--muted)' }}>{txn.categoryName} · {dateLabel(txn.date)}</div>
           </div>
-          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : '#20242E' }}>{signedAmount(txn)}</span>
+          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount(txn)}</span>
         </div>
       </ConfirmSheet>
     </>

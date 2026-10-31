@@ -2,7 +2,7 @@ import { Sk } from '@/features/common/Skeleton'
 
 export default function ExpenseAddSkeleton() {
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: '#F6F3EE' }}>
+    <div className="flex flex-col min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-0">
         <Sk className="rounded-[14px]" style={{ width: 44, height: 44 }} />

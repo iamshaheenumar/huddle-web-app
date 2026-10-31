@@ -25,7 +25,7 @@ export default function RemoveMemberButton({ groupId, userId, name }: { groupId:
       onClick={handleRemove}
       aria-label={`Remove ${name}`}
       className="tap-target flex items-center justify-center rounded-[10px] shrink-0"
-      style={{ width: 32, height: 32, color: 'var(--danger)', background: '#FDF0EB', border: 'none' }}
+      style={{ width: 32, height: 32, color: 'var(--danger)', background: 'var(--danger-soft)', border: 'none' }}
     >
       <UserMinusIcon size={16} weight="bold" />
     </button>

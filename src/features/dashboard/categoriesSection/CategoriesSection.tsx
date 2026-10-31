@@ -26,10 +26,10 @@ export default function CategoriesSection() {
   return (
     <>
       <div className="flex items-baseline justify-between px-5 pt-6">
-        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>Categories</span>
+        <span className="text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>Categories</span>
         <Link href="/budget/set" className="text-[13px] font-bold py-2" style={{ color: 'var(--primary)' }}>Edit budget</Link>
       </div>
-      <div className="mx-5 mt-1 rounded-[22px] py-1 px-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+      <div className="mx-5 mt-1 rounded-[22px] py-1 px-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {sorted.map((bc, i) => {
           const pct = bc.allocated_amount > 0 ? Math.min(100, Math.round((bc.consumed / bc.allocated_amount) * 100)) : 0
           const isLast = i === sorted.length - 1
@@ -39,14 +39,14 @@ export default function CategoriesSection() {
           const barColor = bc.category?.color ?? '#3B6FF6'
           return (
             <Link href={`/categories/${bc.category?.id}`} key={bc.category?.id ?? i}>
-              <div className="flex items-center gap-3 py-3" style={{ borderBottom: isLast ? 'none' : '1px solid #F4F0E9' }}>
+              <div className="flex items-center gap-3 py-3" style={{ borderBottom: isLast ? 'none' : '1px solid var(--hairline)' }}>
                 {bc.category && <CategoryIcon icon={bc.category.icon} color={bc.category.color} bg_color={bc.category.bg_color} size={36} iconSize={18} radius={11} />}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline gap-2">
-                    <span className="text-[14px] font-bold truncate" style={{ color: '#2A2E37' }}>{bc.category?.name}</span>
-                    <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: '#20242E' }}>{fmt(bc.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(bc.allocated_amount)}</span></span>
+                    <span className="text-[14px] font-bold truncate" style={{ color: 'var(--ink)' }}>{bc.category?.name}</span>
+                    <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(bc.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(bc.allocated_amount)}</span></span>
                   </div>
-                  <div className="h-1.5 rounded-full mt-2 overflow-hidden" style={{ background: '#EFEBE3' }}>
+                  <div className="h-1.5 rounded-full mt-2 overflow-hidden" style={{ background: 'var(--track)' }}>
                     {overspent
                       ? <div className="h-full rounded-full" style={{ width: '100%', background: `linear-gradient(to right, ${barColor} 0 ${budgetFraction}%, var(--danger) ${budgetFraction}% 100%)` }} />
                       : <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />

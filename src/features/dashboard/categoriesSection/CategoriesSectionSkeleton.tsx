@@ -9,13 +9,13 @@ export default function CategoriesSectionSkeleton() {
       </div>
       <div
         className="mx-5 mt-3 rounded-[22px] py-1 px-4"
-        style={{ background: '#fff', border: '1px solid #F0ECE4' }}
+        style={{ background: '#fff', border: '1px solid var(--hairline)' }}
       >
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
             className="flex items-center gap-3 py-3"
-            style={{ borderBottom: i < 3 ? '1px solid #F4F0E9' : 'none' }}
+            style={{ borderBottom: i < 3 ? '1px solid var(--hairline)' : 'none' }}
           >
             <Sk className="rounded-[11px] flex-shrink-0" style={{ width: 36, height: 36 }} />
             <div className="flex-1 flex flex-col gap-2">

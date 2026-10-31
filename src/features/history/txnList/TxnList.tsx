@@ -14,17 +14,17 @@ export default function TxnList({ transactions, show }: { transactions: HistoryT
     return <div className="pt-3 text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>No transactions this month</div>
   }
   return (
-    <div className="flex flex-col gap-2 pt-3 mt-3" style={{ borderTop: '1px solid #F0ECE4' }}>
+    <div className="flex flex-col gap-2 pt-3 mt-3" style={{ borderTop: '1px solid var(--hairline)' }}>
       {transactions.map(t => (
         <div key={t.id} className="flex items-center gap-2.5">
           {show === 'payer' && <MemberAvatar name={t.payerName} color={t.payerColor} size={28} fontSize={11} />}
           <div className="flex-1 min-w-0">
-            <div className="text-[13px] font-bold truncate" style={{ color: '#2A2E37' }}>{t.note ?? t.categoryName}</div>
+            <div className="text-[13px] font-bold truncate" style={{ color: 'var(--ink)' }}>{t.note ?? t.categoryName}</div>
             <div className="text-[11px] font-semibold mt-0.5 truncate" style={{ color: 'var(--muted)' }}>
               {show === 'payer' ? t.payerName.split(' ')[0] : t.categoryName} · {fmtDate(t.date)}
             </div>
           </div>
-          <span className="text-[13px] font-extrabold tabular-nums" style={{ color: '#20242E' }}>−{fmt(t.amount)}</span>
+          <span className="text-[13px] font-extrabold tabular-nums" style={{ color: 'var(--ink)' }}>−{fmt(t.amount)}</span>
         </div>
       ))}
     </div>

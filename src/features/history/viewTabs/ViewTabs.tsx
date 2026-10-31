@@ -10,7 +10,7 @@ const TABS: { view: HistoryView; label: string }[] = [
 
 export default function ViewTabs({ period, view }: { period?: string; view: HistoryView }) {
   return (
-    <div className="flex mx-5 mt-5 rounded-full p-1" style={{ background: '#fff', border: '1px solid #EAE5DD' }}>
+    <div className="flex mx-5 mt-5 rounded-full p-1" style={{ background: '#fff', border: '1px solid var(--line)' }}>
       {TABS.map(t => {
         const active = t.view === view
         return (
@@ -20,7 +20,7 @@ export default function ViewTabs({ period, view }: { period?: string; view: Hist
             scroll={false}
             replace
             className="flex-1 rounded-full py-2 text-center text-[13px] font-bold"
-            style={active ? { background: '#20242E', color: '#fff' } : { color: '#6B7079' }}
+            style={active ? { background: 'var(--ink)', color: '#fff' } : { color: '#6B7079' }}
           >
             {t.label}
           </Link>

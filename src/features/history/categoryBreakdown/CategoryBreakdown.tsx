@@ -11,7 +11,7 @@ export default function CategoryBreakdown({ period }: { period?: string }) {
   if (!categories) return <CategoryBreakdownSkeleton />
   if (categories.length === 0) {
     return (
-      <div className="mx-5 mt-4 rounded-[22px] py-[22px] text-center text-[14px] font-semibold" style={{ background: '#fff', border: '1px solid #F0ECE4', color: 'var(--muted)' }}>
+      <div className="mx-5 mt-4 rounded-[22px] py-[22px] text-center text-[14px] font-semibold" style={{ background: '#fff', border: '1px solid var(--hairline)', color: 'var(--muted)' }}>
         No category spend this month
       </div>
     )
@@ -27,19 +27,19 @@ export default function CategoryBreakdown({ period }: { period?: string }) {
         const budgetFraction = c.consumed > 0 ? Math.min(100, (c.allocated / c.consumed) * 100) : 0
         const barColor = c.category.color
         return (
-          <details key={c.category.id} className="group rounded-[20px] p-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+          <details key={c.category.id} className="group rounded-[20px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
             <summary className="flex items-center gap-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               <CategoryIcon icon={c.category.icon} color={c.category.color} bg_color={c.category.bg_color} size={38} iconSize={19} radius={12} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[14px] font-bold" style={{ color: '#2A2E37' }}>{c.category.name}</span>
+                  <span className="text-[14px] font-bold" style={{ color: 'var(--ink)' }}>{c.category.name}</span>
                   {overspent
                     ? <span className="text-[11px] font-bold rounded-full px-2.5 py-1 shrink-0" style={{ background: '#FBE8E1', color: 'var(--danger)' }}>Over by {fmt(c.consumed - c.allocated)}</span>
                     : hasAllocation
-                      ? <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: '#20242E' }}>{fmt(c.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(c.allocated)}</span></span>
-                      : <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: '#20242E' }}>{fmt(c.consumed)}</span>}
+                      ? <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(c.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(c.allocated)}</span></span>
+                      : <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(c.consumed)}</span>}
                 </div>
-                <div className="h-1.5 rounded-full mt-2.5 overflow-hidden" style={{ background: '#EFEBE3' }}>
+                <div className="h-1.5 rounded-full mt-2.5 overflow-hidden" style={{ background: 'var(--track)' }}>
                   {overspent
                     ? <div className="h-full rounded-full" style={{ width: '100%', background: `linear-gradient(to right, ${barColor} 0 ${budgetFraction}%, var(--danger) ${budgetFraction}% 100%)` }} />
                     : <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />}

@@ -16,12 +16,12 @@ export default function CategoryTransactions({ id }: { id: string }) {
   return (
     <>
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <span className="text-base font-extrabold" style={{ color: '#20242E' }}>Transactions</span>
+        <span className="text-base font-extrabold" style={{ color: 'var(--ink)' }}>Transactions</span>
         <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>{expenses.length} this month</span>
       </div>
 
       {expenses.length === 0 && (
-        <div className="mx-5 rounded-3xl p-6 text-center" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div className="mx-5 rounded-3xl p-6 text-center" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           <p className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>No transactions in {MONTHS[month - 1]} yet</p>
           <Link href="/expense/add" className="inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-extrabold text-white mt-3" style={{ background: 'var(--primary)' }}>
             Add first expense
@@ -30,20 +30,20 @@ export default function CategoryTransactions({ id }: { id: string }) {
       )}
 
       {expenses.length > 0 && (
-        <div className="mx-5 rounded-[20px] py-1 px-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div className="mx-5 rounded-[20px] py-1 px-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           {expenses.map((exp, i) => {
             const isLast = i === expenses.length - 1
             return (
-              <div key={exp.id} className="flex items-center gap-3 py-3" style={{ borderBottom: isLast ? 'none' : '1px solid #F4F0E9' }}>
+              <div key={exp.id} className="flex items-center gap-3 py-3" style={{ borderBottom: isLast ? 'none' : '1px solid var(--hairline)' }}>
                 <MemberAvatar name={exp.profile?.display_name ?? '?'} color={exp.profile?.avatar_color ?? '#3B6FF6'} size={36} fontSize={13} />
                 <div className="flex-1 min-w-0">
-                  <div className="text-[14px] font-bold truncate" style={{ color: '#2A2E37' }}>{exp.note ?? category.name}</div>
+                  <div className="text-[14px] font-bold truncate" style={{ color: 'var(--ink)' }}>{exp.note ?? category.name}</div>
                   <div className="flex items-center gap-1.5 text-[11px] font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>
                     {exp.profile?.display_name?.split(' ')[0]} · {new Date(exp.expense_date + 'T00:00:00').toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                     {exp.pending && <SyncingBadge />}
                   </div>
                 </div>
-                <span className="text-[14px] font-extrabold" style={{ color: '#20242E' }}>−{fmt(exp.amount)}</span>
+                <span className="text-[14px] font-extrabold" style={{ color: 'var(--ink)' }}>−{fmt(exp.amount)}</span>
               </div>
             )
           })}

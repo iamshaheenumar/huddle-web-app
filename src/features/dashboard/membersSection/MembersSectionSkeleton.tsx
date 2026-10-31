@@ -7,7 +7,7 @@ export default function MembersSectionSkeleton() {
         <Sk style={{ width: 120, height: 17 }} />
         <Sk style={{ width: 45, height: 13 }} />
       </div>
-      <div className="mx-5 mt-3 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+      <div className="mx-5 mt-3 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         <Sk className="rounded-full" style={{ width: '100%', height: 10 }} />
         <div className="grid grid-cols-3 gap-3 mt-3.5">
           {[0, 1, 2].map(i => (

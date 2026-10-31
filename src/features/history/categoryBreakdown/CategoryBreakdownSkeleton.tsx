@@ -4,7 +4,7 @@ export default function CategoryBreakdownSkeleton() {
   return (
     <div className="flex flex-col gap-2.5 px-5 mt-4">
       {[0, 1, 2, 3].map(i => (
-        <div key={i} className="rounded-[20px] p-4" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div key={i} className="rounded-[20px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           <div className="flex items-center gap-3">
             <Sk style={{ width: 38, height: 38, borderRadius: 12 }} />
             <div className="flex-1">

@@ -13,7 +13,7 @@ export default function EarlierMonths({ period, view }: { period?: string; view:
   return (
     <>
       <div className="px-5 pt-6">
-        <span className="text-base font-extrabold" style={{ color: '#20242E' }}>Earlier months</span>
+        <span className="text-base font-extrabold" style={{ color: 'var(--ink)' }}>Earlier months</span>
       </div>
       <EarlierMonthsList months={months} view={view} />
     </>

@@ -32,16 +32,16 @@ export default function LoginForm({ next }: { next?: string }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ background: '#F6F3EE' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ background: 'var(--background)' }}>
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-10">
           <HuddleMark size={64} shadow className="mb-4" />
-          <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: '#20242E' }}>Huddle</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Huddle</h1>
           <p className="text-sm font-semibold mt-1" style={{ color: 'var(--muted)' }}>Budget together</p>
         </div>
 
-        <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-          <h2 className="text-xl font-extrabold mb-6" style={{ color: '#20242E' }}>Welcome back</h2>
+        <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+          <h2 className="text-xl font-extrabold mb-6" style={{ color: 'var(--ink)' }}>Welcome back</h2>
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <div>
               <label className="text-xs font-bold mb-1.5 block" style={{ color: 'var(--ink-2)' }}>Email</label>
@@ -52,7 +52,7 @@ export default function LoginForm({ next }: { next?: string }) {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 className="w-full rounded-2xl px-4 py-3.5 text-base font-semibold outline-none transition-all"
-                style={{ background: '#F6F3EE', border: '1px solid #EAE5DD', color: '#20242E' }}
+                style={{ background: 'var(--background)', border: '1px solid var(--line)', color: 'var(--ink)' }}
               />
             </div>
             <div>
@@ -64,10 +64,10 @@ export default function LoginForm({ next }: { next?: string }) {
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full rounded-2xl px-4 py-3.5 text-base font-semibold outline-none"
-                style={{ background: '#F6F3EE', border: '1px solid #EAE5DD', color: '#20242E' }}
+                style={{ background: 'var(--background)', border: '1px solid var(--line)', color: 'var(--ink)' }}
               />
             </div>
-            {error && <p className="text-xs font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+            {error && <p className="text-xs font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
             <button
               type="submit"
               disabled={loading}

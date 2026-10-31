@@ -10,7 +10,7 @@ type Props<T extends string> = {
 }
 
 // Equal-width segmented control with a white pill on the selected option.
-export default function Segmented<T extends string>({ options, value, onChange, label, track = '#F6F3EE' }: Props<T>) {
+export default function Segmented<T extends string>({ options, value, onChange, label, track = 'var(--background)' }: Props<T>) {
   return (
     <div
       role="radiogroup"
@@ -29,7 +29,7 @@ export default function Segmented<T extends string>({ options, value, onChange, 
             onClick={() => onChange(o.value)}
             className="text-center py-[7px] rounded-[9px] text-[12px] transition-colors"
             style={selected
-              ? { background: '#fff', color: '#20242E', fontWeight: 800, boxShadow: '0 1px 3px rgba(32,36,46,.08)' }
+              ? { background: '#fff', color: 'var(--ink)', fontWeight: 800, boxShadow: '0 1px 3px rgba(32,36,46,.08)' }
               : { color: 'var(--ink-2)', fontWeight: 700 }}
           >
             {o.label}

@@ -63,31 +63,31 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ background: '#F6F3EE' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ background: 'var(--background)' }}>
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8 text-center">
           <HuddleMark size={64} shadow className="mb-4" />
-          <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: '#20242E' }}>Join {groupName}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Join {groupName}</h1>
           <p className="text-sm font-semibold mt-1" style={{ color: 'var(--muted)' }}>Invited by {inviterName}</p>
         </div>
 
-        <div className="rounded-3xl p-5 mb-6" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
+        <div className="rounded-3xl p-5 mb-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           <div className="text-xs font-bold mb-3" style={{ color: 'var(--muted)' }}>
             {memberCount} member{memberCount !== 1 ? 's' : ''} already here
           </div>
           <div className="flex flex-wrap gap-2">
             {members.map((m, i) => (
-              <div key={i} className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1" style={{ background: '#F6F3EE' }}>
+              <div key={i} className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1" style={{ background: 'var(--background)' }}>
                 <MemberAvatar name={m.display_name} color={m.avatar_color} size={26} fontSize={11} />
-                <span className="text-[12px] font-bold" style={{ color: '#3A3F49' }}>{m.display_name}</span>
+                <span className="text-[12px] font-bold" style={{ color: 'var(--ink)' }}>{m.display_name}</span>
               </div>
             ))}
           </div>
         </div>
 
         {isAuthenticated && !needsSetup ? (
-          <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-            {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mb-4" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+          <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+            {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mb-4" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
             <button
               onClick={handleJoin}
               disabled={loading}
@@ -98,8 +98,8 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
             </button>
           </div>
         ) : (
-          <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-            <h2 className="text-xl font-extrabold mb-6" style={{ color: '#20242E' }}>{needsSetup ? 'Finish setting up' : 'Create your account'}</h2>
+          <div className="rounded-3xl p-6" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+            <h2 className="text-xl font-extrabold mb-6" style={{ color: 'var(--ink)' }}>{needsSetup ? 'Finish setting up' : 'Create your account'}</h2>
             <form onSubmit={handleSignupAndJoin} className="flex flex-col gap-4">
               <div>
                 <label className="text-xs font-bold mb-1.5 block" style={{ color: 'var(--ink-2)' }}>Your name</label>
@@ -110,7 +110,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
                   onChange={e => setDisplayName(e.target.value)}
                   placeholder="Aisha"
                   className="w-full rounded-2xl px-4 py-3.5 text-base font-semibold outline-none"
-                  style={{ background: '#F6F3EE', border: '1px solid #EAE5DD', color: '#20242E' }}
+                  style={{ background: 'var(--background)', border: '1px solid var(--line)', color: 'var(--ink)' }}
                 />
               </div>
               <div>
@@ -123,7 +123,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className="w-full rounded-2xl px-4 py-3.5 text-base font-semibold outline-none"
-                  style={{ background: '#F6F3EE', border: '1px solid #EAE5DD', color: '#20242E' }}
+                  style={{ background: 'var(--background)', border: '1px solid var(--line)', color: 'var(--ink)' }}
                 />
               </div>
               <div>
@@ -136,10 +136,10 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full rounded-2xl px-4 py-3.5 text-base font-semibold outline-none"
-                  style={{ background: '#F6F3EE', border: '1px solid #EAE5DD', color: '#20242E' }}
+                  style={{ background: 'var(--background)', border: '1px solid var(--line)', color: 'var(--ink)' }}
                 />
               </div>
-              {error && <p className="text-xs font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
+              {error && <p className="text-xs font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
               <button
                 type="submit"
                 disabled={loading}

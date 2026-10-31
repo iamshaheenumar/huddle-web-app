@@ -26,8 +26,8 @@ export default function MonthTabs({ period, view }: { period?: string; view: His
             scroll={false}
             className="flex-shrink-0 rounded-full px-4 py-2 text-[13px] font-bold whitespace-nowrap"
             style={isSelected
-              ? { background: '#20242E', color: '#fff' }
-              : { background: '#fff', color: '#3A3F49', border: '1px solid #EAE5DD' }}
+              ? { background: 'var(--ink)', color: '#fff' }
+              : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)' }}
           >
             {MONTHS[p.month - 1].slice(0, 3)} {p.year}
           </Link>
