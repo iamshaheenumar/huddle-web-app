@@ -2,19 +2,42 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { House, ChartPieSlice, Plus, Users, UserCircle } from '@phosphor-icons/react'
+import { House, ChartBar, Plus, UsersThree, UserCircle } from '@phosphor-icons/react'
 import { hidesBottomNav } from './navPaths'
+
+// History gets a tab because it's the screen people come back to; the budget
+// editor is reached from Home ("Edit budget", "Set budget").
+const TABS = [
+  { href: '/dashboard', label: 'Home', Icon: House },
+  { href: '/history', label: 'History', Icon: ChartBar },
+  { href: '/members', label: 'Group', Icon: UsersThree },
+  { href: '/profile', label: 'You', Icon: UserCircle },
+] as const
 
 export default function BottomNav() {
   const pathname = usePathname()
   if (hidesBottomNav(pathname)) return null
 
   const active = (path: string) => pathname === path || pathname.startsWith(path + '/')
-  const color = (path: string) => active(path) ? '#3B6FF6' : '#B4B8C0'
+
+  const tab = ({ href, label, Icon }: (typeof TABS)[number]) => (
+    <Link
+      key={href}
+      href={href}
+      aria-current={active(href) ? 'page' : undefined}
+      className="flex flex-col items-center justify-center gap-1 min-w-14 min-h-11"
+      // Icons default to currentColor, so this colours both icon and label.
+      style={{ color: active(href) ? 'var(--primary)' : 'var(--muted)' }}
+    >
+      <Icon size={24} weight={active(href) ? 'fill' : 'regular'} />
+      <span className="text-[11px] font-bold">{label}</span>
+    </Link>
+  )
 
   return (
-    <div
-      className="flex items-center justify-around px-5 pt-3"
+    <nav
+      aria-label="Main"
+      className="flex items-center justify-around px-3 pt-2"
       style={{
         background: '#fff',
         borderTop: '1px solid #F0ECE4',
@@ -22,34 +45,18 @@ export default function BottomNav() {
         marginBottom: 0,
       }}
     >
-      <Link href="/dashboard" className="flex flex-col items-center gap-1">
-        <House size={24} weight={active('/dashboard') ? 'fill' : 'regular'} color={color('/dashboard')} />
-        <span className="text-[10px] font-bold" style={{ color: color('/dashboard') }}>Home</span>
-      </Link>
-
-      <Link href="/budget/set" className="flex flex-col items-center gap-1">
-        <ChartPieSlice size={24} weight={active('/budget') ? 'fill' : 'regular'} color={color('/budget')} />
-        <span className="text-[10px] font-bold" style={{ color: color('/budget') }}>Budget</span>
-      </Link>
+      {TABS.slice(0, 2).map(tab)}
 
       <Link
         href="/expense/add"
-        aria-label="Add expense"
-        className="w-13 h-13 rounded-full flex items-center justify-center -mt-6"
-        style={{ background: '#3B6FF6', boxShadow: '0 12px 22px -8px rgba(59,111,246,.7)', width: 52, height: 52 }}
+        aria-label="Add transaction"
+        className="rounded-full flex items-center justify-center -mt-6"
+        style={{ background: 'var(--primary)', boxShadow: '0 8px 16px -8px rgba(32,36,46,.45)', width: 56, height: 56 }}
       >
-        <Plus size={24} weight="bold" color="#fff" />
+        <Plus size={26} weight="bold" color="#fff" />
       </Link>
 
-      <Link href="/members" className="flex flex-col items-center gap-1">
-        <Users size={24} weight={active('/members') ? 'fill' : 'regular'} color={color('/members')} />
-        <span className="text-[10px] font-bold" style={{ color: color('/members') }}>Members</span>
-      </Link>
-
-      <Link href="/profile" className="flex flex-col items-center gap-1">
-        <UserCircle size={24} weight={active('/profile') ? 'fill' : 'regular'} color={color('/profile')} />
-        <span className="text-[10px] font-bold" style={{ color: color('/profile') }}>Profile</span>
-      </Link>
-    </div>
+      {TABS.slice(2).map(tab)}
+    </nav>
   )
 }

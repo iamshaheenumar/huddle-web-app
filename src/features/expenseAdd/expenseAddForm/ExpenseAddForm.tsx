@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Plus, PlusCircle, CheckCircle, NotePencil, CalendarBlank, CaretDown, Trash, FloppyDisk } from '@phosphor-icons/react'
+import { X, Plus, PlusCircle, CheckCircle, NotePencil, CalendarBlank, Trash, FloppyDisk } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import AddCategorySheet from '@/features/common/AddCategorySheet'
 import ConfirmSheet from '@/features/common/ConfirmSheet'
@@ -15,7 +15,7 @@ import { persistNow } from '@/lib/query/client'
 import { CURRENCY } from '@/lib/constants'
 import { INCOME_COLOR } from '@/lib/transactions'
 import { createsFirstPayment, editedPosition, initialPosition } from '@/lib/recurring'
-import { todayDate } from '@/features/dashboard/dates'
+import { todayDate, yesterdayDate } from '@/features/dashboard/dates'
 import type { RecurringRow } from '@/features/recurring/queries'
 import RecurringSection, { type RecurringSettings } from '../recurringSection/RecurringSection'
 import KindToggle from '../kindToggle/KindToggle'
@@ -30,6 +30,21 @@ type Props = {
   startIncome?: boolean
   // Edits this recurring payment instead of adding an expense.
   editing?: RecurringRow
+}
+
+// What was typed, as a plain number string: digits, one point, two decimals at most.
+function cleanAmount(input: string) {
+  const [whole, ...rest] = input.replace(/[^0-9.]/g, '').split('.')
+  const int = whole.replace(/^0+(?=\d)/, '') || (rest.length ? '0' : '')
+  return rest.length ? `${int}.${rest.join('').slice(0, 2)}` : int
+}
+
+// "1250.5" → "1,250.5", keeping a trailing "." while it's being typed.
+function groupAmount(raw: string) {
+  if (!raw) return ''
+  const [int, dec] = raw.split('.')
+  const grouped = Number(int || '0').toLocaleString('en-US')
+  return dec === undefined ? grouped : `${grouped}.${dec}`
 }
 
 export default function ExpenseAddForm({ data, startRecurring, startIncome, editing }: Props) {
@@ -50,7 +65,8 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
   const income = kind === 'income'
   const [amount, setAmount] = useState(editing ? String(editing.amount) : '')
   const [paidBy, setPaidBy] = useState<string | null>(editing?.paid_by ?? data.currentUserId)
-  const [categoryId, setCategoryId] = useState<string | null>(editing?.category_id ?? data.categories[0]?.id ?? null)
+  // No default: a silently pre-picked category is how spend ends up mis-filed.
+  const [categoryId, setCategoryId] = useState<string | null>(editing?.category_id ?? null)
   const [note, setNote] = useState(editing?.note ?? '')
   const [date, setDate] = useState(editing?.start_date ?? todayDate())
   const [recurring, setRecurring] = useState(!!editing || !!startRecurring)
@@ -145,71 +161,95 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
     router.push('/recurring')
   }
 
-  const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-AE', { day: 'numeric', month: 'long', year: 'numeric' })
-  const submitLabel = editing ? 'Save changes' : `Add ${recurring ? 'recurring ' : ''}${income ? 'income' : 'expense'}`
+  const yesterday = yesterdayDate()
+  const pickedDate = date !== today && date !== yesterday
+  const dateChips = [
+    { value: today, label: 'Today' },
+    { value: yesterday, label: 'Yesterday' },
+  ]
+  const pickedLabel = new Date(date + 'T00:00:00').toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' })
+
+  const shownAmount = groupAmount(amount)
+  const category = categories.find(c => c.id === categoryId)
+  const hasAmount = parseFloat(amount) > 0
+  // Says what's missing, then exactly what will be saved.
+  const submitLabel = editing
+    ? 'Save changes'
+    : !hasAmount
+      ? 'Enter an amount'
+      : !income && !category
+        ? 'Choose a category'
+        : `Add ${recurring ? 'recurring ' : ''}${CURRENCY} ${shownAmount}${income ? ' income' : ` to ${category!.name}`}`
+  const ready = editing ? true : hasAmount && (income || !!category)
   const SubmitIcon = editing ? FloppyDisk : income ? CheckCircle : PlusCircle
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: '#F6F3EE' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-0">
-        <button onClick={() => router.back()} aria-label="Close" className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
+        <button onClick={() => router.back()} aria-label="Close" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid #EAE5DD', color: '#3A3F49' }}>
           <X size={16} weight="bold" />
         </button>
-        <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>{editing ? 'Edit recurring' : income ? 'Add income' : 'Add expense'}</span>
+        <div className="flex flex-col items-center min-w-0 px-2">
+          <span className="text-[17px] font-extrabold" style={{ color: '#20242E' }}>{editing ? 'Edit recurring' : income ? 'Add income' : 'Add expense'}</span>
+          <span className="text-[12px] font-semibold truncate max-w-full" style={{ color: 'var(--muted)' }}>in {groupName}</span>
+        </div>
         {editing ? (
-          <button onClick={() => setConfirmingDelete(true)} aria-label={income ? 'Delete recurring income' : 'Delete recurring payment'} className="w-10 h-10 rounded-[13px] flex items-center justify-center" style={{ background: '#FDF0EB', color: '#E5683E' }}>
+          <button onClick={() => setConfirmingDelete(true)} aria-label={income ? 'Delete recurring income' : 'Delete recurring payment'} className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#FDF0EB', color: 'var(--danger)' }}>
             <Trash size={17} weight="bold" />
           </button>
         ) : (
-          <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold text-white" style={{ background: '#20242E' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-            {groupName}
-          </div>
+          // Balances the close button so the title stays centred.
+          <div className="w-11 h-11" aria-hidden="true" />
         )}
       </div>
 
       {!editing && <KindToggle value={kind} onChange={setKind} />}
 
       {/* Amount */}
-      <div className="text-center px-5 pt-7 pb-2">
-        <div className="text-[13px] font-semibold" style={{ color: '#9A9FA8' }}>Amount</div>
-        <div className="flex items-start justify-center gap-2 mt-2">
-          <span className="text-[20px] font-bold pt-2.5" style={{ color: '#9A9FA8' }}>{income ? `+ ${CURRENCY}` : CURRENCY}</span>
+      <div className="text-center px-5 pt-6 pb-1">
+        <label htmlFor="amount" className="text-[13px] font-semibold" style={{ color: 'var(--muted)' }}>Amount</label>
+        <div className="flex items-baseline justify-center gap-2 mt-1.5">
+          <span className="text-[20px] font-bold shrink-0" style={{ color: 'var(--muted)' }}>{income ? `+ ${CURRENCY}` : CURRENCY}</span>
           <input
-            type="number"
+            id="amount"
+            type="text"
             inputMode="decimal"
+            autoComplete="off"
             placeholder="0"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
-            className="text-[50px] font-extrabold tracking-tight leading-none text-center bg-transparent outline-none w-44"
-            style={{ color: income ? INCOME_COLOR : '#20242E' }}
+            value={shownAmount}
+            onChange={e => setAmount(cleanAmount(e.target.value))}
+            className="text-[48px] font-extrabold tracking-tight leading-none tabular-nums bg-transparent outline-none min-w-0"
+            // Sized to the digits so the currency stays beside the number.
+            style={{ color: income ? INCOME_COLOR : '#20242E', width: `${Math.max(1, shownAmount.length) + 0.5}ch`, maxWidth: '100%' }}
           />
-          <span className="text-[28px] font-bold pt-1.5" style={{ color: '#B6BAC1' }}>.00</span>
         </div>
       </div>
 
       {/* Paid by / Received by */}
       <div className="px-5 pt-5">
-        <div className="text-[13px] font-bold mb-2.5" style={{ color: '#6B707A' }}>{income ? 'Received by' : 'Paid by'}</div>
-        <div className="flex gap-2.5 flex-wrap">
+        <div className="text-[13px] font-bold mb-2.5" style={{ color: 'var(--ink-2)' }}>{income ? 'Received by' : 'Paid by'}</div>
+        <div className="flex gap-2 flex-wrap">
           {members.map(m => {
             const selected = paidBy === m.id
+            const name = m.id === data.currentUserId ? 'You' : m.display_name.split(' ')[0]
             return (
               <button
                 key={m.id}
+                type="button"
+                aria-pressed={selected}
                 onClick={() => setPaidBy(m.id)}
-                className="flex items-center gap-2 rounded-full transition-all"
+                className="flex items-center gap-2 rounded-full min-h-11 pl-1 pr-3.5 text-[14px] transition-colors"
                 style={selected
-                  ? { background: '#3B6FF6', color: '#fff', padding: '6px 13px 6px 6px' }
-                  : { width: 38, height: 38, background: '#fff', border: '1px solid #EAE5DD', borderRadius: '50%', justifyContent: 'center' }
+                  ? { background: 'var(--primary)', color: '#fff', fontWeight: 700 }
+                  : { background: '#fff', color: '#20242E', border: '1px solid #EAE5DD', fontWeight: 600 }
                 }
               >
-                <div className="rounded-full flex items-center justify-center font-extrabold flex-shrink-0 text-[12px]"
-                  style={{ width: 26, height: 26, background: selected ? 'rgba(255,255,255,.25)' : m.avatar_color, color: selected ? '#fff' : '#fff' }}>
-                  {m.display_name.charAt(0)}
-                </div>
-                {selected && <span className="text-[13px] font-bold">{m.display_name.split(' ')[0]}</span>}
+                <span className="rounded-full flex items-center justify-center font-extrabold flex-shrink-0 text-[13px]"
+                  style={{ width: 32, height: 32, background: selected ? 'rgba(255,255,255,.22)' : m.avatar_color, color: '#fff' }}>
+                  {m.display_name.charAt(0).toUpperCase()}
+                </span>
+                {name}
               </button>
             )
           })}
@@ -218,32 +258,40 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
 
       {/* Category (expenses only) */}
       {!income && <div className="px-5 pt-5">
-        <div className="text-[13px] font-bold mb-2.5" style={{ color: '#6B707A' }}>Category</div>
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex items-baseline justify-between mb-2.5">
+          <span className="text-[13px] font-bold" style={{ color: 'var(--ink-2)' }}>Category</span>
+          <span className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>Most used first</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
           {categories.map(cat => {
             const selected = categoryId === cat.id
             return (
               <button
                 key={cat.id}
+                type="button"
+                aria-pressed={selected}
                 onClick={() => setCategoryId(cat.id)}
-                className="flex items-center gap-1.5 rounded-[13px] px-3 py-2.5 text-[13px] font-bold transition-all"
+                className="flex flex-col items-center gap-1.5 rounded-[16px] px-1 pt-2.5 pb-2 min-h-20 transition-colors"
                 style={selected
-                  ? { background: cat.bg_color, color: cat.color, border: `1.5px solid ${cat.color}` }
-                  : { background: '#fff', color: '#787D87', border: '1px solid #EAE5DD' }
+                  ? { background: cat.bg_color, boxShadow: `inset 0 0 0 2px ${cat.color}` }
+                  : { background: '#fff', boxShadow: 'inset 0 0 0 1px #ECE7DE' }
                 }
               >
-                <CategoryIcon icon={cat.icon} color={selected ? cat.color : '#787D87'} bg_color="transparent" size={18} iconSize={16} radius={0} />
-                {cat.name}
+                <CategoryIcon icon={cat.icon} color={cat.color} bg_color={selected ? '#fff' : cat.bg_color} size={38} iconSize={19} radius={12} />
+                <span className="text-[12px] leading-tight text-center line-clamp-2" style={{ color: '#20242E', fontWeight: selected ? 700 : 600 }}>{cat.name}</span>
               </button>
             )
           })}
           <button
+            type="button"
             onClick={() => setAddingCategory(true)}
-            className="flex items-center gap-1.5 rounded-[13px] px-3 py-2.5 text-[13px] font-bold"
-            style={{ background: 'transparent', color: '#3B6FF6', border: '1.5px dashed #B9CCFB' }}
+            className="flex flex-col items-center gap-1.5 rounded-[16px] px-1 pt-2.5 pb-2 min-h-20"
+            style={{ color: 'var(--primary)', boxShadow: 'inset 0 0 0 1.5px #B9CCFB' }}
           >
-            <Plus size={14} weight="bold" />
-            New
+            <span className="flex items-center justify-center rounded-[12px]" style={{ width: 38, height: 38, background: '#E9F0FE' }}>
+              <Plus size={18} weight="bold" />
+            </span>
+            <span className="text-[12px] font-bold leading-tight">New</span>
           </button>
         </div>
       </div>}
@@ -262,26 +310,53 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
       {/* Note + Date */}
       <div className="px-5 pt-5 flex flex-col gap-2.5">
         <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-          <NotePencil size={18} color="#9A9FA8" />
+          <NotePencil size={18} color="#666B75" />
           <input
             type="text"
-            placeholder="Add a note (optional)"
+            aria-label="Note"
+            placeholder="What was it for? (optional)"
             value={note}
             onChange={e => setNote(e.target.value)}
-            className="flex-1 text-[14px] font-semibold bg-transparent outline-none"
+            className="flex-1 text-[16px] font-semibold bg-transparent outline-none"
             style={{ color: '#2A2E37' }}
           />
         </div>
-        <div className="relative flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid #F0ECE4' }}>
-          <CalendarBlank size={18} color="#9A9FA8" />
-          <span className="flex-1 text-[14px] font-semibold" style={{ color: '#2A2E37' }}>{displayDate}</span>
-          <CaretDown size={13} color="#B6BAC1" />
-          <input
-            type="date"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            className="absolute inset-0 opacity-0 cursor-pointer"
-          />
+        <div role="radiogroup" aria-label={recurring ? 'Start date' : 'Date'} className="flex gap-2 flex-wrap">
+          {dateChips.map(c => {
+            const selected = date === c.value
+            return (
+              <button
+                key={c.label}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => setDate(c.value)}
+                className="min-h-10 rounded-full px-4 text-[13px] transition-colors"
+                style={selected
+                  ? { background: '#20242E', color: '#fff', fontWeight: 700 }
+                  : { background: '#fff', color: '#20242E', border: '1px solid #EAE5DD', fontWeight: 600 }}
+              >
+                {c.label}
+              </button>
+            )
+          })}
+          {/* The native picker sits invisibly over the chip so it opens on tap. */}
+          <label
+            className="relative flex items-center gap-1.5 min-h-10 rounded-full px-4 text-[13px] cursor-pointer focus-within:outline-2 focus-within:outline-offset-2"
+            style={pickedDate
+              ? { background: '#20242E', color: '#fff', fontWeight: 700, outlineColor: 'var(--focus-ring)' }
+              : { background: '#fff', color: '#20242E', border: '1px solid #EAE5DD', fontWeight: 600, outlineColor: 'var(--focus-ring)' }}
+          >
+            <CalendarBlank size={15} weight="bold" />
+            {pickedDate ? pickedLabel : 'Pick date…'}
+            <input
+              type="date"
+              aria-label="Pick a date"
+              value={date}
+              onChange={e => e.target.value && setDate(e.target.value)}
+              className="absolute inset-0 opacity-0 cursor-pointer text-base"
+            />
+          </label>
         </div>
       </div>
 
@@ -310,18 +385,20 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
         />
       )}
 
-      {error &&<p className="mx-5 mt-3 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: '#E0563E', background: '#FBE7E1' }}>{error}</p>}
+      {error &&<p className="mx-5 mt-3 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: '#FBE7E1' }}>{error}</p>}
 
       {/* Add button */}
       <div className="sticky bottom-0 px-5 mt-auto pt-6 pb-[calc(env(safe-area-inset-bottom)+16px)]" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),#F6F3EE 38%)' }}>
         <button
           onClick={handleAdd}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold text-white transition-opacity disabled:opacity-60"
-          style={{ background: '#3B6FF6', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
+          disabled={loading || !ready}
+          className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold transition-colors disabled:cursor-not-allowed"
+          style={ready
+            ? { background: 'var(--primary)', color: '#fff', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }
+            : { background: '#DCD6CC', color: '#4A4F59' }}
         >
-          <SubmitIcon size={18} weight="fill" />
-          {loading ? 'Saving…' : submitLabel}
+          {ready && <SubmitIcon size={18} weight="fill" />}
+          <span className="truncate">{loading ? 'Saving…' : submitLabel}</span>
         </button>
       </div>
     </div>

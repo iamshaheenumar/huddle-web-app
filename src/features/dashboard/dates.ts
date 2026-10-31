@@ -7,10 +7,14 @@ export function todayDate() {
   return new Date().toISOString().split('T')[0]
 }
 
-export function isYesterday(date: string) {
+export function yesterdayDate() {
   const d = new Date()
   d.setUTCDate(d.getUTCDate() - 1)
-  return date === d.toISOString().split('T')[0]
+  return d.toISOString().split('T')[0]
+}
+
+export function isYesterday(date: string) {
+  return date === yesterdayDate()
 }
 
 // created_at is a timestamptz; show it in the app's home zone (AED → UAE).

@@ -2,22 +2,22 @@
 
 import { MONTHS, CURRENCY } from '@/lib/constants'
 import { fmt } from '@/lib/format'
-import { isIncome } from '@/lib/transactions'
 import { useAppContext } from '@/features/common/queries'
-import { useBudgetSummary, useSpendDay } from '../queries'
-import { dayLabel, todayDate } from '../dates'
+import { useBudgetSummary } from '../queries'
 import BudgetHeroCardSkeleton from './BudgetHeroCardSkeleton'
 
-const GRADIENT = 'linear-gradient(152deg,#4D79F8 0%,#3461E8 100%)'
-const SHADOW = '0 18px 30px -18px rgba(52,97,232,.8)'
-const OVER_GRADIENT = 'linear-gradient(152deg,#F2675A 0%,#DC4437 100%)'
-const OVER_SHADOW = '0 18px 30px -18px rgba(220,68,55,.8)'
+// Flat fills: white text keeps AA contrast on both (no gradient end to fall short on).
+const FILL = 'var(--primary)'
+const OVER_FILL = 'var(--danger)'
+// Meta text: 92% white still passes 4.5:1 on either fill.
+const SOFT = 'rgba(255,255,255,.92)'
+// Panels darken the fill rather than lighten it, so white text on them stays readable.
+const PANEL = 'rgba(16,22,48,.18)'
 
 export default function BudgetHeroCard() {
-  const { month } = useAppContext()
+  const { month, year } = useAppContext()
   const summary = useBudgetSummary()
-  const spendDay = useSpendDay()
-  if (!summary || !spendDay) return <BudgetHeroCardSkeleton />
+  if (!summary) return <BudgetHeroCardSkeleton />
   const { remaining, totalBudget, totalSpent } = summary
 
   const hasBudget = totalBudget > 0
@@ -27,53 +27,63 @@ export default function BudgetHeroCard() {
   // Keep a visible sliver once anything is spent, but no stray dot at zero.
   const barPct = !hasBudget || totalSpent <= 0 ? 0 : Math.max(2, Math.min(100, (totalSpent / totalBudget) * 100))
 
+  // The month is always the current one, so today's position in it is the pace to beat.
+  const now = new Date()
+  const daysInMonth = new Date(year, month, 0).getDate()
+  const daysLeft = daysInMonth - now.getDate() + 1
+  const pacePct = (now.getDate() / daysInMonth) * 100
+  const fasterThanPlanned = hasBudget && !over && barPct > pacePct + 5
+  const perDay = hasBudget && !over ? Math.floor(remaining / daysLeft) : 0
+
   const heroAmount = hasBudget ? Math.abs(remaining) : totalSpent
   const heroText = fmt(heroAmount)
   const heroSize = heroText.length > 9 ? 'text-[32px]' : heroText.length > 7 ? 'text-[38px]' : 'text-[44px]'
+  const heroSuffix = !hasBudget ? 'spent' : over ? 'over' : 'left'
   const subLabel = !hasBudget
-    ? 'spent · no budget set'
+    ? `No budget set for ${MONTHS[month - 1]}`
     : over
-      ? `over budget of ${CURRENCY} ${fmt(totalBudget)}`
-      : `remaining of ${CURRENCY} ${fmt(totalBudget)}`
-
-  // Spend only: income shows in the list below but never counts as spent.
-  const todayExpenses = spendDay.isToday ? spendDay.expenses.filter(e => !isIncome(e)) : []
-  const todayTotal = todayExpenses.reduce((s, e) => s + e.amount, 0)
-  const payers = new Set(todayExpenses.map(e => e.profile?.display_name)).size
-  const countLabel = todayExpenses.length
-    ? `${todayExpenses.length} transaction${todayExpenses.length > 1 ? 's' : ''} by ${payers} member${payers > 1 ? 's' : ''}`
-    : 'Nothing spent yet today'
+      ? `Over your ${CURRENCY} ${fmt(totalBudget)} budget`
+      : `of ${CURRENCY} ${fmt(totalBudget)} · ${fasterThanPlanned ? 'spending faster than planned' : 'on track'}`
 
   return (
-    <div className="mx-5 mt-5 rounded-3xl px-5 pt-[22px] pb-5 text-white" style={{ background: over ? OVER_GRADIENT : GRADIENT, boxShadow: over ? OVER_SHADOW : SHADOW }}>
+    <div className="mx-5 mt-5 rounded-3xl p-5 text-white" style={{ background: over ? OVER_FILL : FILL }}>
       <div className="flex justify-between items-center gap-3">
-        <span className="text-[13px] font-bold opacity-85 truncate">{MONTHS[month - 1]} {hasBudget ? 'budget' : 'spending'}</span>
+        <span className="text-[13px] font-bold truncate" style={{ color: SOFT }}>
+          {MONTHS[month - 1]} · {daysLeft} day{daysLeft === 1 ? '' : 's'} left
+        </span>
         {hasBudget && (
-          <span className="shrink-0 whitespace-nowrap text-[12px] font-bold rounded-full px-2.5 py-[5px]" style={{ background: 'rgba(255,255,255,.18)' }}>
-            {over ? `Over · ${pct}% used` : `${pct}% used`}
+          <span className="shrink-0 whitespace-nowrap text-[12px] font-bold rounded-full px-2.5 py-1" style={{ background: PANEL }}>
+            {pct}% used
           </span>
         )}
       </div>
-      <div className="flex items-baseline gap-2 mt-2.5 min-w-0">
-        <span className="shrink-0 text-[20px] font-bold opacity-80">{CURRENCY}</span>
+      <div className="flex items-baseline gap-2 mt-3 min-w-0">
+        <span className="shrink-0 text-[18px] font-bold" style={{ color: SOFT }}>{CURRENCY}</span>
         <span className={`${heroSize} font-extrabold leading-none tabular-nums whitespace-nowrap`} style={{ letterSpacing: '-0.03em' }}>{heroText}</span>
+        <span className="shrink-0 text-[15px] font-semibold" style={{ color: SOFT }}>{heroSuffix}</span>
       </div>
-      <div className="text-[13px] font-semibold opacity-85 mt-1.5">{subLabel}</div>
+      <div className="text-[13px] font-semibold mt-1.5" style={{ color: SOFT }}>{subLabel}</div>
+
       {hasBudget && (
-        <div className="h-2 rounded-full mt-4 overflow-hidden" style={{ background: 'rgba(255,255,255,.22)' }}>
-          <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: '#fff' }} />
+        <div className="relative mt-4 mb-5" role="img" aria-label={`${pct}% of the budget used, ${Math.round(pacePct)}% of the month gone`}>
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.24)' }}>
+            <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: '#fff' }} />
+          </div>
+          {/* Where spending would be if it were spread evenly over the month. */}
+          <div className="absolute -top-1 w-0.5 h-4 rounded-full" style={{ left: `${pacePct}%`, background: '#FFD66B' }} />
+          <div className="absolute top-3.5 -translate-x-1/2 text-[11px] font-bold whitespace-nowrap" style={{ left: `${Math.min(92, Math.max(8, pacePct))}%`, color: '#fff' }}>today</div>
         </div>
       )}
-      <div className="flex items-center justify-between gap-3 mt-4 rounded-2xl px-3.5 py-3" style={{ background: 'rgba(255,255,255,.14)' }}>
-        <div className="min-w-0">
-          <div className="text-[12px] font-bold opacity-85 truncate">Spent today · {dayLabel(todayDate())}</div>
-          <div className="text-[12px] font-semibold opacity-75 mt-[3px] truncate">{countLabel}</div>
+
+      {hasBudget && !over && (
+        <div className="flex items-center justify-between gap-3 mt-2 rounded-2xl px-3.5 py-3" style={{ background: PANEL }}>
+          <span className="text-[13px] font-bold" style={{ color: SOFT }}>Safe to spend per day</span>
+          <span className="flex items-baseline gap-1 whitespace-nowrap tabular-nums">
+            <span className="text-[12px] font-bold" style={{ color: SOFT }}>{CURRENCY}</span>
+            <span className="text-[20px] font-extrabold">{fmt(perDay)}</span>
+          </span>
         </div>
-        <div className="shrink-0 flex items-baseline gap-1 whitespace-nowrap tabular-nums">
-          <span className="text-[12px] font-bold opacity-80">{CURRENCY}</span>
-          <span className="text-[20px] font-extrabold">{fmt(todayTotal)}</span>
-        </div>
-      </div>
+      )}
     </div>
   )
 }
