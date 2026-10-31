@@ -15,8 +15,8 @@ export default function CategoryScreen() {
   if (detail && !detail.category) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-5 text-center" style={{ background: 'var(--background)' }}>
-        <p className="text-[15px] font-bold" style={{ color: 'var(--ink)' }}>This category isn&apos;t in your group</p>
-        <Link href="/dashboard" className="mt-3 text-[13px] font-bold" style={{ color: 'var(--primary)' }}>Back to dashboard</Link>
+        <p className="text-row font-bold" style={{ color: 'var(--ink)' }}>This category isn&apos;t in your group</p>
+        <Link href="/dashboard" className="mt-3 text-body font-bold" style={{ color: 'var(--primary)' }}>Back to dashboard</Link>
       </div>
     )
   }

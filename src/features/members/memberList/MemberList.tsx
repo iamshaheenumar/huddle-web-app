@@ -18,7 +18,7 @@ export default function MemberList() {
   return (
     <>
       <div className="px-5 pt-5 pb-3">
-        <span className="text-base font-extrabold" style={{ color: 'var(--ink)' }}>Spending by member</span>
+        <span className="text-row font-extrabold" style={{ color: 'var(--ink)' }}>Spending by member</span>
       </div>
       <div className="mx-5 flex flex-col gap-2.5">
         {members.map(m => {
@@ -28,17 +28,17 @@ export default function MemberList() {
               <div className="flex items-center gap-3">
                 <MemberAvatar name={m.profile?.display_name ?? '?'} color={m.color} size={40} fontSize={15} />
                 <div className="flex-1 min-w-0">
-                  <div className="text-[14px] font-extrabold flex items-center gap-2" style={{ color: 'var(--ink)' }}>
+                  <div className="text-body font-extrabold flex items-center gap-2" style={{ color: 'var(--ink)' }}>
                     {m.profile?.display_name ?? 'Unknown'}
                     {m.role === 'owner' && (
-                      <span className="text-[11px] font-bold rounded-[5px] px-1.5 py-0.5" style={{ color: 'var(--primary)', background: 'var(--primary-soft)' }}>Owner</span>
+                      <span className="text-label font-bold rounded-[5px] px-1.5 py-0.5" style={{ color: 'var(--primary)', background: 'var(--primary-soft)' }}>Owner</span>
                     )}
                   </div>
-                  <div className="text-[11px] font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}
+                  <div className="text-label font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>{m.txCount} transaction{m.txCount !== 1 ? 's' : ''}
                     {m.income > 0 && <> · <span style={{ color: INCOME_COLOR }}>+{fmt(m.income)} in</span></>}
                   </div>
                 </div>
-                <span className="text-[16px] font-extrabold tabular-nums text-right" style={{ color: 'var(--ink)' }}>{fmt(m.spent)}</span>
+                <span className="text-row font-extrabold tabular-nums text-right" style={{ color: 'var(--ink)' }}>{fmt(m.spent)}</span>
                 {isOwner && (
                   <div className="w-8 flex justify-end shrink-0">
                     {m.role !== 'owner' && (

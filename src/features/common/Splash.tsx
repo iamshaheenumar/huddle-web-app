@@ -8,8 +8,8 @@ export default function Splash({ markSize = 88, showLoader = true }: { markSize?
         <div className="flex flex-col items-center gap-5.5">
           <HuddleMark size={markSize} shadow />
           <div className="flex flex-col items-center gap-1.5">
-            <div className="text-[32px] font-extrabold leading-none tracking-[-0.02em]" style={{ color: 'var(--ink)' }}>Huddle</div>
-            <div className="text-[14px] font-semibold" style={{ color: 'var(--muted)' }}>Budgets you share</div>
+            <div className="text-figure font-extrabold leading-none tracking-[-0.02em]" style={{ color: 'var(--ink)' }}>Huddle</div>
+            <div className="text-body font-medium" style={{ color: 'var(--muted)' }}>Budgets you share</div>
           </div>
         </div>
         <div className="flex-1" />

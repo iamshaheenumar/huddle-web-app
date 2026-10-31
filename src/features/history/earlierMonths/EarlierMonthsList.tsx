@@ -26,12 +26,12 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
           style={{ background: '#fff', border: '1px solid var(--hairline)' }}
         >
           <div className="flex flex-col items-center justify-center rounded-2xl flex-shrink-0" style={{ width: 46, height: 46, background: m.accent.bg }}>
-            <span className="text-[11px] font-extrabold leading-none" style={{ color: m.accent.color }}>{m.monthAbbr}</span>
-            <span className="text-[15px] font-extrabold leading-none mt-1" style={{ color: 'var(--ink)' }}>{m.yearShort}</span>
+            <span className="text-label font-extrabold leading-none" style={{ color: m.accent.color }}>{m.monthAbbr}</span>
+            <span className="text-row font-extrabold leading-none mt-1" style={{ color: 'var(--ink)' }}>{m.yearShort}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[15px] font-bold" style={{ color: 'var(--ink)' }}>{m.label}</div>
-            <div className="text-[12px] font-medium mt-0.5 truncate" style={{ color: 'var(--muted)' }}>
+            <div className="text-row font-bold" style={{ color: 'var(--ink)' }}>{m.label}</div>
+            <div className="text-meta font-medium mt-0.5 truncate" style={{ color: 'var(--muted)' }}>
               {[
                 m.hasBudget ? `Spent ${fmt(m.totalSpent)} of ${fmt(m.totalBudget)}` : `Spent ${fmt(m.totalSpent)}`,
                 // Only months with income show a net, so spend-only months read as before.
@@ -46,7 +46,7 @@ export default function EarlierMonthsList({ months, view }: { months: EarlierMon
       {remaining > 0 && (
         <button
           onClick={() => setVisible(v => v + PAGE_SIZE)}
-          className="rounded-[20px] py-3 text-[13px] font-bold"
+          className="rounded-[20px] py-3 text-body font-bold"
           style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--primary)' }}
         >
           Show {Math.min(PAGE_SIZE, remaining)} more · {remaining} left

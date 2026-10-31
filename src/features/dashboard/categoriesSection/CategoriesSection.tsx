@@ -26,8 +26,8 @@ export default function CategoriesSection() {
   return (
     <>
       <div className="flex items-baseline justify-between px-5 pt-6">
-        <span className="text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>Categories</span>
-        <Link href="/budget/set" className="text-[13px] font-bold py-2" style={{ color: 'var(--primary)' }}>Edit budget</Link>
+        <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>Categories</span>
+        <Link href="/budget/set" className="text-body font-bold py-2" style={{ color: 'var(--primary)' }}>Edit budget</Link>
       </div>
       <div className="mx-5 mt-1 rounded-[22px] py-1 px-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {sorted.map((bc, i) => {
@@ -43,8 +43,8 @@ export default function CategoriesSection() {
                 {bc.category && <CategoryIcon icon={bc.category.icon} color={bc.category.color} bg_color={bc.category.bg_color} size={36} iconSize={18} radius={11} />}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline gap-2">
-                    <span className="text-[14px] font-bold truncate" style={{ color: 'var(--ink)' }}>{bc.category?.name}</span>
-                    <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(bc.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(bc.allocated_amount)}</span></span>
+                    <span className="text-body font-bold truncate" style={{ color: 'var(--ink)' }}>{bc.category?.name}</span>
+                    <span className="text-body font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(bc.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(bc.allocated_amount)}</span></span>
                   </div>
                   <div className="h-1.5 rounded-full mt-2 overflow-hidden" style={{ background: 'var(--track)' }}>
                     {overspent
@@ -54,13 +54,13 @@ export default function CategoriesSection() {
                   </div>
                   {/* Said in words too, so it doesn't rest on telling red from the category colour. */}
                   {overspent && (
-                    <div className="flex items-center gap-1 mt-1.5 text-[12px] font-bold" style={{ color: 'var(--danger)' }}>
+                    <div className="flex items-center gap-1 mt-1.5 text-meta font-bold" style={{ color: 'var(--danger)' }}>
                       <WarningCircle size={14} weight="fill" aria-hidden="true" />
                       Over by {fmt(bc.consumed - bc.allocated_amount)}
                     </div>
                   )}
                   {nearly && (
-                    <div className="mt-1.5 text-[12px] font-bold" style={{ color: 'var(--warning)' }}>
+                    <div className="mt-1.5 text-meta font-bold" style={{ color: 'var(--warning)' }}>
                       {pct}% used · {fmt(bc.allocated_amount - bc.consumed)} left
                     </div>
                   )}

@@ -30,7 +30,8 @@ export default function BudgetHeroCard() {
 
   const heroAmount = hasBudget ? Math.abs(remaining) : totalSpent
   const heroText = fmt(heroAmount)
-  const heroSize = heroText.length > 9 ? 'text-[32px]' : heroText.length > 7 ? 'text-[38px]' : 'text-[44px]'
+  // Long amounts step down a size so they never wrap or clip.
+  const heroSize = heroText.length > 7 ? 'text-figure' : 'text-display'
   const heroSuffix = !hasBudget ? 'spent' : over ? 'over' : 'left'
   const subLabel = !hasBudget
     ? `No budget set for ${MONTHS[month - 1]}`
@@ -41,21 +42,21 @@ export default function BudgetHeroCard() {
   return (
     <div className="mx-5 mt-5 rounded-3xl p-5 text-white" style={{ background: over ? OVER_FILL : FILL }}>
       <div className="flex justify-between items-center gap-3">
-        <span className="text-[13px] font-bold truncate" style={{ color: SOFT }}>
+        <span className="text-body font-bold truncate" style={{ color: SOFT }}>
           {MONTHS[month - 1]} · {daysLeft} day{daysLeft === 1 ? '' : 's'} left
         </span>
         {hasBudget && (
-          <span className="shrink-0 whitespace-nowrap text-[12px] font-bold rounded-full px-2.5 py-1" style={{ background: PANEL }}>
+          <span className="shrink-0 whitespace-nowrap text-meta font-bold rounded-full px-2.5 py-1" style={{ background: PANEL }}>
             {pct}% used
           </span>
         )}
       </div>
       <div className="flex items-baseline gap-2 mt-3 min-w-0">
-        <span className="shrink-0 text-[18px] font-bold" style={{ color: SOFT }}>{CURRENCY}</span>
+        <span className="shrink-0 text-section font-bold" style={{ color: SOFT }}>{CURRENCY}</span>
         <span className={`${heroSize} font-extrabold leading-none tabular-nums whitespace-nowrap`} style={{ letterSpacing: '-0.03em' }}>{heroText}</span>
-        <span className="shrink-0 text-[15px] font-semibold" style={{ color: SOFT }}>{heroSuffix}</span>
+        <span className="shrink-0 text-row font-semibold" style={{ color: SOFT }}>{heroSuffix}</span>
       </div>
-      <div className="text-[13px] font-semibold mt-1.5" style={{ color: SOFT }}>{subLabel}</div>
+      <div className="text-meta font-semibold mt-1.5" style={{ color: SOFT }}>{subLabel}</div>
 
       {hasBudget && (
         <div className="relative mt-4 mb-5" role="img" aria-label={`${pct}% of the budget used, ${Math.round(pacePct)}% of the month gone`}>
@@ -64,16 +65,16 @@ export default function BudgetHeroCard() {
           </div>
           {/* Where spending would be if it were spread evenly over the month. */}
           <div className="absolute -top-1 w-0.5 h-4 rounded-full" style={{ left: `${pacePct}%`, background: '#FFD66B' }} />
-          <div className="absolute top-3.5 -translate-x-1/2 text-[11px] font-bold whitespace-nowrap" style={{ left: `${Math.min(92, Math.max(8, pacePct))}%`, color: '#fff' }}>today</div>
+          <div className="absolute top-3.5 -translate-x-1/2 text-label font-bold whitespace-nowrap" style={{ left: `${Math.min(92, Math.max(8, pacePct))}%`, color: '#fff' }}>today</div>
         </div>
       )}
 
       {hasBudget && !over && (
         <div className="flex items-center justify-between gap-3 mt-2 rounded-2xl px-3.5 py-3" style={{ background: PANEL }}>
-          <span className="text-[13px] font-bold" style={{ color: SOFT }}>Safe to spend per day</span>
+          <span className="text-body font-bold" style={{ color: SOFT }}>Safe to spend per day</span>
           <span className="flex items-baseline gap-1 whitespace-nowrap tabular-nums">
-            <span className="text-[12px] font-bold" style={{ color: SOFT }}>{CURRENCY}</span>
-            <span className="text-[20px] font-extrabold">{fmt(perDay)}</span>
+            <span className="text-meta font-bold" style={{ color: SOFT }}>{CURRENCY}</span>
+            <span className="text-title font-extrabold">{fmt(perDay)}</span>
           </span>
         </div>
       )}

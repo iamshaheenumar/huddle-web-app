@@ -59,7 +59,7 @@ function SyncErrorBanner() {
   }
 
   return (
-    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 rounded-2xl px-4 py-3 text-[13px] font-bold text-white" style={{ width: 'calc(100% - 40px)', maxWidth: 390, background: 'var(--danger)' }}>
+    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 rounded-2xl px-4 py-3 text-body font-bold text-white" style={{ width: 'calc(100% - 40px)', maxWidth: 390, background: 'var(--danger)' }}>
       <span className="flex-1">{failed.length === 1 ? 'A change' : `${failed.length} changes`} couldn&apos;t be saved.</span>
       <button onClick={dismiss} className="underline">Dismiss</button>
     </div>
@@ -70,7 +70,7 @@ function OfflineBanner() {
   const online = useOnline()
   if (online) return null
   return (
-    <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full z-30 px-4 pb-1.5 text-center text-[12px] font-bold text-white" style={{ maxWidth: 430, background: 'var(--ink)', paddingTop: 'calc(env(safe-area-inset-top) + 6px)' }}>
+    <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full z-30 px-4 pb-1.5 text-center text-meta font-bold text-white" style={{ maxWidth: 430, background: 'var(--ink)', paddingTop: 'calc(env(safe-area-inset-top) + 6px)' }}>
       You&apos;re offline · showing saved data
     </div>
   )

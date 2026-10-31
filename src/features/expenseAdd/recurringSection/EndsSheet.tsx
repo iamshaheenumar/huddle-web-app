@@ -61,7 +61,7 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
 
   return (
     <BottomSheet open onClose={onClose} labelledBy="ends-sheet-title">
-      <div id="ends-sheet-title" className="text-[18px] font-extrabold text-center pt-5" style={{ color: 'var(--ink)' }}>Ends</div>
+      <div id="ends-sheet-title" className="text-section font-extrabold text-center pt-5" style={{ color: 'var(--ink)' }}>Ends</div>
 
       <div role="radiogroup" aria-labelledby="ends-sheet-title" className="mt-4 rounded-[20px] px-4 py-1" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {endOptions.map((o, i) => {
@@ -79,20 +79,20 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
                   className="flex items-center justify-center rounded-full flex-shrink-0"
                   style={{ width: 20, height: 20, border: selected ? '6px solid var(--primary)' : '1.5px solid #D5D0C7', background: '#fff' }}
                 />
-                <span className="text-[14px] font-bold" style={{ color: 'var(--ink)' }}>{o.label}</span>
+                <span className="text-body font-bold" style={{ color: 'var(--ink)' }}>{o.label}</span>
               </button>
 
               {selected && o.value === 'on_date' && (
                 <label className="relative flex items-center justify-between mb-3.5 rounded-[12px] px-3 py-2.5" style={{ background: 'var(--background)' }}>
-                  <span className="text-[13px] font-bold" style={{ color: 'var(--ink)' }}>{endDate ? longDate(endDate) : 'Pick a date'}</span>
-                  <span className="text-[12px] font-bold" style={{ color: 'var(--primary)' }}>Change</span>
+                  <span className="text-body font-bold" style={{ color: 'var(--ink)' }}>{endDate ? longDate(endDate) : 'Pick a date'}</span>
+                  <span className="text-meta font-bold" style={{ color: 'var(--primary)' }}>Change</span>
                   <input
                     type="date"
                     aria-label="End date"
                     min={startDate}
                     value={endDate}
                     onChange={e => setEndDate(e.target.value)}
-                    className="absolute inset-0 opacity-0 cursor-pointer text-base"
+                    className="absolute inset-0 opacity-0 cursor-pointer text-input"
                   />
                 </label>
               )}
@@ -107,10 +107,10 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
                     step={1}
                     value={count}
                     onChange={e => setCount(e.target.value)}
-                    className="w-16 text-[16px] font-extrabold bg-transparent outline-none"
+                    className="w-16 text-input font-extrabold bg-transparent outline-none"
                     style={{ color: 'var(--ink)' }}
                   />
-                  <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{noun}s in total</span>
+                  <span className="text-meta font-medium" style={{ color: 'var(--ink-2)' }}>{noun}s in total</span>
                 </div>
               )}
             </div>
@@ -118,12 +118,12 @@ function EndsSheetBody({ onClose, settings, startDate, income, onSave }: Props) 
         })}
       </div>
 
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-3" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <button
         type="button"
         onClick={save}
-        className="w-full mt-5 rounded-[17px] py-4 text-base font-extrabold text-white"
+        className="w-full mt-5 rounded-[17px] py-4 text-row font-extrabold text-white"
         style={{ background: 'var(--primary)', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
       >
         Done

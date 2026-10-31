@@ -17,12 +17,12 @@ export default function GroupTotalCard() {
     <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
       <div className="flex justify-between items-start">
         <div>
-          <div className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>Spent in {MONTHS[month - 1]}</div>
-          <div className="text-[28px] font-extrabold tracking-tight tabular-nums mt-0.5" style={{ color: 'var(--ink)' }}>{CURRENCY} {fmt(totalSpent)}</div>
+          <div className="text-meta font-medium" style={{ color: 'var(--muted)' }}>Spent in {MONTHS[month - 1]}</div>
+          <div className="text-figure font-extrabold tracking-tight tabular-nums mt-0.5" style={{ color: 'var(--ink)' }}>{CURRENCY} {fmt(totalSpent)}</div>
         </div>
         <div className="text-right">
-          <div className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>Budget</div>
-          <div className="text-[18px] font-extrabold tabular-nums mt-0.5" style={{ color: 'var(--ink)' }}>{fmt(totalBudget)}</div>
+          <div className="text-meta font-medium" style={{ color: 'var(--muted)' }}>Budget</div>
+          <div className="text-section font-extrabold tabular-nums mt-0.5" style={{ color: 'var(--ink)' }}>{fmt(totalBudget)}</div>
         </div>
       </div>
       <div className="h-2 rounded-full mt-4 overflow-hidden flex gap-0.5" style={{ background: 'var(--track)' }} aria-hidden="true">
@@ -31,7 +31,7 @@ export default function GroupTotalCard() {
           return w > 0 ? <div key={m.user_id} style={{ width: `${w}%`, background: m.color }} /> : null
         })}
       </div>
-      <div className="text-[12px] font-semibold mt-2.5" style={{ color: 'var(--ink-2)' }}>
+      <div className="text-meta font-medium mt-2.5" style={{ color: 'var(--ink-2)' }}>
         {pctUsed}% of the budget used across {memberCount} member{memberCount === 1 ? '' : 's'}
       </div>
     </div>

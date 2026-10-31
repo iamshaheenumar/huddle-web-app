@@ -8,7 +8,7 @@ import { inviteByEmail } from '@/features/members/actions'
 
 const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const inlineBtn = 'rounded-xl px-4 py-2.5 text-[14px] font-bold flex-shrink-0 transition-colors'
+const inlineBtn = 'rounded-xl px-4 py-2.5 text-body font-bold flex-shrink-0 transition-colors'
 
 export default function InviteCard({ code, groupId }: { code: string; groupId: string }) {
   const router = useRouter()
@@ -69,13 +69,13 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
     <div className="mx-5 mt-5 rounded-[22px] px-5 pt-5.5 pb-5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-[12px] font-bold uppercase tracking-[0.04em]" style={{ color: 'var(--muted)' }}>Invite code</div>
-          <div className="text-[32px] font-extrabold tracking-[0.06em] mt-1.5 tabular-nums leading-none" style={{ color: 'var(--ink)' }}>{codeDisplay}</div>
+          <div className="text-meta font-bold uppercase tracking-[0.04em]" style={{ color: 'var(--muted)' }}>Invite code</div>
+          <div className="text-figure font-extrabold tracking-[0.06em] mt-1.5 tabular-nums leading-none" style={{ color: 'var(--ink)' }}>{codeDisplay}</div>
         </div>
         <button
           onClick={handleRegenerate}
           disabled={regenerating}
-          className="flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-bold flex-shrink-0 disabled:opacity-60"
+          className="flex items-center gap-1.5 rounded-full px-3 py-2 text-meta font-bold flex-shrink-0 disabled:opacity-60"
           style={{ background: 'var(--background)', color: 'var(--ink)' }}
         >
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className={regenerating ? 'animate-spin' : undefined}>
@@ -84,10 +84,10 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           {regenerating ? 'Generating…' : 'New code'}
         </button>
       </div>
-      <div className="text-[12px] font-semibold mt-2.5" style={{ color: 'var(--muted)' }}>Expires in 7 days</div>
+      <div className="text-meta font-medium mt-2.5" style={{ color: 'var(--muted)' }}>Expires in 7 days</div>
 
       <div className="flex items-center gap-2 mt-4.5 rounded-2xl py-1.5 pr-1.5 pl-4" style={{ background: 'var(--background)' }}>
-        <div className="flex-1 min-w-0 text-[14px] font-semibold truncate" style={{ color: 'var(--ink)' }}>
+        <div className="flex-1 min-w-0 text-body font-semibold truncate" style={{ color: 'var(--ink)' }}>
           {link.replace(/^https?:\/\//, '')}
         </div>
         <button
@@ -103,7 +103,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
 
       <div className="flex items-center gap-3 mt-5.5 mb-4.5">
         <div className="flex-1 h-px" style={{ background: 'var(--hairline)' }} />
-        <div className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>or send it by email</div>
+        <div className="text-meta font-medium" style={{ color: 'var(--muted)' }}>or send it by email</div>
         <div className="flex-1 h-px" style={{ background: 'var(--hairline)' }} />
       </div>
 
@@ -113,7 +113,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="friend@example.com"
-          className="flex-1 min-w-0 bg-transparent outline-none py-2 text-[16px] font-medium"
+          className="flex-1 min-w-0 bg-transparent outline-none py-2 text-input font-medium"
           style={{ color: 'var(--ink)' }}
         />
         <button
@@ -128,8 +128,8 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
         </button>
       </form>
 
-      {sentTo && <div className="text-[13px] font-semibold mt-2.5" style={{ color: 'var(--income)' }}>Invite sent to {sentTo}</div>}
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {sentTo && <div className="text-meta font-semibold mt-2.5" style={{ color: 'var(--income)' }}>Invite sent to {sentTo}</div>}
+      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-2.5" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
     </div>
   )
 }

@@ -21,7 +21,7 @@ export default function DashboardHeader() {
         <GroupSwitcher currentGroup={group} groups={groups} />
       </div>
       <div
-        className="w-11 h-11 rounded-full flex items-center justify-center font-extrabold text-base text-white"
+        className="w-11 h-11 rounded-full flex items-center justify-center font-extrabold text-row text-white"
         style={{ background: avatarColor, boxShadow: '0 6px 14px -6px rgba(59,111,246,.7)' }}
       >
         {displayName.charAt(0).toUpperCase()}

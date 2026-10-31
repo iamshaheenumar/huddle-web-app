@@ -24,7 +24,7 @@ export default function MonthTabs({ period, view }: { period?: string; view: His
             key={key}
             href={historyHref(key, view)}
             scroll={false}
-            className="flex-shrink-0 rounded-full px-4 py-2 text-[13px] font-bold whitespace-nowrap"
+            className="flex-shrink-0 rounded-full px-4 py-2 text-body font-bold whitespace-nowrap"
             style={isSelected
               ? { background: 'var(--ink)', color: '#fff' }
               : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)' }}

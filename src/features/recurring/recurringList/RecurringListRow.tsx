@@ -95,7 +95,7 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
         style={{ width: ACTION_WIDTH, background: '#E5483E' }}
       >
         <Trash size={18} weight="bold" />
-        <span className="text-[11px] font-extrabold">Delete</span>
+        <span className="text-label font-extrabold">Delete</span>
       </button>
 
       <div
@@ -124,16 +124,16 @@ export default function RecurringListRow({ row, isLast, open, onOpenChange, onDe
             ? <CategoryIcon icon={row.categories.icon} color={row.categories.color} bg_color={row.categories.bg_color} size={36} iconSize={18} radius={11} />
             : <CategoryIcon icon={row.categories?.icon ?? ''} color="#666B75" bg_color="#F2EFEA" size={36} iconSize={18} radius={11} />}
           <div className="flex-1 min-w-0">
-            <div className="text-[14px] font-bold truncate" style={{ color: running ? 'var(--ink)' : 'var(--muted)' }}>{title}</div>
+            <div className="text-body font-bold truncate" style={{ color: running ? 'var(--ink)' : 'var(--muted)' }}>{title}</div>
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[11px] font-semibold truncate" style={{ color: 'var(--muted)' }}>
+              <span className="text-label font-semibold truncate" style={{ color: 'var(--muted)' }}>
                 {FREQUENCY_LABEL[row.frequency]} · {status}
               </span>
               {row.pending && <SyncingBadge />}
             </div>
           </div>
           <div className="flex flex-col items-end gap-[5px]">
-            <span className="text-[14px] font-extrabold tabular-nums" style={{ color: !running ? 'var(--muted)' : income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount({ kind: row.kind, amount: Number(row.amount) })}</span>
+            <span className="text-body font-extrabold tabular-nums" style={{ color: !running ? 'var(--muted)' : income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount({ kind: row.kind, amount: Number(row.amount) })}</span>
             <Toggle
               size="sm"
               checked={running}

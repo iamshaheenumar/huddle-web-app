@@ -27,7 +27,7 @@ export default function Segmented<T extends string>({ options, value, onChange, 
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(o.value)}
-            className="text-center py-[7px] rounded-[9px] text-[12px] transition-colors"
+            className="text-center py-[7px] rounded-[9px] text-meta transition-colors"
             style={selected
               ? { background: '#fff', color: 'var(--ink)', fontWeight: 800, boxShadow: '0 1px 3px rgba(32,36,46,.08)' }
               : { color: 'var(--ink-2)', fontWeight: 700 }}

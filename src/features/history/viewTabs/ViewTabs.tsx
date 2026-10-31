@@ -19,7 +19,7 @@ export default function ViewTabs({ period, view }: { period?: string; view: Hist
             href={historyHref(period, t.view)}
             scroll={false}
             replace
-            className="flex-1 rounded-full py-2 text-center text-[13px] font-bold"
+            className="flex-1 rounded-full py-2 text-center text-body font-bold"
             style={active ? { background: 'var(--ink)', color: '#fff' } : { color: '#6B7079' }}
           >
             {t.label}

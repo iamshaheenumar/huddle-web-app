@@ -8,7 +8,7 @@ function greetingForHour(hour: number) {
 // hour is always available.
 export default function Greeting({ name }: { name: string }) {
   return (
-    <div className="text-[13px] font-semibold" style={{ color: 'var(--muted)' }}>
+    <div className="text-meta font-medium" style={{ color: 'var(--muted)' }}>
       {greetingForHour(new Date().getHours())}, {name}
     </div>
   )

@@ -26,8 +26,8 @@ export default function RecurringEditScreen() {
   if (!row) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-5 text-center" style={{ background: 'var(--background)' }}>
-        <p className="text-[15px] font-bold" style={{ color: 'var(--ink)' }}>This recurring item isn&apos;t in your group</p>
-        <Link href="/recurring" className="mt-3 text-[13px] font-bold" style={{ color: 'var(--primary)' }}>Back to recurring</Link>
+        <p className="text-row font-bold" style={{ color: 'var(--ink)' }}>This recurring item isn&apos;t in your group</p>
+        <Link href="/recurring" className="mt-3 text-body font-bold" style={{ color: 'var(--primary)' }}>Back to recurring</Link>
       </div>
     )
   }

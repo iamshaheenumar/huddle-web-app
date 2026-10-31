@@ -16,12 +16,12 @@ export default function PeriodHeroCard({ period }: { period?: string }) {
   return (
     <div className="mx-5 mt-4 rounded-3xl p-5 text-white" style={{ background: s.overspent ? HERO_OVER_FILL : HERO_FILL }}>
       <div className="flex items-center gap-2">
-        <span className="text-[16px] font-extrabold">{s.label}</span>
-        <span className="text-[11px] font-bold rounded-full px-2 py-0.5" style={{ background: HERO_PANEL }}>
+        <span className="text-row font-extrabold">{s.label}</span>
+        <span className="text-label font-bold rounded-full px-2 py-0.5" style={{ background: HERO_PANEL }}>
           {s.closed ? 'Closed' : 'This month'}
         </span>
         {s.hasBudget && (
-          <span className="ml-auto text-[12px] font-bold rounded-full px-2.5 py-1" style={{ background: HERO_PANEL }}>
+          <span className="ml-auto text-meta font-bold rounded-full px-2.5 py-1" style={{ background: HERO_PANEL }}>
             {s.pctUsed}% used
           </span>
         )}
@@ -29,13 +29,13 @@ export default function PeriodHeroCard({ period }: { period?: string }) {
 
       <div className="flex items-end justify-between mt-4">
         <div>
-          <div className="text-[12px] font-semibold" style={{ color: HERO_SOFT }}>Total spent</div>
-          <div className="text-[30px] font-extrabold leading-none mt-1.5 tracking-tight tabular-nums">{CURRENCY} {fmt(s.totalSpent)}</div>
+          <div className="text-meta font-medium" style={{ color: HERO_SOFT }}>Total spent</div>
+          <div className="text-figure font-extrabold leading-none mt-1.5 tracking-tight tabular-nums">{CURRENCY} {fmt(s.totalSpent)}</div>
         </div>
         {s.hasBudget && (
           <div className="text-right">
-            <div className="text-[12px] font-semibold" style={{ color: HERO_SOFT }}>Budget</div>
-            <div className="text-[18px] font-extrabold mt-1.5 tabular-nums">{fmt(s.totalBudget)}</div>
+            <div className="text-meta font-medium" style={{ color: HERO_SOFT }}>Budget</div>
+            <div className="text-section font-extrabold mt-1.5 tabular-nums">{fmt(s.totalBudget)}</div>
           </div>
         )}
       </div>
@@ -46,7 +46,7 @@ export default function PeriodHeroCard({ period }: { period?: string }) {
         </div>
       )}
 
-      <div className="flex items-center justify-between mt-3 text-[12px] font-bold" style={{ color: HERO_SOFT }}>
+      <div className="flex items-center justify-between mt-3 text-meta font-bold" style={{ color: HERO_SOFT }}>
         <span className="flex items-center gap-1.5">
           {s.hasBudget && (s.overspent
             ? <WarningCircle size={14} weight="fill" aria-hidden="true" />

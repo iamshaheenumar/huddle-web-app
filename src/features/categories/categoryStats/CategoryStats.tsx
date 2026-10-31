@@ -21,8 +21,8 @@ export default function CategoryStats({ id }: { id: string }) {
     <div className="mx-5 mt-3.5 flex gap-2.5">
       {stats.map(s => (
         <div key={s.label} className="flex-1 rounded-2xl p-3.5 text-center" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
-          <div className="text-[11px] font-bold" style={{ color: 'var(--muted)' }}>{s.label}</div>
-          <div className="text-[17px] font-extrabold mt-0.5" style={{ color: s.color }}>{s.value}</div>
+          <div className="text-label font-bold" style={{ color: 'var(--muted)' }}>{s.label}</div>
+          <div className="text-section font-extrabold mt-0.5" style={{ color: s.color }}>{s.value}</div>
         </div>
       ))}
     </div>

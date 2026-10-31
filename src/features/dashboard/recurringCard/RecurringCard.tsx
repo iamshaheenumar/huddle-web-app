@@ -31,11 +31,11 @@ export default function RecurringCard() {
         <ArrowsClockwise size={19} weight="bold" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[14px] font-bold" style={{ color: 'var(--ink)' }}>
+        <div className="text-body font-bold" style={{ color: 'var(--ink)' }}>
           {/* "payments" while every running rule is spend; "transactions" once one is income. */}
           {activeCount} recurring {monthlyIncome > 0 ? 'transaction' : 'payment'}{activeCount === 1 ? '' : 's'}
         </div>
-        <div className="text-[11px] font-semibold truncate" style={{ color: 'var(--muted)' }}>
+        <div className="text-label font-semibold truncate" style={{ color: 'var(--muted)' }}>
           {amounts} / month
           {next?.next_due_date && ` · next ${nextName} on ${shortDate(next.next_due_date)}`}
         </div>

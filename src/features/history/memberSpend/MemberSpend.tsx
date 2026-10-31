@@ -19,8 +19,8 @@ export default function MemberSpend({ period }: { period?: string }) {
             <MemberAvatar name={m.profile?.display_name ?? '?'} color={m.profile?.avatar_color ?? '#3B6FF6'} size={38} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[14px] font-bold truncate" style={{ color: 'var(--ink)' }}>{m.profile?.display_name ?? 'Unknown'}</span>
-                <span className="text-[13px] font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>
+                <span className="text-body font-bold truncate" style={{ color: 'var(--ink)' }}>{m.profile?.display_name ?? 'Unknown'}</span>
+                <span className="text-body font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>
                   {fmt(m.spent)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>· {m.share}%</span>
                 </span>
               </div>

@@ -26,19 +26,19 @@ export default function DayTransactionsSection() {
     <>
       <div className="flex items-baseline justify-between gap-3 px-5 pt-6">
         <div className="flex items-baseline gap-2 min-w-0">
-          <span className="text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>{title}</span>
+          <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>{title}</span>
           {spent > 0 && (
-            <span className="text-[13px] font-semibold tabular-nums truncate" style={{ color: 'var(--muted)' }}>{CURRENCY} {fmt(spent)} spent</span>
+            <span className="text-meta font-medium tabular-nums truncate" style={{ color: 'var(--muted)' }}>{CURRENCY} {fmt(spent)} spent</span>
           )}
         </div>
-        <Link href="/history" className="shrink-0 text-[13px] font-bold py-2" style={{ color: 'var(--primary)' }}>See all</Link>
+        <Link href="/history" className="shrink-0 text-body font-bold py-2" style={{ color: 'var(--primary)' }}>See all</Link>
       </div>
       <div className="mx-5 mt-3 rounded-[22px] py-1 px-4 overflow-hidden" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {date && !isToday && (
-          <div className="text-[12px] font-semibold pt-3" style={{ color: 'var(--muted)' }}>Nothing logged today yet — showing your last transactions.</div>
+          <div className="text-meta font-medium pt-3" style={{ color: 'var(--muted)' }}>Nothing logged today yet — showing your last transactions.</div>
         )}
         {expenses.length === 0 ? (
-          <div className="py-[22px] text-center text-[14px] font-semibold" style={{ color: 'var(--muted)' }}>No transactions yet. Tap + to add one.</div>
+          <div className="py-[22px] text-center text-body font-medium" style={{ color: 'var(--muted)' }}>No transactions yet. Tap + to add one.</div>
         ) : (
           expenses.map((exp, i) => {
             const payer = exp.profile?.display_name?.split(' ')[0] ?? '?'
@@ -51,16 +51,16 @@ export default function DayTransactionsSection() {
                   ? <IncomeIcon size={40} iconSize={20} radius={12} />
                   : exp.category && <CategoryIcon icon={exp.category.icon} color={exp.category.color} bg_color={exp.category.bg_color} size={40} iconSize={20} radius={12} />}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[15px] font-bold truncate" style={{ color: 'var(--ink)' }}>{exp.note || label || 'Expense'}</div>
+                  <div className="text-row font-bold truncate" style={{ color: 'var(--ink)' }}>{exp.note || label || 'Expense'}</div>
                   <div className="flex items-center gap-1.5 mt-[3px] min-w-0">
                     <MemberAvatar name={payer} color={exp.profile?.avatar_color ?? '#3B6FF6'} size={16} fontSize={9} />
-                    <span className="text-[12px] font-semibold truncate" style={{ color: 'var(--muted)' }}>
+                    <span className="text-meta font-medium truncate" style={{ color: 'var(--muted)' }}>
                       {payer}{label ? ` · ${label}` : ''} · {exp.recurring ? 'Recurring' : timeLabel(exp.created_at)}
                     </span>
                     {exp.pending && <SyncingBadge />}
                   </div>
                 </div>
-                <span className="text-[16px] font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount(exp)}</span>
+                <span className="text-row font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount(exp)}</span>
               </div>
             )
           })

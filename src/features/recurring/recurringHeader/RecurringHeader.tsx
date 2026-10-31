@@ -7,7 +7,7 @@ export default function RecurringHeader() {
       <Link href="/dashboard" aria-label="Back" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}>
         <CaretLeft size={17} weight="bold" />
       </Link>
-      <span className="text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>Recurring</span>
+      <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>Recurring</span>
       <Link href="/expense/add?recurring=1" aria-label="Add recurring payment or income" className="w-11 h-11 rounded-[14px] flex items-center justify-center text-white" style={{ background: 'var(--primary)', boxShadow: '0 10px 18px -8px rgba(59,111,246,.7)' }}>
         <Plus size={17} weight="bold" />
       </Link>

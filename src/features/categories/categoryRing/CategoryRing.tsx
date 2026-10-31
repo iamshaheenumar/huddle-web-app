@@ -28,15 +28,15 @@ export default function CategoryRing({ id }: { id: string }) {
         >
           {overspent ? (
             <>
-              <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>Over by</span>
-              <span className="text-[28px] font-extrabold tracking-tight mt-0.5" style={{ color: OVER }}>{fmt(overspendAmount)}</span>
-              <span className="text-[11px] font-bold mt-0.5" style={{ color: OVER }}>{CURRENCY} · {Math.round(overspendPct)}% over</span>
+              <span className="text-meta font-bold" style={{ color: 'var(--muted)' }}>Over by</span>
+              <span className="text-figure font-extrabold tracking-tight mt-0.5" style={{ color: OVER }}>{fmt(overspendAmount)}</span>
+              <span className="text-label font-bold mt-0.5" style={{ color: OVER }}>{CURRENCY} · {Math.round(overspendPct)}% over</span>
             </>
           ) : (
             <>
-              <span className="text-[12px] font-bold" style={{ color: 'var(--muted)' }}>Available</span>
-              <span className="text-[28px] font-extrabold tracking-tight mt-0.5" style={{ color: 'var(--ink)' }}>{fmt(Math.max(0, available))}</span>
-              <span className="text-[11px] font-bold mt-0.5" style={{ color: category.color }}>{CURRENCY} · {Math.round(pctLeft)}% left</span>
+              <span className="text-meta font-bold" style={{ color: 'var(--muted)' }}>Available</span>
+              <span className="text-figure font-extrabold tracking-tight mt-0.5" style={{ color: 'var(--ink)' }}>{fmt(Math.max(0, available))}</span>
+              <span className="text-label font-bold mt-0.5" style={{ color: category.color }}>{CURRENCY} · {Math.round(pctLeft)}% left</span>
             </>
           )}
         </div>

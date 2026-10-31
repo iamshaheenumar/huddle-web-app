@@ -19,12 +19,12 @@ export default async function InviteMemberPage() {
         <Link href="/members" aria-label="Back to members" className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#20242E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </Link>
-        <span className="text-[18px] font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Invite to {group.name}</span>
+        <span className="text-section font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Invite to {group.name}</span>
       </div>
 
       <InviteCard code={code} groupId={group.id} />
 
-      <p className="mx-7 mt-3.5 text-[13px] font-medium leading-normal" style={{ color: 'var(--muted)', textWrap: 'pretty' }}>
+      <p className="mx-7 mt-3.5 text-meta font-medium leading-normal" style={{ color: 'var(--muted)', textWrap: 'pretty' }}>
         Anyone with the code or link can join {group.name} until it expires. Generating a new code turns off the old one.
       </p>
 

@@ -44,6 +44,18 @@
   --color-border: #F0ECE4;
   --color-card: #ffffff;
   --font-sans: 'Plus Jakarta Sans', sans-serif;
+
+  /* Type scale: text-label … text-display. Nothing goes below 11px; 16px is
+     only for text inputs (smaller makes iOS zoom in on focus). */
+  --text-label: 11px;
+  --text-meta: 12px;
+  --text-body: 14px;
+  --text-row: 15px;
+  --text-input: 16px;
+  --text-section: 17px;
+  --text-title: 22px;
+  --text-figure: 32px;
+  --text-display: 44px;
 }
 
 * {

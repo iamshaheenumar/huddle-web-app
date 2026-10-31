@@ -12,8 +12,8 @@ export default function HistoryHeader() {
   return (
     <div className="flex items-center justify-between px-5 pt-12 pb-1">
       <div className="min-w-0">
-        <div className="text-[13px] font-semibold truncate" style={{ color: 'var(--muted)' }}>{group.name} group</div>
-        <h1 className="text-[22px] font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>History</h1>
+        <div className="text-meta font-medium truncate" style={{ color: 'var(--muted)' }}>{group.name} group</div>
+        <h1 className="text-title font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>History</h1>
       </div>
       <ShareButton groupName={group.name} />
     </div>

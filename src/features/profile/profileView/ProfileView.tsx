@@ -48,25 +48,25 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
         <div className="flex items-center gap-4 mb-8">
           <HuddleMark size={56} shadow />
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Huddle</h1>
-            <p className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>Budget together</p>
+            <h1 className="text-title font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Huddle</h1>
+            <p className="text-body font-medium" style={{ color: 'var(--muted)' }}>Budget together</p>
           </div>
         </div>
 
         {profile && (
           <div className="rounded-3xl p-5 mb-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center font-extrabold text-xl text-white"
+              <div className="w-14 h-14 rounded-full flex items-center justify-center font-extrabold text-title text-white"
                 style={{ background: profile.avatar_color }}>
                 {profile.display_name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div className="text-lg font-extrabold" style={{ color: 'var(--ink)' }}>{profile.display_name}</div>
-                <div className="text-sm font-semibold mt-0.5" style={{ color: 'var(--muted)' }}>Member</div>
+                <div className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>{profile.display_name}</div>
+                <div className="text-body font-medium mt-0.5" style={{ color: 'var(--muted)' }}>Member</div>
               </div>
             </div>
             <div className="mt-4">
-              <div className="text-xs font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Avatar colour</div>
+              <div className="text-meta font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Avatar colour</div>
               <div className="flex gap-3 flex-wrap">
                 {MEMBER_COLORS.map((c, i) => (
                   <button
@@ -90,7 +90,7 @@ export default function ProfileView({ profile: initialProfile }: { profile: Prof
         <button
           onClick={handleSignOut}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 text-base font-extrabold transition-opacity disabled:opacity-60"
+          className="w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 text-row font-extrabold transition-opacity disabled:opacity-60"
           style={{ background: '#fff', border: '1px solid var(--hairline)', color: 'var(--danger)' }}
         >
           <SignOut size={18} weight="bold" />

@@ -191,8 +191,8 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
           <X size={16} weight="bold" />
         </button>
         <div className="flex flex-col items-center min-w-0 px-2">
-          <span className="text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>{editing ? 'Edit recurring' : income ? 'Add income' : 'Add expense'}</span>
-          <span className="text-[12px] font-semibold truncate max-w-full" style={{ color: 'var(--muted)' }}>in {groupName}</span>
+          <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>{editing ? 'Edit recurring' : income ? 'Add income' : 'Add expense'}</span>
+          <span className="text-meta font-medium truncate max-w-full" style={{ color: 'var(--muted)' }}>in {groupName}</span>
         </div>
         {editing ? (
           <button onClick={() => setConfirmingDelete(true)} aria-label={income ? 'Delete recurring income' : 'Delete recurring payment'} className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: 'var(--danger-soft)', color: 'var(--danger)' }}>
@@ -208,9 +208,9 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
 
       {/* Amount */}
       <div className="text-center px-5 pt-6 pb-1">
-        <label htmlFor="amount" className="text-[13px] font-semibold" style={{ color: 'var(--muted)' }}>Amount</label>
+        <label htmlFor="amount" className="text-meta font-medium" style={{ color: 'var(--muted)' }}>Amount</label>
         <div className="flex items-baseline justify-center gap-2 mt-1.5">
-          <span className="text-[20px] font-bold shrink-0" style={{ color: 'var(--muted)' }}>{income ? `+ ${CURRENCY}` : CURRENCY}</span>
+          <span className="text-title font-bold shrink-0" style={{ color: 'var(--muted)' }}>{income ? `+ ${CURRENCY}` : CURRENCY}</span>
           <input
             id="amount"
             type="text"
@@ -219,7 +219,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
             placeholder="0"
             value={shownAmount}
             onChange={e => setAmount(cleanAmount(e.target.value))}
-            className="text-[48px] font-extrabold tracking-tight leading-none tabular-nums bg-transparent outline-none min-w-0"
+            className="text-display font-extrabold tracking-tight leading-none tabular-nums bg-transparent outline-none min-w-0"
             // Sized to the digits so the currency stays beside the number.
             style={{ color: income ? INCOME_COLOR : 'var(--ink)', width: `${Math.max(1, shownAmount.length) + 0.5}ch`, maxWidth: '100%' }}
           />
@@ -228,7 +228,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
 
       {/* Paid by / Received by */}
       <div className="px-5 pt-5">
-        <div className="text-[13px] font-bold mb-2.5" style={{ color: 'var(--ink-2)' }}>{income ? 'Received by' : 'Paid by'}</div>
+        <div className="text-body font-bold mb-2.5" style={{ color: 'var(--ink-2)' }}>{income ? 'Received by' : 'Paid by'}</div>
         <div className="flex gap-2 flex-wrap">
           {members.map(m => {
             const selected = paidBy === m.id
@@ -239,13 +239,13 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
                 type="button"
                 aria-pressed={selected}
                 onClick={() => setPaidBy(m.id)}
-                className="flex items-center gap-2 rounded-full min-h-11 pl-1 pr-3.5 text-[14px] transition-colors"
+                className="flex items-center gap-2 rounded-full min-h-11 pl-1 pr-3.5 text-body transition-colors"
                 style={selected
                   ? { background: 'var(--primary)', color: '#fff', fontWeight: 700 }
                   : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600 }
                 }
               >
-                <span className="rounded-full flex items-center justify-center font-extrabold flex-shrink-0 text-[13px]"
+                <span className="rounded-full flex items-center justify-center font-extrabold flex-shrink-0 text-meta"
                   style={{ width: 32, height: 32, background: selected ? 'rgba(255,255,255,.22)' : m.avatar_color, color: '#fff' }}>
                   {m.display_name.charAt(0).toUpperCase()}
                 </span>
@@ -259,8 +259,8 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
       {/* Category (expenses only) */}
       {!income && <div className="px-5 pt-5">
         <div className="flex items-baseline justify-between mb-2.5">
-          <span className="text-[13px] font-bold" style={{ color: 'var(--ink-2)' }}>Category</span>
-          <span className="text-[12px] font-semibold" style={{ color: 'var(--muted)' }}>Most used first</span>
+          <span className="text-body font-bold" style={{ color: 'var(--ink-2)' }}>Category</span>
+          <span className="text-meta font-medium" style={{ color: 'var(--muted)' }}>Most used first</span>
         </div>
         <div className="grid grid-cols-4 gap-2">
           {categories.map(cat => {
@@ -278,7 +278,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
                 }
               >
                 <CategoryIcon icon={cat.icon} color={cat.color} bg_color={selected ? '#fff' : cat.bg_color} size={38} iconSize={19} radius={12} />
-                <span className="text-[12px] leading-tight text-center line-clamp-2" style={{ color: 'var(--ink)', fontWeight: selected ? 700 : 600 }}>{cat.name}</span>
+                <span className="text-meta leading-tight text-center line-clamp-2" style={{ color: 'var(--ink)', fontWeight: selected ? 700 : 600 }}>{cat.name}</span>
               </button>
             )
           })}
@@ -291,7 +291,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
             <span className="flex items-center justify-center rounded-[12px]" style={{ width: 38, height: 38, background: 'var(--primary-soft)' }}>
               <Plus size={18} weight="bold" />
             </span>
-            <span className="text-[12px] font-bold leading-tight">New</span>
+            <span className="text-meta font-bold leading-tight">New</span>
           </button>
         </div>
       </div>}
@@ -317,7 +317,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
             placeholder="What was it for? (optional)"
             value={note}
             onChange={e => setNote(e.target.value)}
-            className="flex-1 text-[16px] font-semibold bg-transparent outline-none"
+            className="flex-1 text-input font-semibold bg-transparent outline-none"
             style={{ color: 'var(--ink)' }}
           />
         </div>
@@ -331,7 +331,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
                 role="radio"
                 aria-checked={selected}
                 onClick={() => setDate(c.value)}
-                className="min-h-10 rounded-full px-4 text-[13px] transition-colors"
+                className="min-h-10 rounded-full px-4 text-meta transition-colors"
                 style={selected
                   ? { background: 'var(--ink)', color: '#fff', fontWeight: 700 }
                   : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600 }}
@@ -342,7 +342,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
           })}
           {/* The native picker sits invisibly over the chip so it opens on tap. */}
           <label
-            className="relative flex items-center gap-1.5 min-h-10 rounded-full px-4 text-[13px] cursor-pointer focus-within:outline-2 focus-within:outline-offset-2"
+            className="relative flex items-center gap-1.5 min-h-10 rounded-full px-4 text-meta cursor-pointer focus-within:outline-2 focus-within:outline-offset-2"
             style={pickedDate
               ? { background: 'var(--ink)', color: '#fff', fontWeight: 700, outlineColor: 'var(--focus-ring)' }
               : { background: '#fff', color: 'var(--ink)', border: '1px solid var(--line)', fontWeight: 600, outlineColor: 'var(--focus-ring)' }}
@@ -354,7 +354,7 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
               aria-label="Pick a date"
               value={date}
               onChange={e => e.target.value && setDate(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-pointer text-base"
+              className="absolute inset-0 opacity-0 cursor-pointer text-input"
             />
           </label>
         </div>
@@ -385,14 +385,14 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
         />
       )}
 
-      {error &&<p className="mx-5 mt-3 text-xs font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {error &&<p className="mx-5 mt-3 text-meta font-semibold rounded-xl px-3 py-2" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       {/* Add button */}
       <div className="sticky bottom-0 px-5 mt-auto pt-6 pb-[calc(env(safe-area-inset-bottom)+16px)]" style={{ background: 'linear-gradient(180deg,rgba(246,243,238,0),var(--background) 38%)' }}>
         <button
           onClick={handleAdd}
           disabled={loading || !ready}
-          className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold transition-colors disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-row font-extrabold transition-colors disabled:cursor-not-allowed"
           style={ready
             ? { background: 'var(--primary)', color: '#fff', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }
             : { background: '#DCD6CC', color: '#4A4F59' }}

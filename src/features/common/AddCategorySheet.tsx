@@ -96,13 +96,13 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
     <>
       <div className="flex flex-col items-center text-center pt-5">
         <CategoryIcon icon={icon} color={color.color} bg_color={color.bg_color} size={56} iconSize={28} radius={18} />
-        <div id="add-category-title" className="text-[18px] font-extrabold mt-3" style={{ color: trimmed ? color.color : 'var(--ink)' }}>
+        <div id="add-category-title" className="text-section font-extrabold mt-3" style={{ color: trimmed ? color.color : 'var(--ink)' }}>
           {trimmed || 'New category'}
         </div>
       </div>
 
       <div className="mt-5">
-        <label htmlFor="category-name" className="text-[13px] font-bold block mb-2" style={{ color: 'var(--ink-2)' }}>Name</label>
+        <label htmlFor="category-name" className="text-body font-bold block mb-2" style={{ color: 'var(--ink-2)' }}>Name</label>
         <div className="flex items-center gap-3 rounded-[15px] px-4 py-3.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           <input
             id="category-name"
@@ -114,15 +114,15 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
             value={name}
             onChange={e => { setName(e.target.value); if (error) setError('') }}
             onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
-            className="flex-1 text-[16px] font-semibold bg-transparent outline-none"
+            className="flex-1 text-input font-semibold bg-transparent outline-none"
             style={{ color: 'var(--ink)' }}
           />
-          <span className="text-[11px] font-bold tabular-nums" style={{ color: 'var(--muted)' }}>{name.length}/{MAX_NAME}</span>
+          <span className="text-label font-bold tabular-nums" style={{ color: 'var(--muted)' }}>{name.length}/{MAX_NAME}</span>
         </div>
       </div>
 
       <div className="mt-5">
-        <div className="text-[13px] font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Icon</div>
+        <div className="text-body font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Icon</div>
         <div className="grid grid-cols-6 gap-2 rounded-[18px] p-2.5" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
           {CATEGORY_ICON_NAMES.map(n => {
             const selected = n === icon
@@ -151,7 +151,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
       </div>
 
       <div className="mt-5">
-        <div className="text-[13px] font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Color</div>
+        <div className="text-body font-bold mb-2" style={{ color: 'var(--ink-2)' }}>Color</div>
         <div className="flex flex-wrap gap-2.5">
           {CATEGORY_COLORS.map(c => {
             const selected = c.color === color.color
@@ -179,16 +179,16 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
             )
           })}
         </div>
-        <p className="text-[11px] font-semibold mt-2" style={{ color: 'var(--muted)' }}>Dotted colors are already used by another category.</p>
+        <p className="text-label font-semibold mt-2" style={{ color: 'var(--muted)' }}>Dotted colors are already used by another category.</p>
       </div>
 
-      {error && <p className="text-xs font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
+      {error && <p className="text-meta font-semibold rounded-xl px-3 py-2 mt-4" style={{ color: 'var(--danger)', background: 'var(--danger-soft)' }}>{error}</p>}
 
       <div className="flex flex-col gap-2.5 mt-5">
         <button
           onClick={handleSave}
           disabled={pending}
-          className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-base font-extrabold text-white transition-opacity disabled:opacity-60"
+          className="w-full flex items-center justify-center gap-2.5 rounded-[17px] py-4 text-row font-extrabold text-white transition-opacity disabled:opacity-60"
           style={{ background: 'var(--primary)', boxShadow: '0 14px 24px -10px rgba(59,111,246,.7)' }}
         >
           <PlusCircle size={18} weight="fill" />
@@ -197,7 +197,7 @@ function AddCategoryForm({ groupId, existing, pending, setPending, onCancel, onC
         <button
           onClick={onCancel}
           disabled={pending}
-          className="w-full rounded-[17px] py-3.5 text-[15px] font-bold disabled:opacity-60"
+          className="w-full rounded-[17px] py-3.5 text-row font-bold disabled:opacity-60"
           style={{ background: '#fff', border: '1px solid var(--line)', color: 'var(--ink)' }}
         >
           Cancel

@@ -24,8 +24,8 @@ export default function MembersSection() {
   return (
     <>
       <div className="flex items-baseline justify-between px-5 pt-6">
-        <span className="text-[17px] font-extrabold" style={{ color: 'var(--ink)' }}>Who spent what</span>
-        <Link href="/members" className="text-[13px] font-bold py-2" style={{ color: 'var(--primary)' }}>See all</Link>
+        <span className="text-section font-extrabold" style={{ color: 'var(--ink)' }}>Who spent what</span>
+        <Link href="/members" className="text-body font-bold py-2" style={{ color: 'var(--primary)' }}>See all</Link>
       </div>
       <div className="mx-5 mt-1 rounded-[22px] p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
         {total > 0 && (
@@ -38,12 +38,12 @@ export default function MembersSection() {
         <div className={`grid grid-cols-3 gap-x-3 gap-y-3 ${total > 0 ? 'mt-3.5' : ''}`}>
           {ranked.map(m => (
             <div key={m.user_id} className="flex flex-col gap-0.5 min-w-0">
-              <span className="flex items-center gap-1.5 text-[12px] font-semibold min-w-0" style={{ color: 'var(--muted)' }}>
+              <span className="flex items-center gap-1.5 text-meta font-medium min-w-0" style={{ color: 'var(--muted)' }}>
                 <span className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: m.color }} />
                 <span className="truncate">{m.name}</span>
                 <span className="shrink-0">· {m.share}%</span>
               </span>
-              <span className="text-[15px] font-extrabold tabular-nums" style={{ color: 'var(--ink)' }}>{fmt(m.spent)}</span>
+              <span className="text-row font-extrabold tabular-nums" style={{ color: 'var(--ink)' }}>{fmt(m.spent)}</span>
             </div>
           ))}
         </div>

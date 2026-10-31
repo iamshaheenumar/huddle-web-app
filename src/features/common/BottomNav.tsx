@@ -30,7 +30,7 @@ export default function BottomNav() {
       style={{ color: active(href) ? 'var(--primary)' : 'var(--muted)' }}
     >
       <Icon size={24} weight={active(href) ? 'fill' : 'regular'} />
-      <span className="text-[11px] font-bold">{label}</span>
+      <span className="text-label font-bold">{label}</span>
     </Link>
   )
 

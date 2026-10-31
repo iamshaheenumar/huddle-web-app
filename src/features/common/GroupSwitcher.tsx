@@ -31,7 +31,7 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
   return (
     <div className="relative">
       <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="menu" className="flex items-center gap-2 mt-0.5 min-h-11">
-        <span className="text-[22px] font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>{currentGroup.name}</span>
+        <span className="text-title font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>{currentGroup.name}</span>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: open ? 'rotate(180deg)' : undefined, transition: 'transform .15s' }}>
           <path d="M2 4l4 4 4-4" stroke="#666B75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -46,7 +46,7 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
                 key={g.id}
                 onClick={() => handleSwitch(g.id)}
                 disabled={loading}
-                className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left text-[14px] font-bold disabled:opacity-60"
+                className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left text-body font-bold disabled:opacity-60"
                 style={{ color: 'var(--ink)', borderBottom: '1px solid var(--hairline)' }}
               >
                 {g.name}
@@ -56,7 +56,7 @@ export default function GroupSwitcher({ currentGroup, groups }: { currentGroup: 
             <Link
               href="/groups/new"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-4 py-3 text-[14px] font-bold"
+              className="flex items-center gap-2 px-4 py-3 text-body font-bold"
               style={{ color: 'var(--primary)' }}
             >
               <Plus size={15} weight="bold" /> Create new group

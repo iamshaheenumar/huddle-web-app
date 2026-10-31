@@ -57,10 +57,10 @@ export default function DeleteTxnButton({ txn }: { txn: HistoryTxn }) {
             ? <IncomeIcon size={40} iconSize={20} radius={12} />
             : txn.category && <CategoryIcon icon={txn.category.icon} color={txn.category.color} bg_color={txn.category.bg_color} size={40} iconSize={20} radius={12} />}
           <div className="flex-1 min-w-0 text-left">
-            <div className="text-[15px] font-bold truncate" style={{ color: 'var(--ink)' }}>{label}</div>
-            <div className="text-[12px] font-semibold mt-0.5 truncate" style={{ color: 'var(--muted)' }}>{txn.categoryName} · {dateLabel(txn.date)}</div>
+            <div className="text-row font-bold truncate" style={{ color: 'var(--ink)' }}>{label}</div>
+            <div className="text-meta font-medium mt-0.5 truncate" style={{ color: 'var(--muted)' }}>{txn.categoryName} · {dateLabel(txn.date)}</div>
           </div>
-          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount(txn)}</span>
+          <span className="text-row font-extrabold tabular-nums" style={{ color: income ? INCOME_COLOR : 'var(--ink)' }}>{signedAmount(txn)}</span>
         </div>
       </ConfirmSheet>
     </>

@@ -21,7 +21,7 @@ export default function KindToggle({ value, onChange }: { value: TxnKind; onChan
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(v)}
-            className="flex items-center justify-center gap-1.5 py-2 rounded-[10px] text-[13px] transition-colors"
+            className="flex items-center justify-center gap-1.5 py-2 rounded-[10px] text-meta transition-colors"
             style={selected
               ? { background: '#fff', color, fontWeight: 800, boxShadow: '0 1px 3px rgba(32,36,46,.08)' }
               : { color: 'var(--ink-2)', fontWeight: 700 }}
