@@ -45,6 +45,7 @@
   --income-text: #1F7A52;
   --income-soft: #E6F4EC;
   --warning: #9A5B00;
+  --warning-soft: #FCF3E0;
   --focus-ring: #2F63E0;
 }
 
@@ -77,6 +78,7 @@
     --income-text: #5FD39A;
     --income-soft: #17301F;
     --warning: #F2B556;
+    --warning-soft: #33270F;
     --focus-ring: #8DB0FF;
   }
 }

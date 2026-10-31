@@ -6,22 +6,45 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { revalidateAppData } from '@/lib/actions'
 import { clearPersistedCache } from '@/lib/query/client'
+import { Check, CheckCircle, EnvelopeSimple } from '@phosphor-icons/react'
 import HuddleMark from '@/features/common/HuddleMark'
+import { resendConfirmation, savePendingEmail } from '@/features/onboarding/confirmation'
 
-export default function LoginForm({ next }: { next?: string }) {
+// `confirmed`: arrived from a confirmation link opened in another browser, so
+// the email is confirmed but this browser still has to sign in.
+export default function LoginForm({ next, confirmed = false }: { next?: string; confirmed?: boolean }) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [unconfirmed, setUnconfirmed] = useState(false)
+  const [resend, setResend] = useState<'idle' | 'sending' | 'sent'>('idle')
+
+  async function handleResend() {
+    setResend('sending')
+    const message = await resendConfirmation(email, next)
+    if (message) {
+      setError(message)
+      setResend('idle')
+      return
+    }
+    savePendingEmail(email)
+    setResend('sent')
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setUnconfirmed(false)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
+    if (error?.code === 'email_not_confirmed') {
+      setUnconfirmed(true)
+      setResend('idle')
+      setLoading(false)
+    } else if (error) {
       setError(error.message)
       setLoading(false)
     } else {
@@ -42,11 +65,51 @@ export default function LoginForm({ next }: { next?: string }) {
 
         <div className="rounded-3xl p-6" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>
           <h2 className="text-title font-extrabold mb-6" style={{ color: 'var(--ink)' }}>Welcome back</h2>
+
+          {confirmed && !unconfirmed && (
+            <div role="status" className="mb-5 flex gap-2.5 items-start rounded-2xl p-3.5" style={{ background: 'var(--income-soft)' }}>
+              <CheckCircle size={20} weight="fill" className="shrink-0 mt-px" style={{ color: 'var(--income-text)' }} aria-hidden="true" />
+              <p className="text-body font-semibold leading-snug" style={{ color: 'var(--income-text)' }}>Email confirmed. Sign in to continue.</p>
+            </div>
+          )}
+
+          {unconfirmed && (
+            <div role="alert" className="mb-5 rounded-2xl p-3.5" style={{ background: 'var(--warning-soft)' }}>
+              <div className="flex gap-2.5 items-start">
+                <EnvelopeSimple size={20} weight="bold" className="shrink-0 mt-px" style={{ color: 'var(--warning)' }} aria-hidden="true" />
+                <div>
+                  <p className="text-body font-extrabold" style={{ color: 'var(--warning)' }}>Confirm your email first</p>
+                  <p className="mt-0.5 text-meta font-medium leading-snug" style={{ color: 'var(--warning)' }}>
+                    We sent a link to {email} when you signed up. Tap it, then sign in here.
+                  </p>
+                </div>
+              </div>
+              {resend === 'sent' ? (
+                <p role="status" className="mt-3 ml-[30px] flex items-center gap-1.5 min-h-10 text-meta font-bold" style={{ color: 'var(--income-text)' }}>
+                  <Check size={16} weight="bold" aria-hidden="true" />
+                  Sent. Check your inbox.
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resend === 'sending'}
+                  className="mt-3 ml-[30px] min-h-10 px-3.5 rounded-xl text-meta font-bold disabled:opacity-60"
+                  style={{ background: 'var(--card)', border: '1px solid var(--line)', color: 'var(--ink)' }}
+                >
+                  {resend === 'sending' ? 'Sending…' : 'Send the link again'}
+                </button>
+              )}
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <div>
-              <label className="text-meta font-bold mb-1.5 block" style={{ color: 'var(--ink-2)' }}>Email</label>
+              <label htmlFor="login-email" className="text-meta font-bold mb-1.5 block" style={{ color: 'var(--ink-2)' }}>Email</label>
               <input
+                id="login-email"
                 type="email"
+                autoComplete="email"
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -56,9 +119,11 @@ export default function LoginForm({ next }: { next?: string }) {
               />
             </div>
             <div>
-              <label className="text-meta font-bold mb-1.5 block" style={{ color: 'var(--ink-2)' }}>Password</label>
+              <label htmlFor="login-password" className="text-meta font-bold mb-1.5 block" style={{ color: 'var(--ink-2)' }}>Password</label>
               <input
+                id="login-password"
                 type="password"
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
