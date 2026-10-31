@@ -10,7 +10,10 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get('token_hash')
   const type = searchParams.get('type') as EmailOtpType | null
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  // Signup confirmations go to the set-up screens even when the email template
+  // builds its own link without `next` (a custom token_hash template does).
+  const isSignup = !!code || type === 'signup' || type === 'email'
+  const next = searchParams.get('next') ?? (isSignup ? '/welcome/confirmed' : '/dashboard')
   // Only allow same-origin relative paths to avoid open redirects.
   const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/dashboard'
   const to = (path: string) => NextResponse.redirect(new URL(path, request.url))
