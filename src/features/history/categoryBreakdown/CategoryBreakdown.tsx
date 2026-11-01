@@ -1,5 +1,6 @@
 'use client'
 
+import { WarningCircle } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import { fmt } from '@/lib/format'
 import { usePeriodCategories } from '../queries'
@@ -31,18 +32,24 @@ export default function CategoryBreakdown({ period }: { period?: string }) {
             <summary className="flex items-center gap-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               <CategoryIcon icon={c.category.icon} color={c.category.color} bg_color={c.category.bg_color} size={38} iconSize={19} radius={12} />
               <div className="flex-1 min-w-0">
+                {/* Spent and budget always show; how far over or under goes below the bar. */}
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-body font-bold" style={{ color: 'var(--ink)' }}>{c.category.name}</span>
-                  {overspent
-                    ? <span className="text-label font-bold rounded-full px-2.5 py-1 shrink-0" style={{ background: 'var(--danger-soft)', color: 'var(--danger-text)' }}>Over by {fmt(c.consumed - c.allocated)}</span>
-                    : hasAllocation
-                      ? <span className="text-body font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(c.consumed)} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>/ {fmt(c.allocated)}</span></span>
-                      : <span className="text-body font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>{fmt(c.consumed)}</span>}
+                  <span className="text-body font-bold tabular-nums shrink-0" style={{ color: 'var(--ink)' }}>
+                    <span style={overspent ? { color: 'var(--danger-text)' } : undefined}>{fmt(c.consumed)}</span>
+                    {hasAllocation && <span style={{ color: 'var(--muted)', fontWeight: 600 }}> / {fmt(c.allocated)}</span>}
+                  </span>
                 </div>
                 <div className="h-1.5 rounded-full mt-2.5 overflow-hidden" style={{ background: 'var(--track)' }}>
                   {overspent
                     ? <div className="h-full rounded-full" style={{ width: '100%', background: `linear-gradient(to right, ${barColor} 0 ${budgetFraction}%, var(--danger) ${budgetFraction}% 100%)` }} />
                     : <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />}
+                </div>
+                <div className="flex items-center justify-between gap-2 mt-2 text-meta">
+                  {overspent
+                    ? <span className="flex items-center gap-1 font-bold" style={{ color: 'var(--danger-text)' }}><WarningCircle size={13} weight="fill" aria-hidden="true" />Over by {fmt(c.consumed - c.allocated)}</span>
+                    : <span className="font-bold" style={{ color: 'var(--muted)' }}>{hasAllocation ? `${fmt(c.allocated - c.consumed)} left` : 'No budget set'}</span>}
+                  {hasAllocation && <span className="font-semibold tabular-nums" style={{ color: 'var(--muted)' }}>{Math.round((c.consumed / c.allocated) * 100)}% of budget</span>}
                 </div>
               </div>
               <svg className="shrink-0 transition-transform group-open:rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color: 'var(--icon-subtle)' }} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>

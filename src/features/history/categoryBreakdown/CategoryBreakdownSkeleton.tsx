@@ -13,6 +13,10 @@ export default function CategoryBreakdownSkeleton() {
                 <Sk style={{ width: 70, height: 13 }} />
               </div>
               <Sk className="rounded-full" style={{ width: '100%', height: 6, marginTop: 12 }} />
+              <div className="flex justify-between" style={{ marginTop: 10 }}>
+                <Sk style={{ width: 70, height: 11 }} />
+                <Sk style={{ width: 80, height: 11 }} />
+              </div>
             </div>
           </div>
         </div>
