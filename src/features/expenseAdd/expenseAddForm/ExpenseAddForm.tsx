@@ -273,7 +273,9 @@ export default function ExpenseAddForm({ data, startRecurring, startIncome, edit
                 onClick={() => setCategoryId(cat.id)}
                 className="flex flex-col items-center gap-1.5 rounded-[16px] px-1 pt-2.5 pb-2 min-h-20 transition-colors"
                 style={selected
-                  ? { background: cat.bg_color, boxShadow: `inset 0 0 0 2px ${cat.color}` }
+                  // Tinted from the card colour, not the stored pastel (bg_color), which
+                  // stays light in dark mode and would hide the light label.
+                  ? { background: `color-mix(in srgb, ${cat.color} 16%, var(--card))`, boxShadow: `inset 0 0 0 2px ${cat.color}` }
                   : { background: 'var(--card)', boxShadow: 'inset 0 0 0 1px var(--hairline)' }
                 }
               >
