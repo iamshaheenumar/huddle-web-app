@@ -2,6 +2,15 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function proxy(request: NextRequest) {
+  // Supabase falls back to the bare Site URL when a link's redirect isn't on
+  // its allow list; hand that code to the confirm route instead of dropping it.
+  const code = request.nextUrl.searchParams.get('code')
+  if (request.nextUrl.pathname === '/' && code) {
+    const confirmUrl = new URL('/auth/confirm', request.url)
+    confirmUrl.searchParams.set('code', code)
+    return NextResponse.redirect(confirmUrl)
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(

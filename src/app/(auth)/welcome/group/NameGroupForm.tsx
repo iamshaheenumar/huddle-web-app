@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { UserPlus } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
 import { revalidateAppData } from '@/lib/actions'
@@ -56,9 +55,20 @@ export default function NameGroupForm({ group }: { group: GroupSummary }) {
       }
     }
 
-    // Start from an empty cache so a previous user's data never shows.
+    await finish()
+  }
+
+  // Done (or skipped): stop routing sign-ins here, then open Home with an
+  // empty cache so a previous user's data never shows.
+  async function finish() {
+    await createClient().auth.updateUser({ data: { onboarding: false } })
     await Promise.all([revalidateAppData(), clearPersistedCache()])
     router.push('/dashboard')
+  }
+
+  async function handleSkip() {
+    setLoading(true)
+    await finish()
   }
 
   return (
@@ -147,9 +157,9 @@ export default function NameGroupForm({ group }: { group: GroupSummary }) {
         >
           {loading ? 'Setting up…' : trimmed ? `Create ${trimmed}` : 'Name your group to continue'}
         </button>
-        <Link href="/dashboard" className="mt-2 flex items-center justify-center min-h-12 text-body font-bold" style={{ color: 'var(--primary-text)' }}>
+        <button type="button" onClick={handleSkip} disabled={loading} className="mt-2 flex items-center justify-center min-h-12 text-body font-bold disabled:opacity-60" style={{ color: 'var(--primary-text)' }}>
           Skip for now
-        </Link>
+        </button>
       </form>
     </div>
   )

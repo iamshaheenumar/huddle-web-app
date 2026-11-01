@@ -39,7 +39,7 @@ export default function LoginForm({ next, confirmed = false }: { next?: string; 
     setError('')
     setUnconfirmed(false)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error?.code === 'email_not_confirmed') {
       setUnconfirmed(true)
       setResend('idle')
@@ -50,7 +50,9 @@ export default function LoginForm({ next, confirmed = false }: { next?: string; 
     } else {
       // Start from an empty cache so a previous user's data never shows.
       await Promise.all([revalidateAppData(), clearPersistedCache()])
-      router.push(next ?? '/dashboard')
+      // A new account that hasn't named its group yet picks up where it left off.
+      const onboarding = data.user?.user_metadata?.onboarding === true
+      router.push(next ?? (onboarding ? '/welcome/group' : '/dashboard'))
     }
   }
 
