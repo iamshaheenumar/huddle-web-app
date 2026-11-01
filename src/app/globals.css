@@ -200,6 +200,21 @@ input[type="number"]::-webkit-outer-spin-button {
   animation: sheet-fade .2s ease-out;
 }
 
+/* The "+" tip on Home: rises in, then bobs gently toward the button. */
+@keyframes tip-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tip-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+
+.tip-in {
+  animation: tip-in .3s ease-out .4s both, tip-bob 1.6s ease-in-out .7s infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .sheet-up, .sheet-fade { animation: none; }
+  .sheet-up, .sheet-fade, .tip-in { animation: none; }
 }

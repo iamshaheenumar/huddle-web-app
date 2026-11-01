@@ -43,7 +43,7 @@ export default function CheckEmail({ next }: { next?: string }) {
   return (
     <div className="min-h-screen flex justify-center" style={{ background: 'var(--background)' }}>
       <div className="w-full max-w-[430px] flex flex-col px-5 pt-12 pb-[calc(env(safe-area-inset-bottom)+32px)]">
-        <StepHeader step={2} />
+        <StepHeader step={1} />
 
         <div className="mt-12 flex flex-col items-center text-center">
           <div className="w-[88px] h-[88px] rounded-[28px] flex items-center justify-center" style={{ background: 'var(--primary-soft)', color: 'var(--primary-text)' }}>

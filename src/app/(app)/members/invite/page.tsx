@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getAuth } from '@/lib/auth'
 import { getActiveGroup, getOrCreateActiveInvite, listEmailInvites } from '@/lib/group'
-import InviteCard from './InviteCard'
+import InviteCard from '@/features/members/inviteCard/InviteCard'
 import SentInvites from './SentInvites'
 
 export default async function InviteMemberPage() {

@@ -43,7 +43,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
       return
     }
     await revalidateAppData()
-    router.push('/dashboard')
+    router.push('/welcome/joined')
   }
 
   async function handleSignupAndJoin(e: React.FormEvent) {
@@ -59,7 +59,7 @@ export default function InviteAcceptCard({ code, groupName, inviterName, memberC
       return
     }
     await revalidateAppData()
-    router.push('/dashboard')
+    router.push('/welcome/joined')
   }
 
   return (

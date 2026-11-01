@@ -14,7 +14,8 @@ export async function signupAndJoin(
     email,
     password,
     email_confirm: true,
-    user_metadata: { display_name: displayName },
+    // A new account, so Home shows the "Get started" checklist.
+    user_metadata: { display_name: displayName, getting_started: true },
   })
   if (createError) return { error: createError.message }
 
@@ -41,7 +42,7 @@ export async function completeInviteSignup(
 
   const { error: updateError } = await supabase.auth.updateUser({
     password,
-    data: { display_name: displayName, invite_pending: false },
+    data: { display_name: displayName, invite_pending: false, getting_started: true },
   })
   if (updateError) return { error: updateError.message }
 

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { House, ChartBar, Plus, UsersThree, UserCircle } from '@phosphor-icons/react'
 import { hidesBottomNav } from './navPaths'
+import FirstEntryTip from '@/features/dashboard/gettingStarted/FirstEntryTip'
 
 // History gets a tab because it's the screen people come back to; the budget
 // editor is reached from Home ("Edit budget", "Set budget").
@@ -37,7 +38,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Main"
-      className="flex items-center justify-around px-3 pt-2"
+      className="relative flex items-center justify-around px-3 pt-2"
       style={{
         background: 'var(--card)',
         borderTop: '1px solid var(--hairline)',
@@ -45,6 +46,7 @@ export default function BottomNav() {
         marginBottom: 0,
       }}
     >
+      {pathname === '/dashboard' && <FirstEntryTip />}
       {TABS.slice(0, 2).map(tab)}
 
       <Link

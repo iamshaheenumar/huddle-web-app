@@ -10,7 +10,14 @@ const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const inlineBtn = 'rounded-xl px-4 py-2.5 text-body font-bold flex-shrink-0 transition-colors'
 
-export default function InviteCard({ code, groupId }: { code: string; groupId: string }) {
+type Props = {
+  code: string
+  groupId: string
+  // Called once the link is copied or an email invite is sent.
+  onShared?: () => void
+}
+
+export default function InviteCard({ code, groupId, onShared }: Props) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
@@ -26,6 +33,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
   async function handleCopy() {
     await navigator.clipboard.writeText(link)
     setCopied(true)
+    onShared?.()
     setTimeout(() => setCopied(false), 1800)
   }
 
@@ -61,6 +69,7 @@ export default function InviteCard({ code, groupId }: { code: string; groupId: s
     }
     setEmail('')
     setSentTo(target)
+    onShared?.()
     setTimeout(() => setSentTo(''), 3000)
     router.refresh()
   }

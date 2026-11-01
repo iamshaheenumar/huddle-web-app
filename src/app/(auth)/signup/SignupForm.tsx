@@ -36,7 +36,7 @@ export default function SignupForm({ next }: { next?: string }) {
       email,
       password,
       options: {
-        // `onboarding` stays true until Name your group is done or skipped,
+        // `onboarding` stays true until the last set-up step (Invite) is done,
         // so whichever way they come back in (link, sign in) they land there.
         data: { display_name: displayName, onboarding: true },
         // Without this the verification link falls back to the project's Site URL.

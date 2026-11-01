@@ -5,12 +5,15 @@ import HuddleMark from '@/features/common/HuddleMark'
 import { MONTHS } from '@/lib/constants'
 import { useAppContext } from '@/features/common/queries'
 import { useBudget } from '../queries'
+import { useGettingStarted } from '../gettingStarted/queries'
 
 export default function EmptyBudget() {
   const { month } = useAppContext()
   const { data: budget } = useBudget()
-  // undefined = still loading, null = no budget this month.
-  if (budget !== null) return null
+  const gettingStarted = useGettingStarted()
+  // undefined = still loading, null = no budget this month. The Get started
+  // checklist has its own "Set a monthly budget" while it shows.
+  if (budget !== null || gettingStarted?.visible !== false) return null
 
   return (
     <div className="mx-5 mt-6 rounded-3xl p-6 text-center" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>

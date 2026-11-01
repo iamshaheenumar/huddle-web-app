@@ -5,6 +5,7 @@ import CategoriesSection from '@/features/dashboard/categoriesSection/Categories
 import MembersSection from '@/features/dashboard/membersSection/MembersSection'
 import EmptyBudget from '@/features/dashboard/emptyBudget/EmptyBudget'
 import RecurringCard from '@/features/dashboard/recurringCard/RecurringCard'
+import GettingStarted from '@/features/dashboard/gettingStarted/GettingStarted'
 
 // Static shell: each section reads the client query cache and shows its own
 // skeleton only until it has data.
@@ -13,6 +14,7 @@ export default function DashboardPage() {
     <div className="flex flex-col pb-7">
       <DashboardHeader />
       <BudgetHeroCard />
+      <GettingStarted />
       <DayTransactionsSection />
       <RecurringCard />
       <CategoriesSection />

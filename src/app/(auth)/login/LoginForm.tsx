@@ -50,7 +50,7 @@ export default function LoginForm({ next, confirmed = false }: { next?: string; 
     } else {
       // Start from an empty cache so a previous user's data never shows.
       await Promise.all([revalidateAppData(), clearPersistedCache()])
-      // A new account that hasn't named its group yet picks up where it left off.
+      // A new account that hasn't finished set-up goes back through it; saved steps come prefilled.
       const onboarding = data.user?.user_metadata?.onboarding === true
       router.push(next ?? (onboarding ? '/welcome/group' : '/dashboard'))
     }
