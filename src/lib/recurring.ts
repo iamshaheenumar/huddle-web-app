@@ -63,6 +63,16 @@ export function dueAt(s: Schedule, index: number, created: number): string | nul
   return date
 }
 
+// Dates a rule still has to log, from its next due date up to `until`, walked the
+// way process_recurring_expenses() walks them.
+export function datesDueThrough(r: Schedule & { next_index: number; occurrences_created: number }, until: string): string[] {
+  const dates: string[] = []
+  let index = r.next_index
+  let created = r.occurrences_created
+  for (let date = dueAt(r, index, created); date && date <= until; date = dueAt(r, ++index, ++created)) dates.push(date)
+  return dates
+}
+
 // Whether saving a new rule also logs its first payment now; create_recurring_expense().
 export function createsFirstPayment(s: Schedule, today: string) {
   return s.start_date <= today && (s.end_type !== 'on_date' || !s.end_date || s.start_date <= s.end_date)

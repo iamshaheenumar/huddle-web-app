@@ -1,6 +1,9 @@
 import type { Member, BudgetCategory, SpendDay } from './types'
 import type { MemberRow } from '@/features/common/queries'
 import type { TxnKind } from '@/types'
+import { datesDueThrough } from '@/lib/recurring'
+import { isIncome } from '@/lib/transactions'
+import { isRunning, type RecurringRow } from '@/features/recurring/queries'
 
 // month/year are the budget's own, which is an earlier month when it was carried forward.
 export type BudgetRow = { id: string; total_amount: number; month: number; year: number }
@@ -8,12 +11,28 @@ export type BudgetRow = { id: string; total_amount: number; month: number; year:
 export type ExpRow = { id: string; kind?: TxnKind; pending?: boolean; recurring_id?: string | null; amount: number; note: string | null; expense_date: string; created_at: string; category_id: string | null; paid_by: string; profiles: { display_name: string; avatar_color: string } | null; categories: { name: string; icon: string; color: string; bg_color: string } | null }
 export type BCRow = { allocated_amount: number; categories: { id: string; name: string; icon: string; color: string; bg_color: string } | null }
 
-export function budgetSummary(budget: BudgetRow | null, expenses: ExpRow[]) {
+// recurringDue is what running recurring payments will still log this month.
+// The month's recurring spend (paid plus still due) is committed, so only the
+// rest of the budget is free to spread over the days.
+export function budgetSummary(budget: BudgetRow | null, expenses: ExpRow[], recurringDue = 0) {
   const totalBudget = budget?.total_amount ?? 0
   const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0)
   const remaining = totalBudget - totalSpent
   const pctUsed = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0
-  return { totalBudget, totalSpent, remaining, pctUsed }
+  const recurringPaid = expenses.filter(e => e.recurring_id).reduce((sum, e) => sum + e.amount, 0)
+  // Budget left after recurring payments, before any other spend.
+  const flexibleBudget = totalBudget - recurringPaid - recurringDue
+  // Left for everything else once the payments still due are set aside.
+  const spendable = remaining - recurringDue
+  return { totalBudget, totalSpent, remaining, pctUsed, recurringPaid, recurringDue, flexibleBudget, spendable }
+}
+
+// What running recurring expenses will still log between `from` and `until`
+// (overdue ones the catch-up hasn't logged yet included); income is left out.
+export function recurringDueBetween(rules: RecurringRow[], from: string, until: string) {
+  return rules
+    .filter(r => isRunning(r) && !isIncome(r))
+    .reduce((sum, r) => sum + Number(r.amount) * datesDueThrough(r, until).filter(d => d >= from).length, 0)
 }
 
 export function memberSpend(members: MemberRow[], expenses: ExpRow[]): Member[] {

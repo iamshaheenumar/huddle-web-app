@@ -5,13 +5,15 @@ import { createClient } from '@/lib/supabase/client'
 import { useAppContext, useGroupMembers } from '@/features/common/queries'
 import { applyPendingExpenses, usePendingExpenseWrites } from '@/lib/query/mutations'
 import { cashFlow, isIncome } from '@/lib/transactions'
+import { useRecurring } from '@/features/recurring/queries'
 import { todayDate } from './dates'
-import { budgetSummary, memberSpend, budgetCategoryUsage, latestSpendDate, spendDay, type BudgetRow, type ExpRow, type BCRow } from './derive'
+import { budgetSummary, recurringDueBetween, memberSpend, budgetCategoryUsage, latestSpendDate, spendDay, type BudgetRow, type ExpRow, type BCRow } from './derive'
 import type { SpendDay } from './types'
 
 const EXPENSE_SELECT = '*, profiles(display_name, avatar_color), categories(name, icon, color, bg_color)'
 
 const monthStart = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}-01`
+const monthEnd = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}-${new Date(year, month, 0).getDate()}`
 
 // This month's transactions, income included, plus writes still queued on this device.
 export function useMonthTransactions(): ExpRow[] | undefined {
@@ -88,10 +90,12 @@ function useBudgetCategoryRows(budgetId: string | undefined) {
 // Derived views below return undefined while their inputs are still loading.
 
 export function useBudgetSummary() {
+  const { month, year } = useAppContext()
   const budget = useBudget()
   const expenses = useMonthExpenses()
-  if (budget.data === undefined || expenses === undefined) return undefined
-  return budgetSummary(budget.data, expenses)
+  const recurring = useRecurring()
+  if (budget.data === undefined || expenses === undefined || recurring === undefined) return undefined
+  return budgetSummary(budget.data, expenses, recurringDueBetween(recurring, monthStart(year, month), monthEnd(year, month)))
 }
 
 export function useMemberSpend() {

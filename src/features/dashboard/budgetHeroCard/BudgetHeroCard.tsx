@@ -14,7 +14,7 @@ export default function BudgetHeroCard() {
   // Same month's rows as the summary, so it's ready at the same time.
   const flow = useMonthCashFlow()
   if (!summary) return <BudgetHeroCardSkeleton />
-  const { remaining, totalBudget, totalSpent } = summary
+  const { remaining, totalBudget, totalSpent, recurringPaid, recurringDue, flexibleBudget, spendable } = summary
 
   const hasBudget = totalBudget > 0
   const over = hasBudget && remaining < 0
@@ -27,9 +27,15 @@ export default function BudgetHeroCard() {
   const now = new Date()
   const daysInMonth = new Date(year, month, 0).getDate()
   const daysLeft = daysInMonth - now.getDate() + 1
-  const pacePct = (now.getDate() / daysInMonth) * 100
-  const fasterThanPlanned = hasBudget && !over && barPct > pacePct + 5
-  const perDay = hasBudget && !over ? Math.floor(remaining / daysLeft) : 0
+  // Where spending should be by today: recurring payments already logged, plus
+  // the rest of the budget spread evenly over the month.
+  const pacePct = hasBudget
+    ? Math.min(100, ((recurringPaid + Math.max(0, flexibleBudget) * (now.getDate() / daysInMonth)) / totalBudget) * 100)
+    : 0
+  // Spending that eats into recurring payments still due is too fast even before the bar shows it.
+  const fasterThanPlanned = hasBudget && !over && (barPct > pacePct + 5 || spendable < 0)
+  // Recurring payments still due this month are set aside first.
+  const perDay = hasBudget && !over ? Math.floor(Math.max(0, spendable) / daysLeft) : 0
 
   const heroAmount = hasBudget ? Math.abs(remaining) : totalSpent
   const heroText = fmt(heroAmount)
@@ -46,7 +52,12 @@ export default function BudgetHeroCard() {
   // On the last day "per day" is just everything left, so it says so plainly.
   const tiles: { label: string; value: string; currency?: boolean; detail?: string }[] = []
   if (hasBudget && !over) {
-    tiles.push({ label: daysLeft === 1 ? 'Left for today' : 'Safe to spend per day', value: fmt(perDay), currency: true })
+    tiles.push({
+      label: daysLeft === 1 ? 'Left for today' : 'Safe to spend per day',
+      value: fmt(perDay),
+      currency: true,
+      detail: recurringDue > 0 ? `After ${fmt(recurringDue)} recurring due` : undefined,
+    })
   }
   if (flow && flow.income > 0) {
     tiles.push({ label: 'Net this month', value: signedNet(flow.net), detail: `+${fmt(flow.income)} in · ${fmt(flow.spent)} out` })
@@ -76,7 +87,7 @@ export default function BudgetHeroCard() {
           <div className="h-2 rounded-full overflow-hidden" style={{ background: HERO_TRACK }}>
             <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: '#fff' }} />
           </div>
-          {/* Where spending would be if it were spread evenly over the month. */}
+          {/* Where spending would be on plan: recurring so far plus the rest spread evenly. */}
           <div className="absolute -top-1 w-0.5 h-4 rounded-full" style={{ left: `${pacePct}%`, background: '#FFD66B' }} />
           <div className="absolute top-3.5 -translate-x-1/2 text-label font-bold whitespace-nowrap" style={{ left: `${Math.min(92, Math.max(8, pacePct))}%`, color: '#fff' }}>today</div>
         </div>
