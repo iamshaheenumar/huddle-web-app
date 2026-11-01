@@ -12,9 +12,12 @@ export type BudgetSetData = {
   allocations: Record<string, number>
   month: number
   year: number
+  // The earlier month whose budget these values were carried forward from, until
+  // this month gets one of its own.
+  carriedFrom: { month: number; year: number } | null
 }
 
-// This month's budget for the active group as the form's starting values, from
+// The budget in effect this month for the active group as the form's starting values, from
 // the shared category and budget queries; undefined while loading.
 export function useBudgetSetData(): BudgetSetData | undefined {
   const { group, month, year } = useAppContext()
@@ -27,5 +30,6 @@ export function useBudgetSetData(): BudgetSetData | undefined {
   if (budget) budgetCategories.forEach(bc => { allocations[bc.category.id] = bc.allocated_amount })
   else categories.forEach(c => { allocations[c.id] = 0 })
 
-  return { groupId: group.id, groupName: group.name, categories, totalBudget: budget?.total_amount ?? 0, allocations, month, year }
+  const carriedFrom = budget && (budget.month !== month || budget.year !== year) ? { month: budget.month, year: budget.year } : null
+  return { groupId: group.id, groupName: group.name, categories, totalBudget: budget?.total_amount ?? 0, allocations, month, year, carriedFrom }
 }

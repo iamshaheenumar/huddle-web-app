@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CaretLeft, Plus, Check, CheckCircle, PencilSimple, WarningCircle } from '@phosphor-icons/react'
+import { CaretLeft, Plus, Check, CheckCircle, PencilSimple, WarningCircle, ArrowBendDownRight } from '@phosphor-icons/react'
 import CategoryIcon from '@/features/common/CategoryIcon'
 import AddCategorySheet from '@/features/common/AddCategorySheet'
 import { createClient } from '@/lib/supabase/client'
@@ -18,7 +18,7 @@ const STEP = 100
 export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
   const router = useRouter()
   const invalidateAppData = useInvalidateAppData()
-  const { groupId, groupName, month, year } = data
+  const { groupId, groupName, month, year, carriedFrom } = data
 
   const [allocations, setAllocations] = useState<Record<string, number>>(data.allocations)
   // null: the total is the sum of the categories. A number: a total the user set
@@ -92,6 +92,15 @@ export default function BudgetSetForm({ data }: { data: BudgetSetData }) {
           <div className="text-title font-extrabold tracking-tight" style={{ color: 'var(--ink)' }}>Set {MONTHS[month - 1]} budget</div>
         </div>
       </div>
+
+      {carriedFrom && (
+        <div className="mx-5 mt-5 flex items-start gap-2 rounded-2xl px-3.5 py-3 text-meta font-medium" style={{ background: 'var(--primary-soft)', color: 'var(--primary-text)' }}>
+          <ArrowBendDownRight size={15} weight="bold" className="shrink-0 mt-px" aria-hidden="true" />
+          <span>
+            Carried over from {MONTHS[carriedFrom.month - 1]}{carriedFrom.year !== year ? ` ${carriedFrom.year}` : ''}. Changes you save apply to {MONTHS[month - 1]} onwards; {MONTHS[carriedFrom.month - 1]} keeps its budget.
+          </span>
+        </div>
+      )}
 
       {/* Total card */}
       <div className="mx-5 mt-5 rounded-3xl p-5" style={{ background: 'var(--card)', border: '1px solid var(--hairline)' }}>

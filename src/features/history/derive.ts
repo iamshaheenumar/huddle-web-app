@@ -46,6 +46,10 @@ const parsePeriod = (s?: string | null): Period | null => {
   return { year, month }
 }
 
+// The budget in effect for a period: its own, or the latest earlier one carried forward.
+const budgetFor = (budgets: BudgetRow[], p: Period) =>
+  budgets.filter(b => !isBefore(p, b)).sort(cmpDesc)[0]
+
 const sumSpent = (expenses: ExpRow[], p: Period) =>
   expenses.filter(e => inPeriod(e, p)).reduce((s, e) => s + Number(e.amount), 0)
 
@@ -82,7 +86,7 @@ export function historyContext(budgets: BudgetRow[], expenses: ExpRow[], periodP
 
 export function periodSummary(ctx: HistoryContext, budgets: BudgetRow[], expenses: ExpRow[], memberCount: number): PeriodSummary {
   const { selected, currentPeriod } = ctx
-  const budget = budgets.find(b => b.year === selected.year && b.month === selected.month)
+  const budget = budgetFor(budgets, selected)
   const totalBudget = Number(budget?.total_amount ?? 0)
   const totalSpent = sumSpent(expenses, selected)
   const hasBudget = totalBudget > 0
@@ -107,7 +111,7 @@ export function periodSummary(ctx: HistoryContext, budgets: BudgetRow[], expense
 
 export function periodCategories(selected: Period, budgets: BudgetRow[], allBc: BCRow[], expenses: ExpRow[], members: MemberRow[]): HistoryCategory[] {
   const memberById = new Map(members.map(m => [m.user_id, m]))
-  const budget = budgets.find(b => b.year === selected.year && b.month === selected.month)
+  const budget = budgetFor(budgets, selected)
 
   const byId = new Map<string, HistoryCategory>()
   // Seed allocations from the period's budget so allocated-but-unspent categories still appear.
@@ -134,7 +138,7 @@ export function earlierMonths(ctx: HistoryContext, budgets: BudgetRow[], expense
   return ctx.periods
     .filter(p => isBefore(p, ctx.selected))
     .map((p, i) => {
-      const budget = budgets.find(b => b.year === p.year && b.month === p.month)
+      const budget = budgetFor(budgets, p)
       const totalBudget = Number(budget?.total_amount ?? 0)
       const totalSpent = sumSpent(expenses, p)
       const hasBudget = totalBudget > 0

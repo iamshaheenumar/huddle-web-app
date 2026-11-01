@@ -47,6 +47,8 @@ export function useMonthCashFlow() {
   return rows && cashFlow(rows)
 }
 
+// The budget in effect this month: this month's own, or else the latest earlier
+// month's carried forward until someone saves one for this month.
 export function useBudget() {
   const { group, month, year } = useAppContext()
   return useQuery({
@@ -54,10 +56,12 @@ export function useBudget() {
     queryFn: async (): Promise<BudgetRow | null> => {
       const { data, error } = await createClient()
         .from('budgets')
-        .select('id, total_amount')
+        .select('id, total_amount, month, year')
         .eq('group_id', group!.id)
-        .eq('month', month)
-        .eq('year', year)
+        .or(`year.lt.${year},and(year.eq.${year},month.lte.${month})`)
+        .order('year', { ascending: false })
+        .order('month', { ascending: false })
+        .limit(1)
         .maybeSingle()
       if (error) throw error
       return data as unknown as BudgetRow | null
