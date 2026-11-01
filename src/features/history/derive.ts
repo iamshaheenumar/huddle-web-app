@@ -2,7 +2,7 @@ import { MONTHS } from '@/lib/constants'
 import type { MemberRow } from '@/features/common/queries'
 import { cashFlow, isIncome, type CashFlow } from '@/lib/transactions'
 import type { TxnKind } from '@/types'
-import type { Period, PeriodSummary, HistoryCategory, EarlierMonth, HistoryMember, HistoryTxn, HistoryDay } from './types'
+import type { Period, PeriodSummary, HistoryCategory, EarlierMonth, HistoryMember, HistoryTxn, HistoryDay, CompareSide, CompareCategory, CompareMember, MonthComparison } from './types'
 
 export type BudgetRow = { id: string; month: number; year: number; total_amount: number }
 // kind is missing on rows cached before income existed; treat those as expenses.
@@ -30,6 +30,9 @@ const expensePeriod = (dateStr: string): Period => {
   const [y, m] = dateStr.split('-')
   return { year: Number(y), month: Number(m) }
 }
+
+const samePeriod = (a: Period, b: Period) => a.year === b.year && a.month === b.month
+const prevMonth = (p: Period): Period => (p.month === 1 ? { year: p.year - 1, month: 12 } : { year: p.year, month: p.month - 1 })
 
 const inPeriod = (e: ExpRow, p: Period) => {
   const q = expensePeriod(e.expense_date)
@@ -203,4 +206,85 @@ export function periodTransactions(selected: Period, members: MemberRow[], expen
   const days = [...byDate.values()].sort((a, b) => b.date.localeCompare(a.date))
   for (const d of days) d.transactions.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
   return days
+}
+
+// The two months to compare: `a` defaults to the latest month, `b` to the month
+// with data before `a` (or the calendar month before it). `periods` is what the
+// pickers offer — every known month, plus a or b if the URL named one without data.
+export function comparePeriods(ctx: HistoryContext, aParam?: string | null, bParam?: string | null) {
+  const a = parsePeriod(aParam) ?? ctx.periods[0] ?? ctx.currentPeriod
+  let b = parsePeriod(bParam)
+  if (!b || samePeriod(a, b)) b = ctx.periods.find(p => isBefore(p, a)) ?? prevMonth(a)
+  const map = new Map(ctx.periods.map(p => [periodKey(p), p]))
+  map.set(periodKey(a), a)
+  map.set(periodKey(b), b)
+  return { a, b, periods: [...map.values()].sort(cmpDesc) }
+}
+
+const dayOfMonth = (dateStr: string) => Number(dateStr.slice(8, 10))
+
+const byDelta = <T extends { a: number; b: number; delta: number }>(x: T, y: T) =>
+  Math.abs(y.delta) - Math.abs(x.delta) || Math.max(y.a, y.b) - Math.max(x.a, x.b)
+
+// `transactions` includes income (for each side's income figure); everything
+// else counts spend only.
+export function compareMonths(a: Period, b: Period, budgets: BudgetRow[], transactions: ExpRow[], members: MemberRow[]): MonthComparison {
+  const expenses = transactions.filter(e => !isIncome(e))
+
+  // "Oct" and "Sep", or "Oct ’26" and "Oct ’25" when the month names alone would clash.
+  const sameYear = a.year === b.year
+  const side = (p: Period): CompareSide => ({
+    period: p,
+    key: periodKey(p),
+    label: periodLabel(p),
+    short: MONTHS[p.month - 1].slice(0, 3) + (sameYear ? '' : ` ’${String(p.year).slice(2)}`),
+    spent: sumSpent(expenses, p),
+    income: periodCashFlow(p, transactions).income,
+    budget: Number(budgetFor(budgets, p)?.total_amount ?? 0),
+  })
+  const sa = side(a)
+  const sb = side(b)
+
+  const now = new Date()
+  const today = { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() }
+  const running = samePeriod(a, today) || samePeriod(b, today)
+  const spentToDay = (p: Period) =>
+    expenses.filter(e => inPeriod(e, p) && dayOfMonth(e.expense_date) <= today.day).reduce((s, e) => s + Number(e.amount), 0)
+  const toDate = running ? { day: today.day, a: spentToDay(a), b: spentToDay(b) } : null
+  const basis = toDate ?? { a: sa.spent, b: sb.spent }
+  const delta = basis.a - basis.b
+
+  const cats = new Map<string, CompareCategory>()
+  const spentBy = new Map<string, { a: number; b: number }>()
+  for (const e of expenses) {
+    const isA = inPeriod(e, a)
+    if (!isA && !inPeriod(e, b)) continue
+    const amount = Number(e.amount)
+    const m = spentBy.get(e.paid_by) ?? { a: 0, b: 0 }
+    if (isA) m.a += amount; else m.b += amount
+    spentBy.set(e.paid_by, m)
+    // Uncategorised spend still counts in the totals, as on the Categories tab.
+    if (!e.categories) continue
+    const c = cats.get(e.categories.id) ?? { category: e.categories, a: 0, b: 0, delta: 0 }
+    if (isA) c.a += amount; else c.b += amount
+    cats.set(e.categories.id, c)
+  }
+  for (const c of cats.values()) c.delta = c.a - c.b
+
+  const memberRows: CompareMember[] = members
+    .map(m => {
+      const s = spentBy.get(m.user_id) ?? { a: 0, b: 0 }
+      return { user_id: m.user_id, profile: m.profiles, a: s.a, b: s.b, delta: s.a - s.b }
+    })
+    .filter(m => m.a > 0 || m.b > 0)
+
+  return {
+    a: sa,
+    b: sb,
+    toDate,
+    delta,
+    pct: basis.b > 0 ? Math.round((delta / basis.b) * 100) : null,
+    categories: [...cats.values()].sort(byDelta),
+    members: memberRows.sort(byDelta),
+  }
 }

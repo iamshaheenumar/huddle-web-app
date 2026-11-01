@@ -11,3 +11,12 @@ export function historyHref(period: string | undefined, view: HistoryView) {
   const qs = params.toString()
   return qs ? `/history?${qs}` : '/history'
 }
+
+// /history/compare for month a against month b; either can be left to the screen's defaults.
+export function compareHref(a?: string, b?: string) {
+  const params = new URLSearchParams()
+  if (a) params.set('a', a)
+  if (b) params.set('b', b)
+  const qs = params.toString()
+  return qs ? `/history/compare?${qs}` : '/history/compare'
+}

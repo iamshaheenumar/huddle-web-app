@@ -21,7 +21,7 @@ export default function HistoryScreen() {
 
   return (
     <div className="flex flex-col min-h-screen pb-24" style={{ background: 'var(--background)' }}>
-      <HistoryHeader />
+      <HistoryHeader period={period} />
       <MonthTabs period={period} view={view} />
       <PeriodHeroCard period={period} />
       <PeriodCashFlow period={period} />

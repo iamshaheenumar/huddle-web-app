@@ -7,7 +7,10 @@ export default function HistoryHeaderSkeleton() {
         <Sk style={{ width: 90, height: 13 }} />
         <Sk style={{ width: 100, height: 22 }} />
       </div>
-      <Sk style={{ width: 44, height: 44, borderRadius: 14 }} />
+      <div className="flex gap-2">
+        <Sk style={{ width: 44, height: 44, borderRadius: 14 }} />
+        <Sk style={{ width: 44, height: 44, borderRadius: 14 }} />
+      </div>
     </div>
   )
 }

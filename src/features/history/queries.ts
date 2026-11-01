@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useAppContext, useGroupMembers } from '@/features/common/queries'
 import { applyPendingExpenses, usePendingExpenseWrites, type ExpenseDraft } from '@/lib/query/mutations'
 import { isIncome } from '@/lib/transactions'
-import { historyContext, periodSummary, periodCategories, earlierMonths, periodMembers, periodTransactions, periodCashFlow, type BudgetRow, type BCRow, type ExpRow } from './derive'
+import { historyContext, periodSummary, periodCategories, earlierMonths, periodMembers, periodTransactions, periodCashFlow, comparePeriods, compareMonths, type BudgetRow, type BCRow, type ExpRow } from './derive'
 
 // A queued expense in the shape of a fetched history row.
 const draftToRow = (d: ExpenseDraft): ExpRow => ({
@@ -154,4 +154,20 @@ export function usePeriodTransactions(periodParam?: string) {
   const { data: members } = useGroupMembers()
   if (!ctx || !expenses || !members) return undefined
   return periodTransactions(ctx.selected, members, expenses)
+}
+
+// The pair of months on the compare screen, and every month the pickers offer.
+export function useComparePeriods(aParam?: string, bParam?: string) {
+  const ctx = useHistoryContext()
+  if (!ctx) return undefined
+  return comparePeriods(ctx, aParam, bParam)
+}
+
+export function useMonthComparison(aParam?: string, bParam?: string) {
+  const pair = useComparePeriods(aParam, bParam)
+  const { data: budgets } = useAllBudgets()
+  const transactions = useAllTransactions()
+  const { data: members } = useGroupMembers()
+  if (!pair || !budgets || !transactions || !members) return undefined
+  return compareMonths(pair.a, pair.b, budgets, transactions, members)
 }
